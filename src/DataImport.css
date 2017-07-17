@@ -1,0 +1,16 @@
+.dataImport{
+    /*padding-left:256px;*/
+}
+.table {
+    /*overflow-x: auto;*/
+    /*overflow-y: auto;*/
+table-layout: auto;
+    /*width:100%;*/
+}
+.myTable {
+    width:100%;
+    /*min-height: 100% !important;*/
+    table-layout: auto !important;
+    display:block !important;
+    color: rebeccapurple;
+}
