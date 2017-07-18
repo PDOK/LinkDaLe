@@ -26,6 +26,7 @@ class DataCreation extends Component {
         this.state = {
             currentPage: 1,
             data: '',
+            dataClassifications:[],
             classes:{},
             nodes:[],
             edges:[],
@@ -53,12 +54,13 @@ class DataCreation extends Component {
     // uri: false,
     // label: false
 
-    toThirdStep(classifications){
+    toThirdStep(){
         console.log('clack');
         //Convert data to nodes and edges
         let data = this.state.data.slice();
-        let nodes = this.state.nodes.slice();
-        let edges = this.state.edges.slice();
+        let nodes = [];
+        let edges = [];
+        let classifications = this.state.dataClassifications.slice();
         for(let i = 0; i < classifications.length;i++){
             let item = classifications[i];
             if(item.label){
@@ -146,9 +148,16 @@ class DataCreation extends Component {
 
     }
     renderDataClassifyView() {
-        let data = this.loadSecondaryData();
         if(this.state.data){
-            return <DataClassifyView data={data} nextPage={this.toThirdStep.bind(this)}/>
+            return (
+                <DataClassifyView
+                    data={this.state.dataClassifications}
+                    nextPage={this.toThirdStep.bind(this)}
+                    setClass={this.setClass.bind(this)}
+                    setUri={this.setUri.bind(this)}
+                    setLabel={this.setLabel.bind(this)}
+                />
+            )
         }
 
     }
@@ -166,15 +175,95 @@ class DataCreation extends Component {
         })
     }
     setData(data){
+        let exampleValues;
+        if(data.length > 1) {
+                exampleValues= data[0].map(function(column,index) {
+                    return {
+                        columnName: column,
+                        exampleValue: data[1][index],
+                        class: {name: 'Literal'},
+                        uri: false,
+                        label: false
+                    }
+                })
+        } else {
+            exampleValues = {}
+        }
         this.setState({
-            data:data
+            data:data,
+            dataClassifications:exampleValues
         })
+    }
+    setUri(index, boolean){
+        let dataClasses = this.state.dataClassifications.slice();
+        let item = dataClasses[index];
+        if(item.label){
+            item.label=false;
+        }
+        item.uri = boolean;
+        dataClasses[index]=item;
+        this.setState({
+            exampleValues:dataClasses
+        })
+
+    }
+    setLabel(index, boolean){
+        let dataClasses = this.state.dataClassifications.slice();
+        let item = dataClasses[index];
+        item.label = boolean;
+        dataClasses[index]=item;
+        this.setState({
+            exampleValues:dataClasses
+        })
+    }
+    setClass(index, classfication){
+        let dataClasses = this.state.dataClassifications.slice();
+        let item = dataClasses[index];
+        item.class = classfication;
+        dataClasses[index]=item;
+        this.setState({
+            exampleValues:dataClasses
+        })
+
+    }
+    setActiveNode(index,node){
+        let nodes = this.state.nodes.slice()
+        nodes[index] = node;
+        this.setState({
+            nodes:nodes,
+        })
+    }
+    pushEdge(newEdge){
+        let links = this.state.edges.slice();
+        links.push(newEdge);
+        this.setState({
+                edges:links,
+            }
+        );
+
+    }
+    deleteEdge(index, edge){
+        const edges = this.state.edges;
+        edges.splice(index, 1);
+        this.setState({links: edges});
+
     }
 
     renderDataLink(){
         console.log('renderData', this.state.nodes);
         if(this.state.nodes){
-            return <DataLinkView data={{nodes:this.state.nodes,links:this.state.edges}} getData={this.getData.bind(this)} nextPage={    this.goToFinalPage.bind(this)} previousPage={this.goBackTo.bind(this)}/>
+            return (
+                <DataLinkView
+                    nodes={this.state.nodes}
+                    links={this.state.edges}
+                    getData={this.getData.bind(this)}
+                    nextPage={this.goToFinalPage.bind(this)}
+                    previousPage={this.goBackTo.bind(this)}
+                    setNode={this.setActiveNode.bind(this)}
+                    pushEdge={this.pushEdge.bind(this)}
+                    deleteEdge={this.deleteEdge.bind(this)}
+                />
+            )
         }
     }
 

@@ -177,8 +177,8 @@ class DataLinkView extends Component {
     constructor(props) {
         super();
         this.state = {
-            nodes: props.data.nodes,
-            links: props.data.links,
+            // nodes: props.data.nodes,
+            // links: props.data.links,
             selected: {},
             dialog:{
                 open:false
@@ -188,17 +188,9 @@ class DataLinkView extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-
-        const data = this.props.getData();
-        const nodes = data.nodes;
-        const links = data.links;
-        if (this.state.nodes !== nodes || this.state.links !== links) {
-            console.log('update', 'update');
-            this.setState({
-                nodes: nodes,
-                links: links,
-            });
-            this.onSelectNode(null);
+        const nodes = nextProps.nodes;
+        const links = nextProps.links;
+        if (this.props.nodes !== nodes || this.props.links !== links) {
             return true;
         }
         if (this.state.selected !== nextState.selected){
@@ -211,27 +203,8 @@ class DataLinkView extends Component {
     }
 
     componentDidMount() {
-        // this.updateData(this.props.state);
         this.forceUpdate();
     }
-
-    updateData(newState) {
-        const data = this.props.getData();
-        const nodes = data.nodes;
-        const links = data.links;
-        if (this.state.nodes !== nodes || this.state.links !== links) {
-            this.setState({
-                nodes: nodes,
-                links: links
-            });
-            return true;
-        }
-        return false;
-        // randomData is loaded in from external file generate_data.js
-        // and returns an object with nodes and links
-        // this.setState(newState);
-    }
-
     getData() {
         return ({
             nodes: this.props.data.nodes,
@@ -249,14 +222,14 @@ class DataLinkView extends Component {
 
     // Helper to find the index of a given node
     getNodeIndex(searchNode) {
-        return this.state.nodes.findIndex((node) => {
+        return this.props.nodes.findIndex((node) => {
             return node[NODE_KEY] === searchNode[NODE_KEY]
         })
     }
 
     // Helper to find the index of a given edge
     getEdgeIndex(searchEdge) {
-        return this.state.links.findIndex((edge) => {
+        return this.props.links.findIndex((edge) => {
             return edge.source === searchEdge.source &&
                 edge.target === searchEdge.target
         })
@@ -267,7 +240,7 @@ class DataLinkView extends Component {
         const searchNode = {};
         searchNode[NODE_KEY] = nodeKey;
         const i = this.getNodeIndex(searchNode);
-        return this.state.nodes[i]
+        return this.props.nodes[i]
     }
 
     /*
@@ -277,16 +250,13 @@ class DataLinkView extends Component {
     // Called by 'drag' handler, etc..
     // to sync updates from D3 with the graph
     onUpdateNode(viewNode) {
-        const nodes = this.state.nodes;
         const i = this.getNodeIndex(viewNode);
-
-        nodes[i] = viewNode;
-        this.setState({nodes: nodes});
+        this.props.setNode(i,viewNode)
     }
     getNode(id){
-        for(let i = 0 ; i < this.state.nodes.length ; i++){
-            if(this.state.nodes[i].id === id){
-                return this.state.nodes[i];
+        for(let i = 0 ; i < this.props.nodes.length ; i++){
+            if(this.props.nodes[i].id === id){
+                return this.props.nodes[i];
             }
         }
     }
@@ -296,8 +266,8 @@ class DataLinkView extends Component {
         // Deselect events will send Null viewNode
         if (viewNode !== null) {
             let edges = [];
-            for(let i = 0; i < this.state.links.length ; i++){
-                let item = this.state.links[i];
+            for(let i = 0; i < this.props.links.length ; i++){
+                let item = this.props.links[i];
                 let origin;
                 let target;
                 if(item.source === viewNode.id){
@@ -312,8 +282,6 @@ class DataLinkView extends Component {
                     })
                 } else if(item.target === viewNode.id){
                     origin = this.getNode(item.target).label;
-                        console.log(origin);
-                        console.log(item);
                     target = viewNode.label;
                     edges.push({
                         subject:origin,
@@ -322,7 +290,7 @@ class DataLinkView extends Component {
                     })
                 }
             }
-            console.log('relations',edges)
+            console.log('relations',edges);
             this.setState({selected: viewNode, relations:edges});
             console.log('new selected',viewNode)
         } else {
@@ -334,22 +302,22 @@ class DataLinkView extends Component {
 
     // Edge 'mouseUp' handler
     onSelectEdge(viewEdge) {
-        console.log('Edge selected',viewEdge)
+        console.log('Edge selected',viewEdge);
         let target = this.getNode(viewEdge.target).label;
-        let origin = this.getNode(viewEdge.target).label;
+        let origin = this.getNode(viewEdge.source).label;
 
         this.setState({selected: viewEdge,
             relations:[{
                 subject:origin,
                 relation:viewEdge.relation,
-                objects:target
+                object:target
             }]
         });
     }
 
     // Creates a new node between two edges
     onCreateEdge(sourceViewNode, targetViewNode) {
-        const edges = this.state.links;
+        const edges = this.props.links;
 
         // This is just an example - any sort of logic
         // could be used here to determine edge type
@@ -398,7 +366,7 @@ class DataLinkView extends Component {
 
     // Called when an edge is reattached to a different target.
     onSwapEdge(sourceViewNode, targetViewNode, viewEdge) {
-        const edges = this.state.links;
+        const edges = this.props.links;
         const i = this.getEdgeIndex(viewEdge);
         const edge = JSON.parse(JSON.stringify(edges[i]));
 
@@ -411,11 +379,11 @@ class DataLinkView extends Component {
 
     // Called when an edge is deleted
     onDeleteEdge(viewEdge) {
-        const edges = this.state.links;
         const i = this.getEdgeIndex(viewEdge);
-        edges.splice(i, 1);
-        console.log('remove edge',viewEdge);
-        this.setState({links: edges, selected: {}});
+        this.props.deleteEdge(i,viewEdge)
+        this.setState({
+            selected: {}
+        })
     }
     renderDialogTableBody(){
         if(this.state.dialog.results){
@@ -434,7 +402,6 @@ class DataLinkView extends Component {
     doNothing(){};
     handlePick(index){
         let dialog = this.state.dialog;
-        let links = this.state.links;
         let result = dialog.results[index];
         console.log('resulte',result)
         let newEdge = {
@@ -447,14 +414,12 @@ class DataLinkView extends Component {
             link: result.uri,
 
         };
-        links.push(newEdge);
+        this.props.pushEdge(newEdge);
         this.setState({
-                links:links,
-                dialog:{
-                    open:false,
-                }
+            dialog:{
+                open:false,
             }
-        );
+        });
         this.forceUpdate()
     }
     handleClose() {
@@ -471,8 +436,8 @@ class DataLinkView extends Component {
 
 
     render() {
-        const nodes = this.state.nodes;
-        const edges = this.state.links;
+        const nodes = this.props.nodes;
+        const edges = this.props.links;
         const selected = this.state.selected;
 
         const NodeTypes = GraphConfig.NodeTypes;

@@ -16,18 +16,8 @@ import ActionSearch from 'material-ui/svg-icons/action/search';
 class DataClassifyView extends Component{
     constructor(props){
         super(props);
-        let temp = props.data;
         this.state=(
             {
-                data:temp[0].map(function(column,index) {
-                    return {
-                        columnName: column,
-                        exampleValue: temp[1][index],
-                        class: {name:'Literal'},
-                        uri: false,
-                        label: false
-                    }
-                }),
                 dialog:{
                     open:false,
                     id:0,
@@ -37,33 +27,10 @@ class DataClassifyView extends Component{
             }
         )
     }
-
-    onUriCheck(id){
-        let lists = this.state.data.slice();
-        let object = this.state.data[id];
-        if(object.label){
-            object.label=false;
-        }
-        object.uri=!object.uri;
-        lists[id]=object;
-        this.setState({
-            data:lists
-        });
-    }
-    onLabelCheck(id){
-        let lists = this.state.data.slice();
-        let object = this.state.data[id];
-        if(object.uri){
-            object.label=!object.label;
-            lists[id]=object;
-            this.setState({
-                data:lists
-            });
-        }
-    }
+    /* Renders the source link */
     renderSourceLink(id){
-        let lists = this.state.data.slice();
-        let object = this.state.data[id];
+        let lists = this.props.data.slice();
+        let object = this.props.data[id];
         if(object.class.name !== 'Literal'){
             return <a href={object.class}>{object.class.name}</a>
         }
@@ -117,12 +84,11 @@ class DataClassifyView extends Component{
 
     handlePick(index){
         let dialog = this.state.dialog;
-        let data = this.state.data;
+        let data = this.props.data;
         let result = dialog.results[index];
         result.name = result.prefix.split(':')[1];
-        data[dialog.id].class = result;
+        this.props.setClass(index,result)
         this.setState({
-                data:data,
                 dialog:{
                     open:false,
                     id:-1
@@ -147,11 +113,10 @@ class DataClassifyView extends Component{
     }
 
     toNextPage(){
-        console.log('click')
         this.props.nextPage(this.state.data);
     }
     getAmountOfClasses(){
-        let classes = this.state.data.slice();
+        let classes = this.props.data.slice();
         let counter = 0;
         for(let i = 0; i < classes.length; i++){
             let item = classes[i];
@@ -164,6 +129,7 @@ class DataClassifyView extends Component{
 
 
     render(){
+        console.log(this.props.data)
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -202,13 +168,13 @@ class DataClassifyView extends Component{
                             //[[C1,C2,C3,C4,C5,C6]
                             //[V1,V2,V3,V4,V5,V6]]
                             {
-                                this.state.data.map((column,index) =>
+                                this.props.data.map((column,index) =>
                                     <TableRow key={index}>
                                         <TableRowColumn>{column.columnName}</TableRowColumn>
                                         <TableRowColumn>{column.exampleValue}</TableRowColumn>
                                         <TableRowColumn><RaisedButton disabled={!column.uri} onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
-                                        <TableRowColumn><CheckBox value={index} onCheck={()=>this.onUriCheck(index)} checked={column.uri}/></TableRowColumn>
-                                        <TableRowColumn><CheckBox checked={column.label} onCheck={()=>this.onLabelCheck(index)} disabled={!column.uri}/></TableRowColumn>
+                                        <TableRowColumn><CheckBox value={index} onCheck={()=>this.props.setUri(index,!column.uri)} checked={column.uri}/></TableRowColumn>
+                                        <TableRowColumn><CheckBox checked={column.label} onCheck={()=>this.props.setLabel(index,!column.label)} disabled={!column.uri}/></TableRowColumn>
                                         <TableRowColumn>{this.renderSourceLink(index)}</TableRowColumn>
                                     </TableRow>
                                 )
