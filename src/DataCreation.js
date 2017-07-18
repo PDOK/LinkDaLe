@@ -143,8 +143,7 @@ class DataCreation extends Component {
             classes: classifications,
             nodes:nodes,
             edges:edges
-        })
-
+        });
 
     }
     renderDataClassifyView() {
@@ -157,11 +156,21 @@ class DataCreation extends Component {
     getData(){
         return ({nodes:this.state.nodes,links:this.state.edges})
     }
+    goBackTo(index){
+        this.setState({
+            currentPage:index
+        })
+    }
+    goToFinalPage(){
+        this.setState({
+            currentPage:4
+        })
+    }
 
     renderDataLink(){
         console.log('renderData', this.state.nodes);
         if(this.state.nodes){
-            return <DataLinkView data={{nodes:this.state.nodes,links:this.state.edges}} getData={this.getData.bind(this)} nextPage={() => this.toThirdStep.bind(this)} previousPage={() => this.toThirdStep.bind(this)}/>
+            return <DataLinkView data={{nodes:this.state.nodes,links:this.state.edges}} getData={this.getData.bind(this)} nextPage={this.goToFinalPage.bind(this)} previousPage={this.goBackTo.bind(this)}/>
         }
     }
 

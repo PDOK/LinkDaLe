@@ -198,18 +198,21 @@ class DataLinkView extends Component {
                 nodes: nodes,
                 links: links,
             });
+            this.onSelectNode(null);
             return true;
         }
         if (this.state.selected !== nextState.selected){
-            this.setState(nextState.selected)
+            this.setState(nextState.selected);
             return true;
         }
+        console.log("render","no render");
         return false;
 
     }
 
     componentDidMount() {
         // this.updateData(this.props.state);
+        this.forceUpdate();
     }
 
     updateData(newState) {
@@ -237,11 +240,11 @@ class DataLinkView extends Component {
     }
 
     toPreviousPage() {
-        this.props.previousPage();
+        this.props.previousPage(2);
     }
 
     toNextPage() {
-        this.props.nextPage(this.state.structure)
+        this.props.nextPage();
     }
 
     // Helper to find the index of a given node
