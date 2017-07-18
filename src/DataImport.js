@@ -57,7 +57,7 @@ class TableView extends Component {
                 >
                     {/*Render the table header*/}
                     <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                        <TableRow style={{}}>
+                        <TableRow key={0} style={{}}>
                             {/*Create columns for every data*/}
                             {this.props.data[0].map((x) => (
                                 <TableHeaderColumn key={x} style={{width:'75px',maxWidth:'75px'}}>{x}</TableHeaderColumn>
@@ -67,11 +67,11 @@ class TableView extends Component {
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
                         {/*Grab the rest of the data*/}
-                        {this.props.data.slice(1, this.props.data.length).map((row) => (
+                        {this.props.data.slice(1, this.props.data.length).map((row,index) => (
                             //Split the data in rows and columns
-                            <TableRow style={{}}>{
-                                row.map((x) => (
-                                    <TableRowColumn style={{width:'75px',maxWidth:'75px'}}>{x}</TableRowColumn>
+                            <TableRow key={index+1} style={{}}>{
+                                row.map((x,indx) => (
+                                    <TableRowColumn key={indx} style={{width:'75px',maxWidth:'75px'}}>{x}</TableRowColumn>
                                 ))}</TableRow>
                         ))}
                     </TableBody>

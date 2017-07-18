@@ -120,8 +120,8 @@ class InfoBar extends Component {
 
                     />
                     {
-                        this.props.references.map((item) =>
-                            <CardText expandable={true}>
+                        this.props.references.map((item,index) =>
+                            <CardText key={index} expandable={true}>
                                 <Divider/>
                                 <p>
                                     <b>Subject: </b>{item.subject}<br/>
