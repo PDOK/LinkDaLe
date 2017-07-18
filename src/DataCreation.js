@@ -33,10 +33,9 @@ class DataCreation extends Component {
     }
 
 
-    finishFirstStep(i, data) {
+    finishFirstStep(i) {
         this.setState({
             currentPage: 2,
-            data: data
         })
     }
     loadSecondaryData(){
@@ -166,11 +165,16 @@ class DataCreation extends Component {
             currentPage:4
         })
     }
+    setData(data){
+        this.setState({
+            data:data
+        })
+    }
 
     renderDataLink(){
         console.log('renderData', this.state.nodes);
         if(this.state.nodes){
-            return <DataLinkView data={{nodes:this.state.nodes,links:this.state.edges}} getData={this.getData.bind(this)} nextPage={this.goToFinalPage.bind(this)} previousPage={this.goBackTo.bind(this)}/>
+            return <DataLinkView data={{nodes:this.state.nodes,links:this.state.edges}} getData={this.getData.bind(this)} nextPage={    this.goToFinalPage.bind(this)} previousPage={this.goBackTo.bind(this)}/>
         }
     }
 
@@ -178,7 +182,7 @@ class DataCreation extends Component {
         return (
             <Tabs value={this.state.currentPage}>
                 <Tab label="Step 1: Create Data" value={1} disabled>
-                    <DataImport data={this.state.data} pageFunction={this.finishFirstStep.bind(this)}/>
+                    <DataImport data={this.state.data} pageFunction={this.finishFirstStep.bind(this)} setData={this.setData.bind(this)}/>
                 </Tab>
                 <Tab label="Step 2: Classify Data" value={2} disabled>
                     {this.renderDataClassifyView()}

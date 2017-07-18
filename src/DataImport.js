@@ -101,25 +101,22 @@ class ImportView extends Component {
 
     handleFileChange(event) {
         const reader = new FileReader();
-        console.log(event.target.files);
         if (event.target.files.length === 0) {
             this.setState({
                 selectedFile: "No file selected",
-                data: ''
             });
+            this.props.setData('');
             return
         }
         if (event.target.files[0].name.split('\.').pop() !== 'csv') {
             this.setState({
                 selectedFile: "Wrong filetype selected",
-                data: ''
             });
+            this.props.setData('');
             return;
         }
         reader.addEventListener('load', () => {
-            this.setState({
-                data: csvToText(reader.result, /[,|;\t]/g, '\r\n'),
-            })
+            this.props.setData(csvToText(reader.result, /[,|;\t]/g, '\r\n'));
         });
         if (event.target.files) {
             reader.readAsText(event.target.files[0], 'UTF-8');
@@ -130,17 +127,17 @@ class ImportView extends Component {
     }
 
     renderTable() {
-        return <TableView data={this.state.data}/>
+        return <TableView data={this.props.data}/>
     }
 
 
     render() {
-        let toContinue = this.state.data === '';
+        let toContinue = this.props.data === '';
         return (
             <div className="dataImport">
                 <Paper zDepth={1}>
                     <FlatButton
-                        label="Choose an File"
+                        label="Pick a file"
                         labelPosition="before"
                         style={styles.button}
                         containerElement="label"
@@ -156,7 +153,7 @@ class ImportView extends Component {
                             float: 'right',
                             margin: 14
                         }}
-                        onClick={() => this.props.pageFunction(2,this.state.data)}
+                        onClick={() => this.props.pageFunction(2)}
                     />
                 </Paper>
                 <Paper zDepth={1} style={{width:'100%'}}>
