@@ -11,6 +11,8 @@ import AppBar from 'material-ui/AppBar/'
 import DataCreation from './DataCreation'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {green500,green700,green400, orangeA200} from 'material-ui/styles/colors'
+import IconButton from 'material-ui/IconButton'
+import Divider from 'material-ui/Divider'
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
@@ -57,7 +59,18 @@ class NavigationBar extends Component {
                     fullWidth={true}
                     onClick={() => this.props.onClick(States.Tutorialise)}
                 />
+                <Divider/>
+                <div
+                    style={{
+                        position:'absolute',
+                        bottom:0,
+                        width:'100%',
 
+                    }}
+                >
+                    <Divider/>
+                    <IconButton iconClassName="muidocs-icon-custom-github" href="https://github.com/GerwinBosch/rdf-paqt"/>
+                </div>
             </MaterialDrawer>
         )
     }

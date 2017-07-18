@@ -339,7 +339,7 @@ class DataLinkView extends Component {
             relations:[{
                 subject:origin,
                 relation:viewEdge.relation,
-                object:target
+                objects:target
             }]
         });
     }

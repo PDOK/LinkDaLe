@@ -22,3 +22,8 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.icon-github {
+  background-image: url("./GitHub-Mark-120px-plus.png");
+  background-position:center center;
+}
