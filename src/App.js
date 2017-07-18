@@ -10,7 +10,7 @@ import FlatButton from 'material-ui/FlatButton/'
 import AppBar from 'material-ui/AppBar/'
 import DataCreation from './DataCreation'
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {green500,green700,green400, orangeA200} from 'material-ui/styles/colors'
+import {green400, green500, green700, orangeA200} from 'material-ui/styles/colors'
 import IconButton from 'material-ui/IconButton'
 import Divider from 'material-ui/Divider'
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
@@ -62,39 +62,40 @@ class NavigationBar extends Component {
                 <Divider/>
                 <div
                     style={{
-                        position:'absolute',
-                        bottom:0,
-                        width:'100%',
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
 
                     }}
                 >
                     <Divider/>
-                    <IconButton iconClassName="muidocs-icon-custom-github" href="https://github.com/GerwinBosch/rdf-paqt"/>
+                    <IconButton iconClassName="muidocs-icon-custom-github"
+                                href="https://github.com/GerwinBosch/rdf-paqt"/>
                 </div>
             </MaterialDrawer>
         )
     }
 }
+
 const States = {
-    Welcome:1,
-    DataCreation:2,
-    DataBrowsing:3,
-    Querying:4,
-    Tutorialise:5
+    Welcome: 1,
+    DataCreation: 2,
+    DataBrowsing: 3,
+    Querying: 4,
+    Tutorialise: 5
 };
 
 class App extends Component {
     constructor() {
         super();
         this.state = {
-            state : States.Welcome,
-            title:'Welcome'
+            state: States.Welcome,
+            title: 'Welcome'
         }
     }
-    renderContent(){
-        switch(this.state.state){
-            case States.Welcome:
-                return <h1>Welcome</h1>;
+
+    renderContent() {
+        switch (this.state.state) {
             case States.DataCreation:
                 return <DataCreation/>;
             case States.DataBrowsing:
@@ -102,16 +103,20 @@ class App extends Component {
             case States.Querying:
                 return <h1>WIP</h1>;
             case States.Tutorialise:
-                return <h1>WIP</h1>
+                return <h1>WIP</h1>;
+            default:
+                return <h1>Welcome</h1>;
+
         }
     }
-    handleClick(i){
+
+    handleClick(i) {
         console.log(i);
         let title;
-        if(this.state === i){
+        if (this.state === i) {
             return
         }
-        switch(i){
+        switch (i) {
             case (States.Welcome) :
                 title = "Welcome";
                 break;
@@ -127,13 +132,14 @@ class App extends Component {
             case (States.Tutorialise):
                 title = "Learn about Linked Data";
                 break;
+            default:
+                title = "Welcome"
         }
         this.setState({
-            state : i,
-            title : title,
+            state: i,
+            title: title,
         })
     }
-
 
 
     render() {
@@ -144,14 +150,14 @@ class App extends Component {
                     <NavigationBar
                         onClick={(i) => this.handleClick(i)}
                     />
-                    <div style={{paddingLeft:256}}>
+                    <div style={{paddingLeft: 256}}>
                         <AppBar
                             title={this.state.title}
                             iconClassNameRight="muidocs-icon-navigation-expand-more"
                         />
                         {
-                        this.renderContent()
-                    }
+                            this.renderContent()
+                        }
                     </div>
                 </div>
             </MuiThemeProvider>

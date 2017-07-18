@@ -13,97 +13,103 @@ import 'whatwg-fetch'
 import IconButton from 'material-ui/IconButton';
 import ActionSearch from 'material-ui/svg-icons/action/search';
 
-class DataClassifyView extends Component{
-    constructor(props){
+class DataClassifyView extends Component {
+    constructor(props) {
         super(props);
-        this.state=(
+        this.state = (
             {
-                dialog:{
-                    open:false,
-                    id:0,
-                    searchText:'',
-                    results:[]
+                dialog: {
+                    open: false,
+                    id: 0,
+                    searchText: '',
+                    results: []
                 }
             }
         )
     }
+
     /* Renders the source link */
-    renderSourceLink(id){
-        let lists = this.props.data.slice();
+    renderSourceLink(id) {
         let object = this.props.data[id];
-        if(object.class.name !== 'Literal'){
+        if (object.class.name !== 'Literal') {
             return <a href={object.class}>{object.class.name}</a>
         }
 
     }
-    handleOpen(i){
+
+    //Opens the dialog and set the row number of the item that was picked
+    handleOpen(i) {
         this.setState({
-            dialog:{
-                open:true,
-                id:i
+            dialog: {
+                open: true,
+                id: i
             }
         })
     }
-    handleClose(){
+
+    handleClose() {
         this.setState(
             {
-                dialog:{
-                    open:false,
-                    id:-1
+                dialog: {
+                    open: false,
+                    id: -1
                 }
             }
         )
     }
-    onChange(object, string){
+
+    onChange(object, string) {
         let dialog = this.state.dialog;
-        dialog.searchText=string;
-        this.setState({dialog:dialog});
+        dialog.searchText = string;
+        this.setState({dialog: dialog});
     }
-    searchVocabulary(){
+
+    searchVocabulary() {
         let query = this.state.dialog.searchText;
         let dialog = this.state.dialog;
-        fetch('http://lov.okfn.org/dataset/lov/api/v2/term/search?q='+query+'&type=class')
-            .then(function(response) {
+        fetch('http://lov.okfn.org/dataset/lov/api/v2/term/search?q=' + query + '&type=class')
+            .then(function (response) {
                 return response.json()
-            }).then(function(json) {
+            }).then(function (json) {
             console.log('parsed json', json.results);
-            dialog.results=json.results.map(
-                function(item) {
+            dialog.results = json.results.map(
+                function (item) {
                     return {
                         uri: item.uri[0],
                         vocabPrefix: item['vocabulary.prefix'][0],
-                        prefix:item.prefixedName[0]
+                        prefix: item.prefixedName[0]
                     };
                 }
             );
-            this.setState({dialog:dialog});
-        }.bind(this)).catch(function(ex) {
+            this.setState({dialog: dialog});
+        }.bind(this)).catch(function (ex) {
             console.log('parsing failed', ex)
         })
     }
 
-    handlePick(index){
+    handlePick(index) {
         let dialog = this.state.dialog;
         let result = dialog.results[index];
         result.name = result.prefix.split(':')[1];
-        this.props.setClass(index,result)
+        this.props.setClass(index, result);
         this.setState({
-                dialog:{
-                    open:false,
-                    id:-1
+                dialog: {
+                    open: false,
+                    id: -1
                 }
             }
         )
     }
 
-    renderDialogTableBody(){
-        if(this.state.dialog.results){
-            return this.state.dialog.results.map((column,index) =>
+    renderDialogTableBody() {
+        if (this.state.dialog.results) {
+            return this.state.dialog.results.map((column, index) =>
                 <TableRow key={index}>
                     <TableRowColumn>{column.vocabPrefix}</TableRowColumn>
                     <TableRowColumn><a href={column.uri}>{column.uri}</a></TableRowColumn>
                     <TableRowColumn>{column.prefix}</TableRowColumn>
-                    <TableRowColumn><RaisedButton onClick={() => this.handlePick(index)}>pick</RaisedButton></TableRowColumn>
+                    <TableRowColumn><RaisedButton
+                        onClick={() => this.handlePick(index)}>pick</RaisedButton></TableRowColumn>
                 </TableRow>
             )
 
@@ -111,15 +117,16 @@ class DataClassifyView extends Component{
 
     }
 
-    toNextPage(){
+    toNextPage() {
         this.props.nextPage(this.state.data);
     }
-    getAmountOfClasses(){
+
+    getAmountOfClasses() {
         let classes = this.props.data.slice();
         let counter = 0;
-        for(let i = 0; i < classes.length; i++){
+        for (let i = 0; i < classes.length; i++) {
             let item = classes[i];
-            if(item.uri){
+            if (item.uri) {
                 counter++;
             }
         }
@@ -127,8 +134,8 @@ class DataClassifyView extends Component{
     }
 
 
-    render(){
-        console.log(this.props.data)
+    render() {
+        console.log(this.props.data);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -139,11 +146,11 @@ class DataClassifyView extends Component{
         return (
             <div>
                 <Paper zDepth={2}>
-                    <div style={{width:'100%',display:'inline-block'}}>
+                    <div style={{width: '100%', display: 'inline-block'}}>
                         <FlatButton
                             label="continue"
-                            disabled={this.getAmountOfClasses()===0}
-                            onClick={()=>this.toNextPage()}
+                            disabled={this.getAmountOfClasses() === 0}
+                            onClick={() => this.toNextPage()}
                             style={{
                                 float: 'right',
                                 margin: 14
@@ -158,7 +165,8 @@ class DataClassifyView extends Component{
                                 <TableHeaderColumn tooltip="the column name">ColumnName</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The first value">Example Value</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The class it will be defined as">Class</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="If this class should be considered a URI">Uri</TableHeaderColumn>
+                                <TableHeaderColumn
+                                    tooltip="If this class should be considered a URI">Uri</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="If this class is also a label">Label</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The result of the transformation">Result</TableHeaderColumn>
                             </TableRow>
@@ -167,13 +175,18 @@ class DataClassifyView extends Component{
                             //[[C1,C2,C3,C4,C5,C6]
                             //[V1,V2,V3,V4,V5,V6]]
                             {
-                                this.props.data.map((column,index) =>
+                                this.props.data.map((column, index) =>
                                     <TableRow key={index}>
                                         <TableRowColumn>{column.columnName}</TableRowColumn>
                                         <TableRowColumn>{column.exampleValue}</TableRowColumn>
-                                        <TableRowColumn><RaisedButton disabled={!column.uri} onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
-                                        <TableRowColumn><CheckBox value={index} onCheck={()=>this.props.setUri(index,!column.uri)} checked={column.uri}/></TableRowColumn>
-                                        <TableRowColumn><CheckBox checked={column.label} onCheck={()=>this.props.setLabel(index,!column.label)} disabled={!column.uri}/></TableRowColumn>
+                                        <TableRowColumn><RaisedButton disabled={!column.uri}
+                                                                      onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
+                                        <TableRowColumn><CheckBox value={index}
+                                                                  onCheck={() => this.props.setUri(index, !column.uri)}
+                                                                  checked={column.uri}/></TableRowColumn>
+                                        <TableRowColumn><CheckBox checked={column.label}
+                                                                  onCheck={() => this.props.setLabel(index, !column.label)}
+                                                                  disabled={!column.uri}/></TableRowColumn>
                                         <TableRowColumn>{this.renderSourceLink(index)}</TableRowColumn>
                                     </TableRow>
                                 )
@@ -187,17 +200,19 @@ class DataClassifyView extends Component{
                     modal={true}
                     open={this.state.dialog.open}
                 >
-                    <div style={{width:'100%'}}>
-                        <TextField style={{width:'80%'}} floatingLabelText="Class name" onChange={this.onChange.bind(this)} />
+                    <div style={{width: '100%'}}>
+                        <TextField style={{width: '80%'}} floatingLabelText="Class name"
+                                   onChange={this.onChange.bind(this)}/>
                         <IconButton>
                             <ActionSearch onClick={this.searchVocabulary.bind(this)}/>
                         </IconButton>
                     </div>
-                    <div style={{minHeight:'400px'}}>
-                        <Table wrapperStyle={{paddingBottom:'27px'}}>
+                    <div style={{minHeight: '400px'}}>
+                        <Table wrapperStyle={{paddingBottom: '27px'}}>
                             <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                                 <TableRow>
-                                    <TableHeaderColumn tooltip="The vocabulary the class originates from">Vocabulary</TableHeaderColumn>
+                                    <TableHeaderColumn
+                                        tooltip="The vocabulary the class originates from">Vocabulary</TableHeaderColumn>
                                     <TableHeaderColumn tooltip="Link to the class description">uri</TableHeaderColumn>
                                     <TableHeaderColumn tooltip="The full prefix">Prefix</TableHeaderColumn>
                                     <TableHeaderColumn>Select</TableHeaderColumn>

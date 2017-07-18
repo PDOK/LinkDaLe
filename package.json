@@ -10,7 +10,8 @@
     "react-digraph": "^1.0.13",
     "react-dom": "^15.6.1",
     "react-icons": "^2.2.5",
-    "whatwg-fetch": "^2.0.3"
+    "whatwg-fetch": "^2.0.3",
+    "react-tap-event-plugin": "latest"
   },
   "devDependencies": {
     "react-scripts": "1.0.7"

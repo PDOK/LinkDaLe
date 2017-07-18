@@ -2,10 +2,8 @@
  * Created by Gerwin Bosch on 27-6-2017.
  */
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './DataImport.css';
 import FlatButton from 'material-ui/FlatButton/'
-import RaisedButton from 'material-ui/RaisedButton/'
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
@@ -27,11 +25,11 @@ const styles = {
 };
 
 
-function csvToText(text, delimitter, stdDelimitter) {
-    var lines = text.split(stdDelimitter);
+function csvToText(text, delimiter, stdDelimiter) {
+    let lines = text.split(stdDelimiter);
     for (let i = 0; i < lines.length; i++) {
         if (!lines[i] || lines[i] === "") continue;
-        lines[i] = lines[i].split(delimitter);
+        lines[i] = lines[i].split(delimiter);
 
     }
     //Remove empty lines
@@ -48,7 +46,7 @@ function csvToText(text, delimitter, stdDelimitter) {
 class TableView extends Component {
     render() {
         // If there is data render the view
-        console.log(this.props.data)
+        console.log(this.props.data);
         if (this.props.data) {
             return (
                 <Table
@@ -110,7 +108,7 @@ class ImportView extends Component {
         }
         if (event.target.files[0].name.split('\.').pop() !== 'csv') {
             this.setState({
-                selectedFile: "Wrong filetype selected",
+                selectedFile: "Wrong type of file selected",
             });
             this.props.setData('');
             return;
