@@ -84,7 +84,6 @@ class DataClassifyView extends Component{
 
     handlePick(index){
         let dialog = this.state.dialog;
-        let data = this.props.data;
         let result = dialog.results[index];
         result.name = result.prefix.split(':')[1];
         this.props.setClass(index,result)

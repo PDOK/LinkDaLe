@@ -57,7 +57,12 @@ class DataCreation extends Component {
     toThirdStep(){
         console.log('clack');
         //Convert data to nodes and edges
-        let data = this.state.data.slice();
+        this.setState(
+            {
+                nodes:[],
+                edges:[]
+            }
+        )
         let nodes = [];
         let edges = [];
         let classifications = this.state.dataClassifications.slice();
@@ -66,7 +71,7 @@ class DataCreation extends Component {
             if(item.label){
                 nodes.push(
                     {
-                        id:(id++),
+                        id:(nodes.length),
                         label:item.class.name,
                         type:'literal',
                         r:30,
@@ -76,7 +81,7 @@ class DataCreation extends Component {
                 //TODO: Create uri's
                 nodes.push(
                     {
-                        id:(id++),
+                        id:(nodes.length),
                         label:item.class.name+'_id',
                         type:'uri',
                         r:30,
@@ -100,7 +105,7 @@ class DataCreation extends Component {
             } else if (item.uri){
                 nodes.push(
                     {
-                        id:(id++),
+                        id:(nodes.length),
                         label:item.class.name,
                         type:'uri',
                         r:30,
@@ -110,7 +115,7 @@ class DataCreation extends Component {
             } else {
                 nodes.push(
                     {
-                        id:(id++),
+                        id:(nodes.length),
                         label:item.columnName,
                         type:'literal',
                         r:30,
@@ -140,7 +145,6 @@ class DataCreation extends Component {
 
         this.setState({
             currentPage: 3,
-            data: this.state.data,
             classes: classifications,
             nodes:nodes,
             edges:edges
@@ -165,9 +169,20 @@ class DataCreation extends Component {
         return ({nodes:this.state.nodes,links:this.state.edges})
     }
     goBackTo(index){
-        this.setState({
-            currentPage:index
-        })
+        switch (index) {
+            case 2:
+                this.setState({
+                    nodes:[],
+                    edges:[],
+                    currentPage:2
+                });
+                break;
+            default:
+            this.setState({
+                currentPage:index
+            })
+
+        }
     }
     goToFinalPage(){
         this.setState({

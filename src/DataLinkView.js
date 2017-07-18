@@ -190,6 +190,8 @@ class DataLinkView extends Component {
     shouldComponentUpdate(nextProps, nextState) {
         const nodes = nextProps.nodes;
         const links = nextProps.links;
+        console.log(nextProps.nodes);
+        console.log(this.props.nodes);
         if (this.props.nodes !== nodes || this.props.links !== links) {
             return true;
         }
@@ -198,7 +200,7 @@ class DataLinkView extends Component {
             return true;
         }
         console.log("render","no render");
-        return false;
+        return true;
 
     }
 
@@ -433,9 +435,7 @@ class DataLinkView extends Component {
         dialog.searchText=string;
         this.setState({dialog:dialog});
     }
-
-
-    render() {
+    renderGraph(){
         const nodes = this.props.nodes;
         const edges = this.props.links;
         const selected = this.state.selected;
@@ -443,6 +443,43 @@ class DataLinkView extends Component {
         const NodeTypes = GraphConfig.NodeTypes;
         const NodeSubtypes = GraphConfig.NodeSubtypes;
         const EdgeTypes = GraphConfig.EdgeTypes;
+        console.log('nodes',this.props.nodes)
+        if(this.props.nodes.length > 0) {
+            return (
+                <GraphView
+                    style={
+                        {
+                            height: window.innerHeight - 190,
+                            flex: '0 0 85%'
+                        }
+                    }
+                    primary={green500}
+                    ref='GraphView'
+                    nodeKey={NODE_KEY}
+                    emptyType={EMPTY_TYPE}
+                    nodes={nodes}
+                    edges={edges}
+                    selected={selected}
+                    nodeTypes={NodeTypes}
+                    nodeSubtypes={NodeSubtypes}
+                    edgeTypes={EdgeTypes}
+                    getViewNode={this.getViewNode.bind(this)}
+                    onSelectNode={this.onSelectNode.bind(this)}
+                    onUpdateNode={this.onUpdateNode.bind(this)}
+                    onSelectEdge={this.onSelectEdge.bind(this)}
+                    onCreateEdge={this.onCreateEdge.bind(this)}
+                    onSwapEdge={this.onSwapEdge.bind(this)}
+                    onDeleteEdge={this.onDeleteEdge.bind(this)}
+                    onDeleteNode={this.doNothing}
+                />
+            )
+        }
+
+    }
+
+
+    render() {
+        const selected = this.state.selected;
 
         console.log('render selected',selected)
         const actions = [
@@ -475,32 +512,7 @@ class DataLinkView extends Component {
 
                 </Paper>
                 <div style={{display:'flex'}}>
-                    <GraphView
-                        style={
-                            {
-                                height:window.innerHeight-190,
-                                flex:'0 0 85%'
-                            }
-                        }
-                        primary={green500}
-                        ref='GraphView'
-                        nodeKey={NODE_KEY}
-                        emptyType={EMPTY_TYPE}
-                        nodes={nodes}
-                        edges={edges}
-                        selected={selected}
-                        nodeTypes={NodeTypes}
-                        nodeSubtypes={NodeSubtypes}
-                        edgeTypes={EdgeTypes}
-                        getViewNode={this.getViewNode.bind(this)}
-                        onSelectNode={this.onSelectNode.bind(this)}
-                        onUpdateNode={this.onUpdateNode.bind(this)}
-                        onSelectEdge={this.onSelectEdge.bind(this)}
-                        onCreateEdge={this.onCreateEdge.bind(this)}
-                        onSwapEdge={this.onSwapEdge.bind(this)}
-                        onDeleteEdge={this.onDeleteEdge.bind(this)}
-                        onDeleteNode={this.doNothing}
-                    />
+                    {this.renderGraph()}
                     <InfoBar style={
                         {
                             flex:0
