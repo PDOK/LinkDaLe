@@ -4,7 +4,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import DataImport from './DataImport';
-import csvToText from './DataImport';
 
 it('renders without crashing', () => {
     const div = document.createElement('div');

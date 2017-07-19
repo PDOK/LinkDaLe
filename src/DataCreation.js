@@ -2,7 +2,7 @@
  * Created by Gerwin Bosch on 30-6-2017.
  */
 import React, {Component} from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
+import {Tab, Tabs} from 'material-ui/Tabs';
 import DataImport from './DataImport'
 import DataClassifyView from './DataClassifyView'
 import DataLinkView from './DataLinkView'
@@ -13,39 +13,30 @@ const States = {
     DataLinking: 13,
     DataPublishing: 14,
 };
-let id = 0;
 
 class DataCreation extends Component {
     constructor() {
         super();
-        if(this.state){
-            if(this.state.data) {
+        if (this.state) {
+            if (this.state.data) {
                 console.error('DATA ALREADY EXISTS')
             }
         }
         this.state = {
             currentPage: 1,
             data: '',
-            classes:{},
-            nodes:[],
-            edges:[],
+            dataClassifications: [],
+            classes: {},
+            nodes: [],
+            edges: [],
         }
     }
 
 
-    finishFirstStep(i, data) {
+    finishFirstStep(i) {
         this.setState({
             currentPage: 2,
-            data: data
         })
-    }
-    loadSecondaryData(){
-        if(this.state.data){
-            return this.state.data.slice(0,2);
-        } else {
-            return [[]]
-        }
-
     }
 
     // columnName: column,
@@ -54,66 +45,71 @@ class DataCreation extends Component {
     // uri: false,
     // label: false
 
-    toThirdStep(classifications){
+    toThirdStep() {
         console.log('clack');
         //Convert data to nodes and edges
-        let data = this.state.data.slice();
-        let nodes = this.state.nodes.slice();
-        let edges = this.state.edges.slice();
-        for(let i = 0; i < classifications.length;i++){
+        this.setState(
+            {
+                nodes: [],
+                edges: []
+            }
+        );
+        let nodes = [];
+        let edges = [];
+        let classifications = this.state.dataClassifications.slice();
+        for (let i = 0; i < classifications.length; i++) {
             let item = classifications[i];
-            if(item.label){
+            if (item.label) {
                 nodes.push(
                     {
-                        id:(id++),
-                        label:item.class.name,
-                        type:'literal',
-                        r:30,
-                        title:item.class.name,
-                        class:item.class.uri
+                        id: (nodes.length),
+                        label: item.class.name,
+                        type: 'literal',
+                        r: 30,
+                        title: item.class.name,
+                        class: item.class.uri
                     });
                 //TODO: Create uri's
                 nodes.push(
                     {
-                        id:(id++),
-                        label:item.class.name+'_id',
-                        type:'uri',
-                        r:30,
-                        title:item.class.name+'_id',
-                        class:item.class
+                        id: (nodes.length),
+                        label: item.class.name + '_id',
+                        type: 'uri',
+                        r: 30,
+                        title: item.class.name + '_id',
+                        class: item.class
                     });
                 edges.push(
                     {
-                        source:nodes.length-1,
-                        target:nodes.length-2,
-                        relation:'rdfs:label',
-                        r:30,
+                        source: nodes.length - 1,
+                        target: nodes.length - 2,
+                        relation: 'rdfs:label',
+                        r: 30,
                         type: "emptyEdge",
-                        title:'label',
-                        link:'https://www.infowebml.ws/rdf-owl/label.htm'
+                        title: 'label',
+                        link: 'https://www.infowebml.ws/rdf-owl/label.htm'
 
 
                     }
-
                 )
-            } else if (item.uri){
+            } else if (item.uri) {
                 nodes.push(
                     {
-                        id:(id++),
-                        label:item.class.name,
-                        type:'uri',
-                        r:30,
-                        title:item.class.name
+                        id: (nodes.length),
+                        label: item.class.name,
+                        type: 'uri',
+                        r: 30,
+                        title: item.class.name
 
                     });
             } else {
                 nodes.push(
                     {
-                        id:(id++),
-                        label:item.columnName,
-                        type:'literal',
-                        r:30,
-                        title:item.columnName
+                        id: (nodes.length),
+                        label: item.columnName,
+                        type: 'literal',
+                        r: 30,
+                        title: item.columnName
 
                     });
             }
@@ -123,13 +119,13 @@ class DataCreation extends Component {
         let dX = 100;
         let dY = 100;
         let rowLength = Math.ceil(Math.sqrt(nodes.length));
-        for(let i = 0; i<nodes.length;i++){
-            let item  = nodes[i];
-            if(i%rowLength === 0 && i !== 0){
-                dX= 100;
+        for (let i = 0; i < nodes.length; i++) {
+            let item = nodes[i];
+            if (i % rowLength === 0 && i !== 0) {
+                dX = 100;
                 dY += 225;
             }
-            if(!item.x){
+            if (!item.x) {
                 item.x = dX;
                 item.y = dY;
                 dX += 225;
@@ -139,29 +135,151 @@ class DataCreation extends Component {
 
         this.setState({
             currentPage: 3,
-            data: this.state.data,
             classes: classifications,
-            nodes:nodes,
-            edges:edges
-        })
-
+            nodes: nodes,
+            edges: edges
+        });
 
     }
+
     renderDataClassifyView() {
-        let data = this.loadSecondaryData();
-        if(this.state.data){
-            return <DataClassifyView data={data} nextPage={this.toThirdStep.bind(this)}/>
+        if (this.state.data) {
+            return (
+                <DataClassifyView
+                    data={this.state.dataClassifications}
+                    nextPage={this.toThirdStep.bind(this)}
+                    setClass={this.setClass.bind(this)}
+                    setUri={this.setUri.bind(this)}
+                    setLabel={this.setLabel.bind(this)}
+                />
+            )
         }
 
     }
-    getData(){
-        return ({nodes:this.state.nodes,links:this.state.edges})
+
+    getData() {
+        return ({nodes: this.state.nodes, links: this.state.edges})
     }
 
-    renderDataLink(){
+    goBackTo(index) {
+        switch (index) {
+            case 2:
+                this.setState({
+                    nodes: [],
+                    edges: [],
+                    currentPage: 2
+                });
+                break;
+            default:
+                this.setState({
+                    currentPage: index
+                })
+
+        }
+    }
+
+    goToFinalPage() {
+        this.setState({
+            currentPage: 4
+        })
+    }
+
+    setData(data) {
+        let exampleValues;
+        if (data.length > 1) {
+            exampleValues = data[0].map(function (column, index) {
+                return {
+                    columnName: column,
+                    exampleValue: data[1][index],
+                    class: {name: 'Literal'},
+                    uri: false,
+                    label: false
+                }
+            })
+        } else {
+            exampleValues = {}
+        }
+        this.setState({
+            data: data,
+            dataClassifications: exampleValues
+        })
+    }
+
+    setUri(index, boolean) {
+        let dataClasses = this.state.dataClassifications.slice();
+        let item = dataClasses[index];
+        if (item.label) {
+            item.label = false;
+        }
+        item.uri = boolean;
+        dataClasses[index] = item;
+        this.setState({
+            exampleValues: dataClasses
+        })
+
+    }
+
+    setLabel(index, boolean) {
+        let dataClasses = this.state.dataClassifications.slice();
+        let item = dataClasses[index];
+        item.label = boolean;
+        dataClasses[index] = item;
+        this.setState({
+            exampleValues: dataClasses
+        })
+    }
+
+    setClass(index, classification) {
+        let dataClasses = this.state.dataClassifications.slice();
+        let item = dataClasses[index];
+        item.class = classification;
+        dataClasses[index] = item;
+        this.setState({
+            exampleValues: dataClasses
+        })
+
+    }
+
+    setActiveNode(index, node) {
+        let nodes = this.state.nodes.slice();
+        nodes[index] = node;
+        this.setState({
+            nodes: nodes,
+        })
+    }
+
+    pushEdge(newEdge) {
+        let links = this.state.edges.slice();
+        links.push(newEdge);
+        this.setState({
+                edges: links,
+            }
+        );
+
+    }
+
+    deleteEdge(index, edge) {
+        const edges = this.state.edges;
+        edges.splice(index, 1);
+        this.setState({links: edges});
+
+    }
+
+    renderDataLink() {
         console.log('renderData', this.state.nodes);
-        if(this.state.nodes){
-            return <DataLinkView data={{nodes:this.state.nodes,links:this.state.edges}} getData={this.getData.bind(this)} nextPage={() => this.toThirdStep.bind(this)} previousPage={() => this.toThirdStep.bind(this)}/>
+        if (this.state.nodes) {
+            return (
+                <DataLinkView
+                    nodes={this.state.nodes}
+                    links={this.state.edges}
+                    getData={this.getData.bind(this)}
+                    nextPage={this.goToFinalPage.bind(this)}
+                    previousPage={this.goBackTo.bind(this)}
+                    setNode={this.setActiveNode.bind(this)}
+                    pushEdge={this.pushEdge.bind(this)}
+                    deleteEdge={this.deleteEdge.bind(this)}
+                />
+            )
         }
     }
 
@@ -169,7 +287,8 @@ class DataCreation extends Component {
         return (
             <Tabs value={this.state.currentPage}>
                 <Tab label="Step 1: Create Data" value={1} disabled>
-                    <DataImport data={this.state.data} pageFunction={this.finishFirstStep.bind(this)}/>
+                    <DataImport data={this.state.data} pageFunction={this.finishFirstStep.bind(this)}
+                                setData={this.setData.bind(this)}/>
                 </Tab>
                 <Tab label="Step 2: Classify Data" value={2} disabled>
                     {this.renderDataClassifyView()}
@@ -185,4 +304,5 @@ class DataCreation extends Component {
 
 
 }
+
 export default DataCreation;

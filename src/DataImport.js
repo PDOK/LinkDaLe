@@ -2,10 +2,8 @@
  * Created by Gerwin Bosch on 27-6-2017.
  */
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './DataImport.css';
 import FlatButton from 'material-ui/FlatButton/'
-import RaisedButton from 'material-ui/RaisedButton/'
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
@@ -27,11 +25,11 @@ const styles = {
 };
 
 
-function csvToText(text, delimitter, stdDelimitter) {
-    var lines = text.split(stdDelimitter);
+function csvToText(text, delimiter, stdDelimiter) {
+    let lines = text.split(stdDelimiter);
     for (let i = 0; i < lines.length; i++) {
         if (!lines[i] || lines[i] === "") continue;
-        lines[i] = lines[i].split(delimitter);
+        lines[i] = lines[i].split(delimiter);
 
     }
     //Remove empty lines
@@ -48,7 +46,7 @@ function csvToText(text, delimitter, stdDelimitter) {
 class TableView extends Component {
     render() {
         // If there is data render the view
-        console.log(this.props.data)
+        console.log(this.props.data);
         if (this.props.data) {
             return (
                 <Table
@@ -59,7 +57,7 @@ class TableView extends Component {
                 >
                     {/*Render the table header*/}
                     <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                        <TableRow style={{}}>
+                        <TableRow key={0} style={{}}>
                             {/*Create columns for every data*/}
                             {this.props.data[0].map((x) => (
                                 <TableHeaderColumn key={x} style={{width:'75px',maxWidth:'75px'}}>{x}</TableHeaderColumn>
@@ -69,11 +67,11 @@ class TableView extends Component {
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
                         {/*Grab the rest of the data*/}
-                        {this.props.data.slice(1, this.props.data.length).map((row) => (
+                        {this.props.data.slice(1, this.props.data.length).map((row,index) => (
                             //Split the data in rows and columns
-                            <TableRow style={{}}>{
-                                row.map((x) => (
-                                    <TableRowColumn style={{width:'75px',maxWidth:'75px'}}>{x}</TableRowColumn>
+                            <TableRow key={index+1} style={{}}>{
+                                row.map((x,indx) => (
+                                    <TableRowColumn key={indx} style={{width:'75px',maxWidth:'75px'}}>{x}</TableRowColumn>
                                 ))}</TableRow>
                         ))}
                     </TableBody>
@@ -101,25 +99,22 @@ class ImportView extends Component {
 
     handleFileChange(event) {
         const reader = new FileReader();
-        console.log(event.target.files);
         if (event.target.files.length === 0) {
             this.setState({
                 selectedFile: "No file selected",
-                data: ''
             });
+            this.props.setData('');
             return
         }
         if (event.target.files[0].name.split('\.').pop() !== 'csv') {
             this.setState({
-                selectedFile: "Wrong filetype selected",
-                data: ''
+                selectedFile: "Wrong type of file selected",
             });
+            this.props.setData('');
             return;
         }
         reader.addEventListener('load', () => {
-            this.setState({
-                data: csvToText(reader.result, /[,|;\t]/g, '\r\n'),
-            })
+            this.props.setData(csvToText(reader.result, /[,|;\t]/g, '\r\n'));
         });
         if (event.target.files) {
             reader.readAsText(event.target.files[0], 'UTF-8');
@@ -130,17 +125,17 @@ class ImportView extends Component {
     }
 
     renderTable() {
-        return <TableView data={this.state.data}/>
+        return <TableView data={this.props.data}/>
     }
 
 
     render() {
-        let toContinue = this.state.data === '';
+        let toContinue = this.props.data === '';
         return (
             <div className="dataImport">
                 <Paper zDepth={1}>
                     <FlatButton
-                        label="Choose an File"
+                        label="Pick a file"
                         labelPosition="before"
                         style={styles.button}
                         containerElement="label"
@@ -156,7 +151,7 @@ class ImportView extends Component {
                             float: 'right',
                             margin: 14
                         }}
-                        onClick={() => this.props.pageFunction(2,this.state.data)}
+                        onClick={() => this.props.pageFunction(2)}
                     />
                 </Paper>
                 <Paper zDepth={1} style={{width:'100%'}}>
