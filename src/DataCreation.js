@@ -6,6 +6,7 @@ import {Tab, Tabs} from 'material-ui/Tabs';
 import DataImport from './DataImport'
 import DataClassifyView from './DataClassifyView'
 import DataLinkView from './DataLinkView'
+import DownloadView from './DownloadView'
 
 const States = {
     DataUpload: 11,
@@ -13,6 +14,129 @@ const States = {
     DataLinking: 13,
     DataPublishing: 14,
 };
+async function transformData(data, classes, links, nodes){
+    return await convertData(data, classes, links, nodes)
+}
+
+function convertData(data, classes, links, nodes){
+    // Map relations
+    let classDefinitions=[];
+    //For every node
+    for(let i = 0; i < nodes.length ; i++){
+        let subject = nodes[i];
+        //Skip when the nodes is a literal, as they can't have subjects
+        if(subject.type==='Literal') continue;
+        let relations = [];
+        //Get all the relations of this node
+        for( let j = 0; j < links.length; j++){
+            let relation = links[j];
+            if(relation.source === subject.id){
+                //Push relation and class
+                relations.push({relation:relation,target:getItemById(nodes,relation.target)})
+            }
+        }
+        //When there are no relations skip the node
+        if(relations.length===0) continue;
+        classDefinitions.push({
+            subject:subject,
+            relations:relations
+        })
+    }
+    let result = [];
+    console.log(classDefinitions);
+    //For every row of data
+    for(let k = 1; k <data.length; k++){
+        let dataRow = data[k];
+        //Check if the uri is in that label
+        for(let id = 0; id < classDefinitions.length; id++){
+            let cd = classDefinitions[id];
+            //Skip when the value is not present in the data
+            if(!dataRow[cd.subject.column]) continue;
+            //Skip when there are no relations
+            if(cd.relations.length===0) continue;
+            // Check if the item exists or a new needs to be created
+            let item;
+            for(let civ = 0; civ < result.length; civ++){
+                let res = result[civ];
+                if(res['@id'] === dataRow[cd.subject.column] && res['@type'] === cd.subject.title){
+                    item=res;
+                }
+            }
+            //If there is no item create a new one
+            if(!item){
+                item={};
+                item['@context']={};
+                item['@context'][cd.subject.title] = cd.subject.uri;
+                item['@type']=cd.subject.label;
+                item['@id']=dataRow[cd.subject.column];
+                cd.relations.map((x)=>{
+                    if(x.target === 'literal'){
+                        item['@context'][x.relation.title]=x.relation.link;
+                    } else {
+                        item['@context'][x.relation.title]={};
+                        item['@context'][x.relation.title]['@id']=x.relation.link;
+                        item['@context'][x.relation.title]['@type']='@id'
+                    }
+                })
+            }
+            //For every relation check if there is a value
+            for(let relCounter=0; relCounter<cd.relations.length; relCounter++){
+                let relation = cd.relations[relCounter];
+                //If there is a relation
+                if(dataRow[relation.target.column]){
+                    //If the relation is not mentioned yt
+                    if(typeof item[relation.relation.title] === 'undefined'){
+                        item[relation.relation.title]=dataRow[relation.target.column];
+                        //If the relation already has multiple relations
+                    } else if (item[relation.relation.title] instanceof Array){
+                        let cont=false;
+                        //Check if the value already exists
+                        for(let temp in item[relation.relation.title]){
+                            if(temp === dataRow[relation.target.column]) cont = true;
+                        }
+                        if(!cont) {
+                            item[relation.relation.title].push(dataRow[relation.target.column]);
+                        }
+                    } else {
+                        //Check if the value is the same as projected
+                        if(item[relation.relation.title] !== dataRow[relation.target.column]) {
+                            item[relation.relation.title] = [item[relation.relation.title], dataRow[relation.target.column]];
+                        }
+                    }
+                }
+            }
+            // Check if the item exists
+            let found = false;
+            for(let civ = 0; civ < result.length; civ++){
+                let res = result[civ];
+                if(res['@id'] === dataRow[cd.subject.column] && res['@type'] === cd.subject.title){
+                    // If found replace the item
+                    result[civ]=item;
+                    found= true;
+                    break;
+                }
+            }
+            if(!found){
+                result.push(item)
+            }
+
+        }
+
+    }
+    return result;
+    console.log(result);
+}
+function getItemByatId(list, id){
+    for(let i = 0; i < list.length; i++){
+        if(list[i].id === id) return list[i]
+    }
+}
+
+function getItemById(list, id){
+    for(let i = 0; i < list.length; i++){
+        if(list[i].id === id) return list[i]
+    }
+}
 
 class DataCreation extends Component {
     constructor() {
@@ -29,6 +153,7 @@ class DataCreation extends Component {
             classes: {},
             nodes: [],
             edges: [],
+            processing: true,
         }
     }
 
@@ -67,7 +192,7 @@ class DataCreation extends Component {
                         type: 'literal',
                         r: 30,
                         title: item.class.name,
-                        class: item.class.uri
+                        column:i,
                     });
                 //TODO: Create uri's
                 nodes.push(
@@ -77,7 +202,8 @@ class DataCreation extends Component {
                         type: 'uri',
                         r: 30,
                         title: item.class.name + '_id',
-                        class: item.class
+                        uri: item.class.uri,
+                        column:i,
                     });
                 edges.push(
                     {
@@ -99,8 +225,8 @@ class DataCreation extends Component {
                         label: item.class.name,
                         type: 'uri',
                         r: 30,
-                        title: item.class.name
-
+                        title: item.class.name,
+                        column:i,
                     });
             } else {
                 nodes.push(
@@ -109,8 +235,8 @@ class DataCreation extends Component {
                         label: item.columnName,
                         type: 'literal',
                         r: 30,
-                        title: item.columnName
-
+                        title: item.columnName,
+                        column:i,
                     });
             }
 
@@ -181,7 +307,14 @@ class DataCreation extends Component {
     goToFinalPage() {
         this.setState({
             currentPage: 4
-        })
+        });
+        transformData(this.state.data,this.state.dataClassifications,this.state.edges,this.state.nodes)
+            .then(result =>{
+                this.setState({
+                  jsonLd:result,
+                  processing:false,
+                })
+            })
     }
 
     setData(data) {
@@ -297,6 +430,7 @@ class DataCreation extends Component {
                     {this.renderDataLink()}
                 </Tab>
                 <Tab label="Step 4: Finished" value={4} disabled>
+                    <DownloadView processing={this.state.processing}/>
                 </Tab>
 
             </Tabs>)

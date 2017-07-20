@@ -71,7 +71,6 @@ class DataClassifyView extends Component {
             .then(function (response) {
                 return response.json()
             }).then(function (json) {
-            console.log('parsed json', json.results);
             dialog.results = json.results.map(
                 function (item) {
                     return {
@@ -91,7 +90,8 @@ class DataClassifyView extends Component {
         let dialog = this.state.dialog;
         let result = dialog.results[index];
         result.name = result.prefix.split(':')[1];
-        this.props.setClass(index, result);
+        console.log('index',index);
+        this.props.setClass(this.state.dialog.id, result);
         this.setState({
                 dialog: {
                     open: false,
@@ -135,7 +135,6 @@ class DataClassifyView extends Component {
 
 
     render() {
-        console.log(this.props.data);
         const actions = [
             <FlatButton
                 label="Cancel"
