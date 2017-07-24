@@ -43,11 +43,9 @@ function convertData(data, classes, links, nodes){
         })
     }
     let results = [];
-    console.log(classDefinitions);
     //For every row of data except the header
     for(let k = 1; k <data.length; k++){
         let dataRow = data[k];
-        console.log(dataRow);
         //Check if the uri is in that label
         for(let id = 0; id < classDefinitions.length; id++){
             let cd = classDefinitions[id];
@@ -255,6 +253,11 @@ class DataCreation extends Component {
                         data[0].push(item.class.name + '_uri');
                         continue
                     }
+                    console.log(data[y][i])
+                    if(!data[y][i]) {
+                        data[y].push('');
+                        continue;
+                    }
                     let copyFound =false;
                     for(let x = 0; x < y; x++) {
                         if (data[x][i]===data[y][i]) {
@@ -265,7 +268,7 @@ class DataCreation extends Component {
                     }
                     if(!copyFound){
                         if(classifications[i].baseUri[classifications[i].baseUri.length-1] ==='/'){
-                            data[y].push(classifications[i].baseUri+'/'+uniqueCounter)
+                            data[y].push(classifications[i].baseUri+uniqueCounter)
                         } else {
                             data[y].push(classifications[i].baseUri+'/'+uniqueCounter)
                         }
@@ -312,7 +315,6 @@ class DataCreation extends Component {
                 dX += 225;
             }
         }
-        console.log(classifications);
 
         this.setState({
             data:data,
@@ -400,8 +402,10 @@ class DataCreation extends Component {
         let item = dataClasses[index];
         if (item.label) {
             item.label = false;
+            item.baseUri = null;
         }
         item.uri = boolean;
+        item.class={name:'Literal'};
         dataClasses[index] = item;
         this.setState({
             exampleValues: dataClasses
@@ -414,6 +418,9 @@ class DataCreation extends Component {
         let item = dataClasses[index];
         item.label = boolean;
         dataClasses[index] = item;
+        if(!boolean){
+            item.baseUri = null;
+        }
         this.setState({
             exampleValues: dataClasses
         })
@@ -431,12 +438,8 @@ class DataCreation extends Component {
     }
 
     setBaseUri(index, classification) {
-        console.log(index);
-        console.log(classification)
         let classes = this.state.dataClassifications.slice();
-        console.log(classes)
         let item = classes[index];
-        console.log(item)
         item.baseUri = classification;
         classes[index] = item;
         this.setState({

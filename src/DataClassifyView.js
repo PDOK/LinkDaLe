@@ -90,7 +90,6 @@ class DataClassifyView extends Component {
         let dialog = this.state.dialog;
         let result = dialog.results[index];
         result.name = result.prefix.split(':')[1];
-        console.log('index',index);
         this.props.setClass(this.state.dialog.id, result);
         this.setState({
                 dialog: {
@@ -135,6 +134,17 @@ class DataClassifyView extends Component {
         }
         return counter;
     }
+    continueDisabled(){
+        let classes = this.props.data.slice();
+        if(this.getAmountOfClasses() === 0) return true;
+            for(let i = 0; i < classes.length; i++){
+                let item = classes[i];
+                if(item.label && !item.baseUri) return true;
+                if(item.uri && item.class.name === 'Literal') return true;
+            }
+           return false;
+
+    }
 
 
     render() {
@@ -151,7 +161,7 @@ class DataClassifyView extends Component {
                     <div style={{width: '100%', display: 'inline-block'}}>
                         <FlatButton
                             label="continue"
-                            disabled={this.getAmountOfClasses() === 0}
+                            disabled={this.continueDisabled()}
                             onClick={() => this.toNextPage()}
                             style={{
                                 float: 'right',
