@@ -32,7 +32,7 @@ class DataClassifyView extends Component {
     renderSourceLink(id) {
         let object = this.props.data[id];
         if (object.class.name !== 'Literal') {
-            return <a href={object.class}>{object.class.name}</a>
+            return <a href={object.class.uri}>{object.class.name}</a>
         }
 
     }
@@ -120,6 +120,9 @@ class DataClassifyView extends Component {
     toNextPage() {
         this.props.nextPage(this.state.data);
     }
+    onBaseUriChange(index,text){
+        this.props.setBaseUri(index,text)
+    }
 
     getAmountOfClasses() {
         let classes = this.props.data.slice();
@@ -158,15 +161,16 @@ class DataClassifyView extends Component {
 
                 </Paper>
                 <Paper zDepth={1}>
-                    <Table>
+                    <Table selectable={false}>
                         <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                             <TableRow>
                                 <TableHeaderColumn tooltip="the column name">ColumnName</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The first value">Example Value</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The class it will be defined as">Class</TableHeaderColumn>
-                                <TableHeaderColumn
+                                <TableHeaderColumn style={{width:'12px'}}
                                     tooltip="If this class should be considered a URI">Uri</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="If this class is also a label">Label</TableHeaderColumn>
+                                <TableHeaderColumn style={{width:'24px'}} tooltip="If this class is also a label">Label</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="The base URI of the class">Base URI</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The result of the transformation">Result</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
@@ -180,13 +184,18 @@ class DataClassifyView extends Component {
                                         <TableRowColumn>{column.exampleValue}</TableRowColumn>
                                         <TableRowColumn><RaisedButton disabled={!column.uri}
                                                                       onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
-                                        <TableRowColumn><CheckBox value={index}
+                                        <TableRowColumn style={{width:'24px'}}><CheckBox value={index}
                                                                   onCheck={() => this.props.setUri(index, !column.uri)}
                                                                   checked={column.uri}/></TableRowColumn>
-                                        <TableRowColumn><CheckBox checked={column.label}
+                                        <TableRowColumn style={{width:'24px'}}><CheckBox checked={column.label}
                                                                   onCheck={() => this.props.setLabel(index, !column.label)}
                                                                   disabled={!column.uri}/></TableRowColumn>
+                                        <TableRowColumn><TextField
+                                                                  id={column.columnName}
+                                                                  onChange={(event, string) => this.onBaseUriChange(index,string)}
+                                                                  disabled={!column.label}/></TableRowColumn>
                                         <TableRowColumn>{this.renderSourceLink(index)}</TableRowColumn>
+
                                     </TableRow>
                                 )
                             }

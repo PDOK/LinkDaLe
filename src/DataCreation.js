@@ -42,11 +42,12 @@ function convertData(data, classes, links, nodes){
             relations:relations
         })
     }
-    let result = [];
+    let results = [];
     console.log(classDefinitions);
-    //For every row of data
+    //For every row of data except the header
     for(let k = 1; k <data.length; k++){
         let dataRow = data[k];
+        console.log(dataRow);
         //Check if the uri is in that label
         for(let id = 0; id < classDefinitions.length; id++){
             let cd = classDefinitions[id];
@@ -56,11 +57,15 @@ function convertData(data, classes, links, nodes){
             if(cd.relations.length===0) continue;
             // Check if the item exists or a new needs to be created
             let item;
-            for(let civ = 0; civ < result.length; civ++){
-                let res = result[civ];
+            let itemClass = classes[cd.subject.column];
+            for(let civ = 0; civ < results.length; civ++){
+                let res = results[civ];
                 if(res['@id'] === dataRow[cd.subject.column] && res['@type'] === cd.subject.title){
                     item=res;
                 }
+                // else if(typeof itemClass.baseUri!== 'undefined' && res['@type'] === cd.subject.title && res.label === dataRow[cd.subject.column]){
+                //     item=res;
+                // }
             }
             //If there is no item create a new one
             if(!item){
@@ -68,7 +73,22 @@ function convertData(data, classes, links, nodes){
                 item['@context']={};
                 item['@context'][cd.subject.title] = cd.subject.uri;
                 item['@type']=cd.subject.label;
-                item['@id']=dataRow[cd.subject.column];
+                // if(itemClass.baseUri){
+                //     let counter = 1;
+                //     for(let civ = 0; civ < results.length; civ++){
+                //         let res = results[civ];
+                //         if(res['@context']['@type'] ===cd.subject.title){
+                //             counter++;
+                //         }
+                //     }
+                //     if(itemClass.baseUri[-1]==='/') {
+                //         item['@id'] = itemClass.baseUri + counter;
+                //     } else {
+                //         item['@id'] = itemClass.baseUri + '/'+ counter;
+                //     }
+                // } else {
+                    item['@id']=dataRow[cd.subject.column];
+                // }
                 cd.relations.map((x)=>{
                     if(x.target === 'literal'){
                         item['@context'][x.relation.title]=x.relation.link;
@@ -79,12 +99,17 @@ function convertData(data, classes, links, nodes){
                     }
                 })
             }
+            console.log(cd.relations.length)
             //For every relation check if there is a value
             for(let relCounter=0; relCounter<cd.relations.length; relCounter++){
                 let relation = cd.relations[relCounter];
                 //If there is a relation
-                if(dataRow[relation.target.column]){
-                    //If the relation is not mentioned yt
+                console.log(relation)
+                if(dataRow[relation.target.column]) {
+                    //The target value
+                    let targetValue = dataRow[relation.target.column]
+                    //If the relation is not mentioned yet
+                    console.log(targetValue)
                     if(typeof item[relation.relation.title] === 'undefined'){
                         item[relation.relation.title]=dataRow[relation.target.column];
                         //If the relation already has multiple relations
@@ -107,24 +132,30 @@ function convertData(data, classes, links, nodes){
             }
             // Check if the item exists
             let found = false;
-            for(let civ = 0; civ < result.length; civ++){
-                let res = result[civ];
+            for(let civ = 0; civ < results.length; civ++){
+                let res = results[civ];
                 if(res['@id'] === dataRow[cd.subject.column] && res['@type'] === cd.subject.title){
                     // If found replace the item
-                    result[civ]=item;
+                    results[civ]=item;
                     found= true;
                     break;
                 }
+                // if(typeof itemClass.baseUri!== 'undefined' && res['@type'] === cd.subject.title && res.label === dataRow[cd.subject.column]){
+                //     // If found replace the item
+                //     results[civ]=item;
+                //     found= true;
+                //     break;
+                // }
             }
             if(!found){
-                result.push(item)
+                results.push(item)
             }
 
         }
 
     }
-    return result;
-    console.log(result);
+    console.log('result',results);
+    return results;
 }
 function getItemByatId(list, id){
     for(let i = 0; i < list.length; i++){
@@ -150,7 +181,7 @@ class DataCreation extends Component {
             currentPage: 1,
             data: '',
             dataClassifications: [],
-            classes: {},
+            classes: [],
             nodes: [],
             edges: [],
             processing: true,
@@ -181,6 +212,7 @@ class DataCreation extends Component {
         );
         let nodes = [];
         let edges = [];
+        let data = this.state.data
         let classifications = this.state.dataClassifications.slice();
         for (let i = 0; i < classifications.length; i++) {
             let item = classifications[i];
@@ -194,16 +226,15 @@ class DataCreation extends Component {
                         title: item.class.name,
                         column:i,
                     });
-                //TODO: Create uri's
                 nodes.push(
                     {
                         id: (nodes.length),
-                        label: item.class.name + '_id',
+                        label: item.class.name + '_uri',
                         type: 'uri',
                         r: 30,
-                        title: item.class.name + '_id',
+                        title: item.class.name + '_uri',
                         uri: item.class.uri,
-                        column:i,
+                        column:this.state.data[0].length,
                     });
                 edges.push(
                     {
@@ -217,7 +248,31 @@ class DataCreation extends Component {
 
 
                     }
-                )
+                );
+                let uniqueCounter=1;
+                for(let y = 0; y< data.length; y++){
+                    if(y===0){
+                        data[0].push(item.class.name + '_uri');
+                        continue
+                    }
+                    let copyFound =false;
+                    for(let x = 0; x < y; x++) {
+                        if (data[x][i]===data[y][i]) {
+                            data[y].push(data[x][data[x].length-1]);
+                            copyFound=true;
+                            break;
+                        }
+                    }
+                    if(!copyFound){
+                        if(classifications[i].baseUri[classifications[i].baseUri.length-1] ==='/'){
+                            data[y].push(classifications[i].baseUri+'/'+uniqueCounter)
+                        } else {
+                            data[y].push(classifications[i].baseUri+'/'+uniqueCounter)
+                        }
+                        uniqueCounter++;
+                    }
+
+                }
             } else if (item.uri) {
                 nodes.push(
                     {
@@ -257,9 +312,10 @@ class DataCreation extends Component {
                 dX += 225;
             }
         }
-
+        console.log(classifications);
 
         this.setState({
+            data:data,
             currentPage: 3,
             classes: classifications,
             nodes: nodes,
@@ -277,6 +333,7 @@ class DataCreation extends Component {
                     setClass={this.setClass.bind(this)}
                     setUri={this.setUri.bind(this)}
                     setLabel={this.setLabel.bind(this)}
+                    setBaseUri={this.setBaseUri.bind(this)}
                 />
             )
         }
@@ -373,6 +430,22 @@ class DataCreation extends Component {
 
     }
 
+    setBaseUri(index, classification) {
+        console.log(index);
+        console.log(classification)
+        let classes = this.state.dataClassifications.slice();
+        console.log(classes)
+        let item = classes[index];
+        console.log(item)
+        item.baseUri = classification;
+        classes[index] = item;
+        this.setState({
+            exampleValues: classes
+        })
+
+
+    }
+
     setActiveNode(index, node) {
         let nodes = this.state.nodes.slice();
         nodes[index] = node;
@@ -399,7 +472,6 @@ class DataCreation extends Component {
     }
 
     renderDataLink() {
-        console.log('renderData', this.state.nodes);
         if (this.state.nodes) {
             return (
                 <DataLinkView

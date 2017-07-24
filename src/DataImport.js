@@ -46,7 +46,6 @@ function csvToText(text, delimiter, stdDelimiter) {
 class TableView extends Component {
     render() {
         // If there is data render the view
-        console.log(this.props.data);
         if (this.props.data) {
             return (
                 <Table
