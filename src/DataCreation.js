@@ -9,8 +9,6 @@ import DataLinkView from './DataLinkView'
 import DownloadView from './DownloadView'
 import * as rdf from 'rdf-ext';
 import * as JSONLD_Serializer from 'rdf-serializer-n3';
-import * as turtle from 'rdf-parser-n3';
-import * as N3 from 'n3';
 
 
 
