@@ -37,6 +37,13 @@ class InfoBar extends Component {
             )
         }
     }
+    handleDownloadClick(){
+        let dataStr = "data:application/x-turtle;charset=utf-8," + encodeURIComponent(this.props.turtle);
+        let dlAnchorElem = document.getElementById('downloadAnchorElem');
+        dlAnchorElem.setAttribute("href",     dataStr     );
+        dlAnchorElem.setAttribute("download", "dataSet.turtle");
+        dlAnchorElem.click();
+    }
 
     render(){
         return(
@@ -46,6 +53,7 @@ class InfoBar extends Component {
                         <div style={{width:'100%'}}>
                             <RaisedButton
                                 label='download'
+                                onClick={()=>this.handleDownloadClick()}
                                 disabled={this.props.processing}
                                 style={{
                                     margin:'30px',
