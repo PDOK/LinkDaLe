@@ -22,6 +22,22 @@ class InfoBar extends Component {
             )
         }
     }
+    renderTurtle(){
+        console.log(this.props.turtle)
+        if(!this.props.turtle){
+            return <p>Generating turtle</p>
+        } else {
+            console.log(this.props.turtle.split('\n'));
+            return(
+            <div>
+                {this.props.turtle.split('\n').map((text)=>
+              <p>{text}</p>
+            )}
+            </div>
+            )
+        }
+    }
+
     render(){
         return(
             <div style={{position:'relative', width:'100%',minHeight:'100%', height:'100%'}}>
@@ -55,13 +71,14 @@ class InfoBar extends Component {
                     </div>
                     <div style={
                         {
-                            paddingTop:'80px',
+                            paddingTop:'90px',
                             minHeight:'700px',
+                            paddingLeft:'50px'
                         }
                     }>
+                        {this.renderTurtle()}
+                        {this.renderProgress()}
                         <p>
-                            {/*{this.props.sparql}*/}
-                            {this.renderProgress()}
                         </p>
                     </div>
 

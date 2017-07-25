@@ -342,22 +342,27 @@ class DataCreation extends Component {
         transformData(this.state.data,this.state.dataClassifications,this.state.edges,this.state.nodes)
             .then(result =>{
                 this.setState({
-                  mapping:result,
+                  graph:result,
                   processing:false,
                 })
-            });
-            let serializer = new JSONLD_Serializer();
-            serializer.serialize(graph, function(resolve){
-                console.log('resolve',resolve);
-            }).then(function(result) {
-                console.log(result); // "Stuff worked!";
-                this.setState({
-                    turtle:result
-                })
-            });
+            }).then(result =>{
+                let d = this.serialiseData(result);
+        });
 
     }
+    serialiseData(data){
 
+        let serializer = new JSONLD_Serializer();
+        serializer.serialize(this.state.graph, function(resolve){
+        }).then(result =>{
+            console.log('turtle',result);
+            this.setState({
+                turtle:result
+            });
+            return result;
+        })
+
+    }
     setData(data) {
         let exampleValues;
         if (data.length > 1) {
