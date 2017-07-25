@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "d3": "^4.9.1",
-    "jsonld": "^0.4.12",
     "material-ui": "^0.18.5",
     "radium": "^0.19.1",
+    "rdf-ext": "^0.3.0",
+    "rdf-parser-n3": "^0.3.0",
+    "rdf-serializer-jsonld": "^0.3.0",
+    "rdf-serializer-ntriples": "^0.3.0",
     "react": "^15.6.1",
     "react-digraph": "^1.0.13",
     "react-dom": "^15.6.1",

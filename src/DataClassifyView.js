@@ -237,10 +237,7 @@ class DataClassifyView extends Component {
                                 </TableRow>
                             </TableHeader>
                             <TableBody displayRowCheckbox={false}>
-                                //[[C1,C2,C3,C4,C5,C6]
-                                //[V1,V2,V3,V4,V5,V6]]
                                 {this.renderDialogTableBody()}
-
                             </TableBody>
 
                         </Table>
