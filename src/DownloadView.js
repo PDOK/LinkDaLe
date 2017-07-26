@@ -34,6 +34,7 @@ class InfoBar extends Component {
             )
         }
     }
+
     renderText(output){
         if(!output){
             return <p>Generating output</p>
@@ -47,8 +48,8 @@ class InfoBar extends Component {
                     marginRight:'50px',
 
                 }}>
-                {output.split('\n').map((text)=>
-                    <p style={{margin:'0'}}>{text}</p>
+                {output.split('\n').map((text,index)=>
+                    <p key={index} style={{margin:'0'}}>{text}</p>
             )}
                 </div>
             )
@@ -81,8 +82,6 @@ class InfoBar extends Component {
                 break;
         }
         serializer.serialize(this.props.graph,function(x,y){
-            console.log(x);
-            console.log(y)
         }).then((graph, err)=>
             this.setState({
                 displayText: graph
@@ -97,6 +96,32 @@ class InfoBar extends Component {
 
 
     }
+    shouldComponentUpdate(nextProps, nextState) {
+        const graph = nextProps.graph;
+        if(!graph){
+            return true;
+        }
+        if (this.props.graph !== graph) {
+            let serializer = new TurtleSerializer();
+            let text='.turtle';
+            let dataType='application/x-turtle';
+            serializer.serialize(graph,function(x,y){
+            }).then((graph, err)=>
+                this.setState({
+                    displayText: graph
+                })
+            );
+            this.setState({
+                text:text,
+                dataType:dataType,
+            });
+            return true;
+        }
+        return true;
+
+    }
+
+
     render(){
         return(
             <div style={{position:'relative', width:'100%',minHeight:'100%', height:'100%'}}>
