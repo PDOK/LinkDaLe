@@ -11,94 +11,94 @@ import * as rdf from 'rdf-ext';
 import * as JSONLD_Serializer from 'rdf-serializer-n3';
 
 
-
 const States = {
     DataUpload: 11,
     DataClassifying: 12,
     DataLinking: 13,
     DataPublishing: 14,
 };
-async function transformData(data, classes, links, nodes){
+
+async function transformData(data, classes, links, nodes) {
     return await convertDataToTriples(data, classes, links, nodes)
 }
-function convertDataToTriples(data, classes, links, nodes){
+
+function convertDataToTriples(data, classes, links, nodes) {
     // Map relations
-    let classDefinitions=[];
+    let classDefinitions = [];
     //For every node
-    for(let i = 0; i < nodes.length ; i++){
+    for (let i = 0; i < nodes.length; i++) {
         let subject = nodes[i];
         //Skip when the nodes is a literal, as they can't have subjects
-        if(subject.type==='Literal') continue;
+        if (subject.type === 'Literal') continue;
         let relations = [];
         //Get all the relations of this node
-        for( let j = 0; j < links.length; j++){
+        for (let j = 0; j < links.length; j++) {
             let relation = links[j];
-            if(relation.source === subject.id){
+            if (relation.source === subject.id) {
                 //Push relation and class
-                relations.push({relation:relation,target:getItemById(nodes,relation.target)})
+                relations.push({relation: relation, target: getItemById(nodes, relation.target)})
             }
         }
         //When there are no relations skip the node
-        if(relations.length===0) continue;
+        if (relations.length === 0) continue;
         classDefinitions.push({
-            subject:subject,
-            relations:relations
+            subject: subject,
+            relations: relations
         })
     }
     let graph = rdf.createGraph();
-    let results = [];
     //For every row of data except the header
-    for(let k = 1; k <data.length; k++){
+    for (let k = 1; k < data.length; k++) {
         let dataRow = data[k];
         //Check if the uri is in that label
-        for(let id = 0; id < classDefinitions.length; id++){
+        for (let id = 0; id < classDefinitions.length; id++) {
             let cd = classDefinitions[id];
             //Skip when the value is not present in the data
             console.log(cd);
-            if(!dataRow[cd.subject.column]) continue;
+            if (!dataRow[cd.subject.column]) continue;
             //Skip when there are no relations
-            if(cd.relations.length===0) continue;
+            if (cd.relations.length === 0) continue;
             //If there is no item create a new one
             let skip = false;
             let dataSubject = rdf.createNamedNode(dataRow[cd.subject.column]);
             let typeOf = rdf.createNamedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-            for(let i = 0; i < graph.length ; i++){
+            for (let i = 0; i < graph.length; i++) {
                 let node = graph._graph[i];
-                if(node.object===dataSubject && node.predicate===typeOf){
+                if (node.object === dataSubject && node.predicate === typeOf) {
                     skip = true;
                     break;
                 }
             }
             console.log(dataRow[cd.subject.column]);
-            if(!skip){
-                graph.add(rdf.createTriple(dataSubject,typeOf,rdf.createNamedNode(cd.subject.uri)))
+            if (!skip) {
+                graph.add(rdf.createTriple(dataSubject, typeOf, rdf.createNamedNode(cd.subject.uri)))
             }
             //For every relation check if there is a value
-            for(let relCounter=0; relCounter<cd.relations.length; relCounter++){
+            for (let relCounter = 0; relCounter < cd.relations.length; relCounter++) {
                 let relation = cd.relations[relCounter];
                 //If there is a relation
                 let relationNode = rdf.createNamedNode(relation.relation.link);
                 console.log(relation);
-                if(dataRow[relation.target.column]) {
+                if (dataRow[relation.target.column]) {
                     //The target value
                     let targetValue = dataRow[relation.target.column];
                     //If the relation is not mentioned yet
-                    if(relation.target.type === 'literal'){
-                        if(!Number(targetValue)){//String literal
-                            targetValue = rdf.createLiteral(targetValue,'en','http://www.w3.org/2001/XMLSchema#string')
-                        } else if (targetValue % 1 ===0){// Integer Literal
-                            targetValue = rdf.createLiteral(targetValue,null,'https://www.w3.org/2001/XMLSchema#integer')
+                    if (relation.target.type === 'literal') {
+                        if (!Number(targetValue)) {//String literal
+                            targetValue = rdf.createLiteral(targetValue, 'en', 'http://www.w3.org/2001/XMLSchema#string')
+                        } else if (targetValue % 1 === 0) {// Integer Literal
+                            targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#integer')
                         } else {// Float Literal
-                            targetValue = rdf.createLiteral(targetValue,null,'https://www.w3.org/2001/XMLSchema#float')
+                            targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#float')
                         }
                     } else {
                         targetValue = rdf.createNamedNode(targetValue)
                     }
                     console.log(graph._graph);
-                    for (let gi = 0 ; gi < graph.length ; gi ++){
+                    for (let gi = 0; gi < graph.length; gi++) {
                         let occ = graph._graph[gi];
-                        if(occ.object!== dataSubject && occ.predicate !== relationNode && occ.subject !== targetValue){
-                            graph.add(rdf.createTriple(dataSubject,relationNode,targetValue));
+                        if (occ.object !== dataSubject && occ.predicate !== relationNode && occ.subject !== targetValue) {
+                            graph.add(rdf.createTriple(dataSubject, relationNode, targetValue));
                         }
                     }
 
@@ -116,15 +116,10 @@ function convertDataToTriples(data, classes, links, nodes){
     // pipe the serializer output to stdout
     return graph;
 }
-function getItemByatId(list, id){
-    for(let i = 0; i < list.length; i++){
-        if(list[i].id === id) return list[i]
-    }
-}
 
-function getItemById(list, id){
-    for(let i = 0; i < list.length; i++){
-        if(list[i].id === id) return list[i]
+function getItemById(list, id) {
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].id === id) return list[i]
     }
 }
 
@@ -173,7 +168,6 @@ class DataCreation extends Component {
         let edges = [];
         let data = this.state.data;
         let classifications = this.state.dataClassifications.slice();
-        let tempClassifications = [];
         for (let i = 0; i < classifications.length; i++) {
             let item = classifications[i];
             if (item.label) {
@@ -184,7 +178,7 @@ class DataCreation extends Component {
                         type: 'literal',
                         r: 30,
                         title: item.class.name,
-                        column:i,
+                        column: i,
                     });
                 nodes.push(
                     {
@@ -194,7 +188,7 @@ class DataCreation extends Component {
                         r: 30,
                         title: item.class.name + '_uri',
                         uri: item.class.uri,
-                        column:this.state.data[0].length,
+                        column: this.state.data[0].length,
                     });
                 edges.push(
                     {
@@ -209,37 +203,37 @@ class DataCreation extends Component {
 
                     }
                 );
-                let uniqueCounter=1;
-                for(let y = 0; y< data.length; y++){
-                    if(y===0){
+                let uniqueCounter = 1;
+                for (let y = 0; y < data.length; y++) {
+                    if (y === 0) {
                         data[0].push(item.class.name + '_uri');
                         continue
                     }
-                    if(!data[y][i]) {
+                    if (!data[y][i]) {
                         data[y].push('');
                         continue;
                     }
-                    let copyFound =false;
-                    for(let x = 0; x < y; x++) {
-                        if (data[x][i]===data[y][i]) {
-                            data[y].push(data[x][data[x].length-1]);
-                            copyFound=true;
+                    let copyFound = false;
+                    for (let x = 0; x < y; x++) {
+                        if (data[x][i] === data[y][i]) {
+                            data[y].push(data[x][data[x].length - 1]);
+                            copyFound = true;
                             break;
                         }
                     }
-                    if(!copyFound){
+                    if (!copyFound) {
                         let baseUri = classifications[i].baseUri;
-                        if(baseUri.startsWith("http://")||baseUri.startsWith("https://")){
+                        if (baseUri.startsWith("http://") || baseUri.startsWith("https://")) {
 
-                        } else if(baseUri.startsWith("www")){
-                            baseUri="http://" + baseUri;
+                        } else if (baseUri.startsWith("www")) {
+                            baseUri = "http://" + baseUri;
                         } else {
-                            baseUri="http://www." + baseUri;
+                            baseUri = "http://www." + baseUri;
                         }
-                        if(classifications[i].baseUri[classifications[i].baseUri.length-1] !=='/'){
-                            baseUri=baseUri+'/';
+                        if (classifications[i].baseUri[classifications[i].baseUri.length - 1] !== '/') {
+                            baseUri = baseUri + '/';
                         }
-                        data[y].push(baseUri+uniqueCounter)
+                        data[y].push(baseUri + uniqueCounter);
                         uniqueCounter++;
                     }
 
@@ -253,7 +247,7 @@ class DataCreation extends Component {
                         r: 30,
                         title: item.class.name,
                         uri: item.class.uri,
-                        column:i,
+                        column: i,
                     });
             } else {
                 nodes.push(
@@ -263,7 +257,7 @@ class DataCreation extends Component {
                         type: 'literal',
                         r: 30,
                         title: item.columnName,
-                        column:i,
+                        column: i,
                     });
             }
 
@@ -287,7 +281,7 @@ class DataCreation extends Component {
         }
 
         this.setState({
-            data:data,
+            data: data,
             currentPage: 3,
             classes: classifications,
             nodes: nodes,
@@ -337,30 +331,16 @@ class DataCreation extends Component {
         this.setState({
             currentPage: 4
         });
-        transformData(this.state.data,this.state.dataClassifications,this.state.edges,this.state.nodes)
-            .then(result =>{
+        transformData(this.state.data, this.state.dataClassifications, this.state.edges, this.state.nodes)
+            .then(result => {
                 this.setState({
-                  graph:result,
-                  processing:false,
+                    graph: result,
+                    processing: false,
                 })
-            }).then(result =>{
-                let d = this.serialiseData(result);
-        });
+            })
 
     }
-    serialiseData(data){
 
-        let serializer = new JSONLD_Serializer();
-        serializer.serialize(this.state.graph, function(resolve){
-        }).then(result =>{
-            console.log('turtle',result);
-            this.setState({
-                turtle:result
-            });
-            return result;
-        })
-
-    }
     setData(data) {
         let exampleValues;
         if (data.length > 1) {
@@ -390,7 +370,7 @@ class DataCreation extends Component {
             item.baseUri = null;
         }
         item.uri = boolean;
-        item.class={name:'Literal'};
+        item.class = {name: 'Literal'};
         dataClasses[index] = item;
         this.setState({
             dataClassifications: dataClasses
@@ -403,7 +383,7 @@ class DataCreation extends Component {
         let item = dataClasses[index];
         item.label = boolean;
         dataClasses[index] = item;
-        if(!boolean){
+        if (!boolean) {
             item.baseUri = null;
         }
         this.setState({

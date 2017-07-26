@@ -328,7 +328,6 @@ class DataLinkView extends Component {
             .then(function (response) {
                 return response.json()
             }).then(function (json) {
-                console.log(json.results)
             dialog.results = json.results.map(
                 function (item) {
                     return {
