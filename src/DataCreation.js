@@ -490,7 +490,7 @@ class DataCreation extends Component {
                     {this.renderDataLink()}
                 </Tab>
                 <Tab label="Step 4: Finished" value={4} disabled>
-                    <DownloadView processing={this.state.processing} turtle={this.state.turtle}/>
+                    <DownloadView processing={this.state.processing} graph={this.state.graph}/>
                 </Tab>
 
             </Tabs>)

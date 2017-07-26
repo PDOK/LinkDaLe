@@ -2,9 +2,21 @@ import React, {Component} from 'react';
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
 import CircularProgress from 'material-ui/CircularProgress'
+import SelectField from 'material-ui/SelectField'
+import * as TurtleSerializer from 'rdf-serializer-n3'
+import * as JsonLDSerializer from 'rdf-serializer-jsonld'
+import * as NTriplesSerializer from 'rdf-serializer-ntriples'
+import * as SPARQLSerializer from 'rdf-serializer-sparql-update'
+import MenuItem from 'material-ui/MenuItem'
+import {grey300} from 'material-ui/styles/colors'
 class InfoBar extends Component {
     constructor(){
         super();
+        this.state={
+            displayText:'',
+            value:0
+
+        }
     }
     renderProgress(){
         if(this.props.processing){
@@ -22,29 +34,69 @@ class InfoBar extends Component {
             )
         }
     }
-    renderTurtle(){
-        console.log(this.props.turtle)
-        if(!this.props.turtle){
-            return <p>Generating turtle</p>
+    renderText(output){
+        if(!output){
+            return <p>Generating output</p>
         } else {
-            console.log(this.props.turtle.split('\n'));
+            if(typeof output === 'object'){
+                output = JSON.stringify(output);
+            }
             return(
-            <div>
-                {this.props.turtle.split('\n').map((text)=>
-              <p>{text}</p>
+                <div style={{
+                    background:grey300,
+                    marginRight:'50px',
+
+                }}>
+                {output.split('\n').map((text)=>
+                    <p style={{margin:'0'}}>{text}</p>
             )}
-            </div>
+                </div>
             )
         }
     }
-    handleDownloadClick(){
-        let dataStr = "data:application/x-turtle;charset=utf-8," + encodeURIComponent(this.props.turtle);
-        let dlAnchorElem = document.getElementById('downloadAnchorElem');
-        dlAnchorElem.setAttribute("href",     dataStr     );
-        dlAnchorElem.setAttribute("download", "dataSet.turtle");
-        dlAnchorElem.click();
-    }
+    handleChange(event,value){
+        let serializer;
+        let text;
+        let dataType;
+        switch(value){
+            case 3 :
+                serializer = new SPARQLSerializer();
+                text='.txt';
+                dataType='text/plain';
+                break;
+            case 1 :
+                serializer = new JsonLDSerializer();
+                text='.json';
+                dataType='application/json-ld';
+                break;
+            case 2 :
+                serializer = new NTriplesSerializer();
+                text='.txt';
+                dataType='text/plain';
+                break;
+            default :
+                serializer = new TurtleSerializer();
+                text='.turtle';
+                dataType='application/x-turtle';
+                break;
+        }
+        serializer.serialize(this.props.graph,function(x,y){
+            console.log(x);
+            console.log(y)
+        }).then((graph, err)=>
+            this.setState({
+                displayText: graph
+            })
+        );
+        this.setState({
+            text:text,
+            dataType:dataType,
+            value:value,
+        });
+        this.forceUpdate();
 
+
+    }
     render(){
         return(
             <div style={{position:'relative', width:'100%',minHeight:'100%', height:'100%'}}>
@@ -53,7 +105,8 @@ class InfoBar extends Component {
                         <div style={{width:'100%'}}>
                             <RaisedButton
                                 label='download'
-                                onClick={()=>this.handleDownloadClick()}
+                                href={"data:"+this.state.dataType+";charset=utf-8," + encodeURIComponent(this.state.displayText)}
+                                download={'dataset'+this.state.text}
                                 disabled={this.props.processing}
                                 style={{
                                     margin:'30px',
@@ -84,7 +137,18 @@ class InfoBar extends Component {
                             paddingLeft:'50px'
                         }
                     }>
-                        {this.renderTurtle()}
+                        <SelectField
+                            floatingLabelText="Frequency"
+                            value={this.state.value}
+                            onChange={this.handleChange.bind(this)}
+                        >
+                            <MenuItem value={0} primaryText="Turtle" />
+                            <MenuItem value={1} primaryText="JSON-LD" />
+                            <MenuItem value={2} primaryText="N-Triples" />
+                            <MenuItem value={3} primaryText="SPARQL" />
+                        </SelectField>
+                        <br/>
+                        {this.renderText(this.state.displayText)}
                         {this.renderProgress()}
                         <p>
                         </p>

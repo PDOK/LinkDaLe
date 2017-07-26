@@ -147,7 +147,6 @@ class App extends Component {
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <div className="App">
-                    <a id="downloadAnchorElem" style={{Display:'none'}}/>
                     <NavigationBar
                         onClick={(i) => this.handleClick(i)}
                     />
