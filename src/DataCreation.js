@@ -170,7 +170,7 @@ class DataCreation extends Component {
         let classifications = this.state.dataClassifications.slice();
         for (let i = 0; i < classifications.length; i++) {
             let item = classifications[i];
-            if (item.label) {
+            if (item.baseUri) {
                 nodes.push(
                     {
                         id: (nodes.length),
@@ -298,7 +298,6 @@ class DataCreation extends Component {
                     nextPage={this.toThirdStep.bind(this)}
                     setClass={this.setClass.bind(this)}
                     setUri={this.setUri.bind(this)}
-                    setLabel={this.setLabel.bind(this)}
                     setBaseUri={this.setBaseUri.bind(this)}
                 />
             )
@@ -350,7 +349,6 @@ class DataCreation extends Component {
                     exampleValue: data[1][index],
                     class: {name: 'Literal'},
                     uri: false,
-                    label: false
                 }
             })
         } else {
@@ -365,30 +363,12 @@ class DataCreation extends Component {
     setUri(index, boolean) {
         let dataClasses = this.state.dataClassifications.slice();
         let item = dataClasses[index];
-        if (item.label) {
-            item.label = false;
-            item.baseUri = null;
-        }
         item.uri = boolean;
-        item.class = {name: 'Literal'};
         dataClasses[index] = item;
         this.setState({
             dataClassifications: dataClasses
         })
 
-    }
-
-    setLabel(index, boolean) {
-        let dataClasses = this.state.dataClassifications.slice();
-        let item = dataClasses[index];
-        item.label = boolean;
-        dataClasses[index] = item;
-        if (!boolean) {
-            item.baseUri = null;
-        }
-        this.setState({
-            dataClassifications: dataClasses
-        })
     }
 
     setClass(index, classification) {

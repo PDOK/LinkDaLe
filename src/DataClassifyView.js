@@ -12,6 +12,11 @@ import Dialog from 'material-ui/Dialog';
 import 'whatwg-fetch'
 import IconButton from 'material-ui/IconButton';
 import ActionSearch from 'material-ui/svg-icons/action/search';
+import {Step, Stepper, StepLabel} from 'material-ui/Stepper'
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import ExpandTransition from 'material-ui/internal/ExpandTransition';
+import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back'
 
 class DataClassifyView extends Component {
     constructor(props) {
@@ -22,7 +27,9 @@ class DataClassifyView extends Component {
                     open: false,
                     id: 0,
                     searchText: '',
-                    results: []
+                    results: [],
+                    stepIndex:0,
+                    vocabPickerIndex:0,
                 }
             }
         )
@@ -39,23 +46,22 @@ class DataClassifyView extends Component {
 
     //Opens the dialog and set the row number of the item that was picked
     handleOpen(i) {
+        let dialog = this.state.dialog;
+        dialog.open=true;
+        dialog.id=i;
         this.setState({
-            dialog: {
-                open: true,
-                id: i
-            }
+            dialog: dialog
         })
     }
 
     handleClose() {
-        this.setState(
-            {
-                dialog: {
-                    open: false,
-                    id: -1
-                }
-            }
-        )
+        let dialog = this.state.dialog;
+        dialog.open=false;
+        dialog.id=-1;
+        dialog.stepIndex=0;
+        this.setState({
+            dialog: dialog
+        })
     }
 
     onChange(object, string) {
@@ -64,7 +70,7 @@ class DataClassifyView extends Component {
         this.setState({dialog: dialog});
     }
 
-    searchVocabulary() {
+    searchVocabulary(e) {
         let query = this.state.dialog.searchText;
         let dialog = this.state.dialog;
         fetch('http://lov.okfn.org/dataset/lov/api/v2/term/search?q=' + query + '&type=class')
@@ -83,18 +89,22 @@ class DataClassifyView extends Component {
             this.setState({dialog: dialog});
         }.bind(this)).catch(function (ex) {
             console.log('parsing failed', ex)
-        })
+        });
+        e.preventDefault();
     }
 
     handlePick(index) {
         let dialog = this.state.dialog;
-        let result = dialog.results[index];
+        let result = dialog.results[dialog.vocabPickerIndex];
         result.name = result.prefix.split(':')[1];
         this.props.setClass(this.state.dialog.id, result);
+        this.props.setUri(this.state.dialog.id,true);
         this.setState({
                 dialog: {
                     open: false,
-                    id: -1
+                    id: -1,
+                    stepIndex:0,
+                    vocabPickerIndex:0,
                 }
             }
         )
@@ -103,14 +113,10 @@ class DataClassifyView extends Component {
     renderDialogTableBody() {
         if (this.state.dialog.results) {
             return this.state.dialog.results.map((column, index) =>
-                <TableRow key={index}>
-                    <TableRowColumn>{column.vocabPrefix}</TableRowColumn>
-                    <TableRowColumn><a href={column.uri}>{column.uri}</a></TableRowColumn>
-                    <TableRowColumn>{column.prefix}</TableRowColumn>
-                    <TableRowColumn><RaisedButton
-                        onClick={() => this.handlePick(index)}>pick</RaisedButton></TableRowColumn>
-                </TableRow>
+                <MenuItem value={index} label={column.prefix} primaryText={column.prefix}/>
             )
+
+        } else {
 
         }
 
@@ -134,26 +140,83 @@ class DataClassifyView extends Component {
         }
         return counter;
     }
+    onVocabPicked(e, index){
+        let dialog = this.state.dialog;
+        dialog.vocabPickerIndex=index;
+    }
     continueDisabled(){
         let classes = this.props.data.slice();
         if(this.getAmountOfClasses() === 0) return true;
-            for(let i = 0; i < classes.length; i++){
-                let item = classes[i];
-                if(item.label && !item.baseUri) return true;
-                if(item.uri && item.class.name === 'Literal') return true;
-            }
            return false;
 
+    }
+    startClassification(index,boolean){
+        this.handleOpen(index);
+
+    }
+    renderDialogBody(){
+        let item = this.props.data[this.state.dialog.id]
+        if(!item){
+            return <div/>
+        }
+        switch(this.state.dialog.stepIndex){
+            case 0:
+                return (
+                    <div>
+                        <p>When the data is not a proper URI... Stan's todo</p>
+                        <p>Column name: {item.columnName}</p>
+                        <p>Example value: {item.exampleValue}</p>
+                            <TextField name="Base-uri:" type="url" hintText="Input the URL from which the data will start" onChange={(event, string) => this.onBaseUriChange(this.state.dialog.id,string)}/>
+                    </div>
+
+                );
+            break;
+            case 1:
+                return (
+                    <div>
+                        <p>Some text written by stan goes here</p>
+                        <form onSubmit={this.searchVocabulary.bind(this)}>
+                            <TextField name="Search vocabularies" hintText="class name" onChange={this.onChange.bind(this)}/>
+                            <IconButton type="submit"><ActionSearch/></IconButton>
+                        </form>
+                        <p>Some text written by stan goes here</p>
+                        <DropDownMenu value={this.state.dialog.vocabPickerIndex} onChange={this.onVocabPicked.bind(this)}>
+                            {this.renderDialogTableBody()}
+                        </DropDownMenu>
+                    </div>
+                );
+            break;
+            default:
+                return <div/>
+        }
+
+    }
+    handleNext(){
+        let dialog = this.state.dialog;
+        dialog.stepIndex=1;
+        this.setState({
+            dialog:dialog
+        })
+    }
+    resetItem(index){
+        this.props.setClass(index, {name:'Literal'});
+        this.props.setUri(index,false);
+        this.props.setBaseUri(index,null)
     }
 
 
     render() {
         const actions = [
             <FlatButton
-                label="Cancel"
+                label= {(this.state.dialog.stepIndex===0) ? 'Next':'Finish'}
                 primary={true}
-                onClick={this.handleClose.bind(this)}
-            />
+                onClick={(this.state.dialog.stepIndex===0) ? this.handleNext.bind(this):this.handlePick.bind(this)}
+            />,
+            <FlatButton
+            label='Cancel'
+            primary={false}
+            onClick={this.handleClose.bind(this)}
+    />
         ];
         return (
             <div>
@@ -176,12 +239,10 @@ class DataClassifyView extends Component {
                             <TableRow>
                                 <TableHeaderColumn tooltip="the column name">ColumnName</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The first value">Example Value</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The class it will be defined as">Class</TableHeaderColumn>
-                                <TableHeaderColumn style={{width:'12px'}}
-                                    tooltip="If this class should be considered a URI">Uri</TableHeaderColumn>
-                                <TableHeaderColumn style={{width:'24px'}} tooltip="If this class is also a label">Label</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The base URI of the class">Base URI</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The result of the transformation">Result</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Is this a root node">Root node</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="The type">type</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Base URI">Base URI</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Reset">Reset</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody displayRowCheckbox={false}>
@@ -192,19 +253,22 @@ class DataClassifyView extends Component {
                                     <TableRow key={index}>
                                         <TableRowColumn>{column.columnName}</TableRowColumn>
                                         <TableRowColumn>{column.exampleValue}</TableRowColumn>
-                                        <TableRowColumn><RaisedButton disabled={!column.uri}
-                                                                      onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
-                                        <TableRowColumn style={{width:'24px'}}><CheckBox value={index}
-                                                                  onCheck={() => this.props.setUri(index, !column.uri)}
-                                                                  checked={column.uri}/></TableRowColumn>
-                                        <TableRowColumn style={{width:'24px'}}><CheckBox checked={column.label}
-                                                                  onCheck={() => this.props.setLabel(index, !column.label)}
-                                                                  disabled={!column.uri}/></TableRowColumn>
-                                        <TableRowColumn><TextField
-                                                                  id={column.columnName}
-                                                                  onChange={(event, string) => this.onBaseUriChange(index,string)}
-                                                                  disabled={!column.label}/></TableRowColumn>
-                                        <TableRowColumn>{this.renderSourceLink(index)}</TableRowColumn>
+                                        <TableRowColumn>
+                                            <CheckBox checked={column.uri} onCheck={()=>this.startClassification(index,!column.uri)} disabled={column.uri}/>
+                                        </TableRowColumn>
+                                        <TableRowColumn>{column.class.name}</TableRowColumn>
+                                        <TableRowColumn>{column.baseUri ? column.baseUri : ''}</TableRowColumn>
+                                        <TableRowColumn>
+                                            {
+                                                column.uri ?
+                                                (
+                                                <IconButton onClick={(e)=>this.resetItem(index)}>
+                                                    <ArrowBack/>
+                                                </IconButton>
+                                                ) :
+                                                <div/>
+                                            }
+                                        </TableRowColumn>
 
                                     </TableRow>
                                 )
@@ -218,34 +282,15 @@ class DataClassifyView extends Component {
                     modal={true}
                     open={this.state.dialog.open}
                 >
-                    <div style={{width: '100%'}}>
-                        <TextField style={{width: '80%'}} floatingLabelText="Class name"
-                                   onChange={this.onChange.bind(this)}/>
-                        <IconButton>
-                            <ActionSearch onClick={this.searchVocabulary.bind(this)}/>
-                        </IconButton>
-                    </div>
-                    <div style={{minHeight: '400px'}}>
-                        <Table wrapperStyle={{paddingBottom: '27px'}}>
-                            <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                                <TableRow>
-                                    <TableHeaderColumn
-                                        tooltip="The vocabulary the class originates from">Vocabulary</TableHeaderColumn>
-                                    <TableHeaderColumn tooltip="Link to the class description">uri</TableHeaderColumn>
-                                    <TableHeaderColumn tooltip="The full prefix">Prefix</TableHeaderColumn>
-                                    <TableHeaderColumn>Select</TableHeaderColumn>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody displayRowCheckbox={false}>
-                                {this.renderDialogTableBody()}
-                            </TableBody>
-
-                        </Table>
-
-
-                    </div>
-
-
+                    <Stepper activeStep={this.state.dialog.stepIndex}>
+                        <Step>
+                            <StepLabel>Pick URI</StepLabel>
+                        </Step>
+                        <Step>
+                            <StepLabel>Select class</StepLabel>
+                        </Step>
+                    </Stepper>
+                    {this.renderDialogBody()}
                 </Dialog>
             </div>
         )
