@@ -113,7 +113,7 @@ class DataClassifyView extends Component {
     renderDialogTableBody() {
         if (this.state.dialog.results) {
             return this.state.dialog.results.map((column, index) =>
-                <MenuItem value={index} label={column.prefix} primaryText={column.prefix}/>
+                <MenuItem key={index} value={index} label={column.prefix} primaryText={column.prefix}/>
             )
 
         } else {
