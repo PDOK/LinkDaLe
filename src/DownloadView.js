@@ -137,7 +137,6 @@ class InfoBar extends Component {
                                     margin:'30px',
                                     width:'40%',
                                     float:'left'
-
                                 }}
                             />
                         </div>
