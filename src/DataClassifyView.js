@@ -59,6 +59,8 @@ class DataClassifyView extends Component {
         dialog.open=false;
         dialog.id=-1;
         dialog.stepIndex=0;
+        dialog.results=[];
+        dialog.vocabPickerIndex=0;
         this.setState({
             dialog: dialog
         })
@@ -102,7 +104,9 @@ class DataClassifyView extends Component {
         this.setState({
                 dialog: {
                     open: false,
-                    id: -1,
+                    id: 0,
+                    searchText: '',
+                    results: [],
                     stepIndex:0,
                     vocabPickerIndex:0,
                 }
@@ -111,11 +115,16 @@ class DataClassifyView extends Component {
     }
 
     renderDialogTableBody() {
-        if (this.state.dialog.results) {
-            return this.state.dialog.results.map((column, index) =>
-                <MenuItem key={index} value={index} label={column.prefix} primaryText={column.prefix}/>
-            )
 
+        if (this.state.dialog.results.length) {
+            console.log(this.state.dialog.results.length !== 0)
+            let result = this.state.dialog.results.map((column, index) =>
+                <MenuItem key={index} value={index} label={column.prefix} primaryText={column.prefix}/>);
+            return(
+                <DropDownMenu value={this.state.dialog.vocabPickerIndex} onChange={this.onVocabPicked.bind(this)} openImmediately={true}>
+                    {result}
+                </DropDownMenu>
+            )
         } else {
 
         }
@@ -155,7 +164,7 @@ class DataClassifyView extends Component {
 
     }
     renderDialogBody(){
-        let item = this.props.data[this.state.dialog.id]
+        let item = this.props.data[this.state.dialog.id];
         if(!item){
             return <div/>
         }
@@ -180,9 +189,8 @@ class DataClassifyView extends Component {
                             <IconButton type="submit"><ActionSearch/></IconButton>
                         </form>
                         <p>Some text written by stan goes here</p>
-                        <DropDownMenu value={this.state.dialog.vocabPickerIndex} onChange={this.onVocabPicked.bind(this)}>
                             {this.renderDialogTableBody()}
-                        </DropDownMenu>
+
                     </div>
                 );
             break;
@@ -211,6 +219,7 @@ class DataClassifyView extends Component {
                 label= {(this.state.dialog.stepIndex===0) ? 'Next':'Finish'}
                 primary={true}
                 onClick={(this.state.dialog.stepIndex===0) ? this.handleNext.bind(this):this.handlePick.bind(this)}
+                disabled={(this.state.dialog.stepIndex===0) ? false:this.state.dialog.results.length===0}
             />,
             <FlatButton
             label='Cancel'
