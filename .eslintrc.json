@@ -2,14 +2,22 @@
 // Copy this file, and add rule overrides as needed.
 {
   "extends": "airbnb",
+  "react/jsx-filename-extension": ["off", { "extensions": [".js", ".jsx"] }],
   "allowForLoopAfterthoughts": true,
   "allow": ["warn", "error"],
   "globals": {
-    "window": true
+    "window": true,
+    "PropTypes":true,
+    "it":true,
+    "expect":true,
+    "fetch":true,
+    "FileReader":true,
+    "document":true
   },
-  "react/no-multi-comp": [true, { "ignoreStateless":true }],
-  "react/jsx-no-bind": [false, {
+  "react/no-multi-comp": ["off", { "ignoreStateless":true }],
+  "react/jsx-no-bind": ["off", {
     "allowBind": false
-  }]
+  }],
+  "react/forbid-prop-types": "off"
 
 }

@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types,react/jsx-no-bind */
+/* eslint-disable react/prop-types,react/jsx-no-bind,react/jsx-filename-extension */
 /**
  * Created by Gerwin Bosch on 6-7-2017.
  */
@@ -18,7 +18,7 @@ import {
 } from 'material-ui/Table';
 import ActionSearch from 'material-ui/svg-icons/action/search';
 import Dialog from 'material-ui/Dialog';
-import * as Fetch from 'whatwg-fetch';
+import 'whatwg-fetch';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -37,10 +37,8 @@ const GraphConfig = {
         <symbol viewBox="0 0 100 100" id="empty" key="0">
           <circle cx="50" cy="50" r="45" />
         </symbol>
-
       ),
     },
-
     uri: {
       typeText: 'URI',
       shapeId: '#uri',
@@ -93,16 +91,6 @@ class DataLinkView extends Component {
         open: false,
       },
     };
-    this.getViewNode.bind(this);
-    this.onSelectNode.bind(this);
-    this.onUpdateNode.bind(this);
-    this.onSelectEdge.bind(this);
-    this.onCreateEdge.bind(this);
-    this.onSwapEdge.bind(this);
-    this.onDeleteEdge.bind(this);
-    this.handleClose.bind(this);
-    this.onChange.bind(this);
-    this.searchVocabulary.bind(this);
   }
 
   componentDidMount() {
@@ -269,7 +257,7 @@ class DataLinkView extends Component {
   searchVocabulary() {
     const query = this.state.dialog.searchText;
     const dialog = this.state.dialog;
-    Fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
+    fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
         }&type=property`).then(response => response.json()).then((json) => {
           dialog.results = json.results.map(
           item => ({
@@ -362,7 +350,7 @@ class DataLinkView extends Component {
           nodeTypes={NodeTypes}
           nodeSubtypes={NodeSubtypes}
           edgeTypes={EdgeTypes}
-          getViewNode={this.getViewNode}
+          getViewNode={this.getViewNode.bind(this)}
           onSelectNode={this.onSelectNode.bind(this)}
           onUpdateNode={this.onUpdateNode.bind(this)}
           onSelectEdge={this.onSelectEdge.bind(this)}
@@ -384,7 +372,7 @@ class DataLinkView extends Component {
       <FlatButton
         label="Cancel"
         primary
-        onClick={this.handleClose}
+        onClick={this.handleClose.bind(this)}
       />,
     ];
 
@@ -434,10 +422,10 @@ class DataLinkView extends Component {
             <TextField
               style={{ width: '80%' }}
               floatingLabelText="Class name"
-              onChange={this.onChange}
+              onChange={this.onChange.bind(this)}
             />
             <IconButton>
-              <ActionSearch onClick={this.searchVocabulary} />
+              <ActionSearch onClick={this.searchVocabulary.bind(this)} />
             </IconButton>
           </div>
           <div style={{ minHeight: '400px' }}>
@@ -473,111 +461,85 @@ class DataLinkView extends Component {
   }
 
 }
-class InfoBar extends Component {
-  renderHeader() {
-    const item = this.props.selected;
-    let title = 'No item selected';
-    let subTitle = 'click on an item to select it';
-    if (item.type === 'literal' || item.type === 'uri') {
-      title = item.label;
-      subTitle = 'node';
-    } else if (this.props.selected.type === 'emptyEdge') {
-      title = item.title;
-      subTitle = 'relation';
-    }
-    return (
-      <CardHeader
-        title={title}
-        subtitle={subTitle}
-      />);
+function InfoBar(props) {
+  const item = props.selected;
+  let title = 'No item selected';
+  let subTitle = 'click on an item to select it';
+  if (item.type === 'literal' || item.type === 'uri') {
+    title = item.label;
+    subTitle = 'node';
+  } else if (item.type === 'emptyEdge') {
+    title = item.title;
+    subTitle = 'relation';
   }
-
-  renderText() {
-    const item = this.props.selected;
-    let text;
-    if (item.type === 'literal') {
-      text = <p>Raw Value</p>;
-    } else if (item.type === 'uri') {
-      text = (<a
-        href={item.uri}
-        target="_blank"
-        rel="noopener noreferrer"
-      >{item.title}</a>);
-    } else if (item.type === 'emptyEdge') {
-      text = (<a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-      >{item.relation}</a>);
-    }
-
-    return (
-      <CardText>
-        {text}
-      </CardText>
+  let text;
+  if (item.type === 'literal') {
+    text = <p>Raw Value</p>;
+  } else if (item.type === 'uri') {
+    text = (<a
+      href={item.uri}
+      target="_blank"
+      rel="noopener noreferrer"
+    >{item.title}</a>);
+  } else if (item.type === 'emptyEdge') {
+    text = (<a
+      href={item.link}
+      target="_blank"
+      rel="noopener noreferrer"
+    >{item.relation}</a>);
+  }
+  let middleCard = <div />;
+  if (this.props.references && this.props.references.length > 0) {
+    middleCard = (
+      <Card>
+        <CardHeader
+          title="References"
+          subtitle="Click to expand"
+          actAsExpander
+          showExpandableButton
+        />
+        {
+            this.props.references.map(relation =>
+                (<CardText key={relation.subject} expandable>
+                  <Divider />
+                  <p>
+                    <b>Subject: </b>{relation.subject}<br />
+                    <b>Relation: </b>{relation.relation}<br />
+                    <b>Object: </b>{relation.object}<br />
+                  </p>
+                </CardText>),
+            )
+          }
+      </Card>
     );
   }
-
-  renderReferences() {
-    if (this.props.references && this.props.references.length > 0) {
-      return (
-        <Card>
-          <CardHeader
-            title="References"
-            subtitle="Click to expand"
-            actAsExpander
-            showExpandableButton
-          />
-          {
-              this.props.references.map(item =>
-                  (<CardText key={item.subject} expandable>
-                    <Divider />
-                    <p>
-                      <b>Subject: </b>{item.subject}<br />
-                      <b>Relation: </b>{item.relation}<br />
-                      <b>Object: </b>{item.object}<br />
-                    </p>
-                  </CardText>),
-              )
-            }
-        </Card>
-      );
-    }
-    return <div />;
-  }
-
-  render() {
-    return (
-      <div style={{
-        float: 'right',
-        height: '100%',
-        width: '256px',
-      }}
-      >
-        <Card>
-          {this.renderHeader()}
-          {this.renderText()}
-          {this.renderReferences()}
-          <Card>
-            <CardHeader
-              title="Controls"
-              subtitle="Click to expand"
-              actAsExpander
-              showExpandableButton
-            />
-            <CardText expandable>
-                Click: Select node/edge<br />
-                Click and hold on node: Drag the node<br />
-                Shift+Click a node and drag: Create new Edge<br />
-            </CardText>
-          </Card>
-
-        </Card>
-
-
-      </div>
-    );
-  }
+  return (
+    <Card>
+      <Card>
+        <CardHeader
+          title={title}
+          subtitle={subTitle}
+        />
+        <CardText>
+          {text}
+        </CardText>
+      </Card>
+      {middleCard}
+      <Card>
+        <CardHeader
+          title="Controls"
+          subtitle="Click to expand"
+          actAsExpander
+          showExpandableButton
+        />
+        <CardText expandable>
+          Click: Select node/edge<br />
+          Click and hold on node: Drag the node<br />
+          Shift+Click a node and drag: Create new Edge<br />
+        </CardText>
+      </Card>
+    </Card>
+  );
 }
 
 export default DataLinkView;
