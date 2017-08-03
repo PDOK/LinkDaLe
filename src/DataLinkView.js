@@ -489,7 +489,7 @@ function InfoBar(props) {
     >{item.relation}</a>);
   }
   let middleCard = <div />;
-  if (this.props.references && this.props.references.length > 0) {
+  if (props.references && props.references.length > 0) {
     middleCard = (
       <Card>
         <CardHeader
@@ -499,7 +499,7 @@ function InfoBar(props) {
           showExpandableButton
         />
         {
-            this.props.references.map(relation =>
+            props.references.map(relation =>
                 (<CardText key={relation.subject} expandable>
                   <Divider />
                   <p>
