@@ -51,6 +51,9 @@ class DataClassifyView extends Component {
   onVocabPicked(e, index) {
     const dialog = this.state.dialog;
     dialog.vocabPickerIndex = index;
+    this.setState({
+      dialog,
+    });
   }
 
   onChange(object, string) {
