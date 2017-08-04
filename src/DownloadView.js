@@ -105,8 +105,9 @@ class InfoBar extends Component {
 
       }}
       >
-        {text.split('\n').map(value =>
-          <p key={value} style={{ margin: '0' }}>{value}</p>,
+        {text.split('\n').map((value, idx) =>
+// eslint-disable-next-line react/no-array-index-key
+          <p key={idx} style={{ margin: '0' }}>{value}</p>,
           )}
       </div>
     );
