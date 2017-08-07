@@ -24,29 +24,9 @@ const styles = {
     },
 };
 
-
-function csvToText(text, delimiter, stdDelimiter) {
-    let lines = text.split(stdDelimiter);
-    for (let i = 0; i < lines.length; i++) {
-        if (!lines[i] || lines[i] === "") continue;
-        lines[i] = lines[i].split(delimiter);
-
-    }
-    //Remove empty lines
-    lines = lines.filter(function (line) {
-        for (let i = 0; i < line.length; i++) {
-            if (line[i]) {
-                return true;
-            }
-        }
-        return false;
-    });
-    return lines;
-}
 class TableView extends Component {
     render() {
         // If there is data render the view
-        console.log(this.props.data);
         if (this.props.data) {
             return (
                 <Table
@@ -83,7 +63,6 @@ class TableView extends Component {
         }
     }
 }
-
 class ImportView extends Component {
     constructor() {
         super();
@@ -94,6 +73,24 @@ class ImportView extends Component {
         };
 
         this.handleFileChange = this.handleFileChange.bind(this);
+    }
+    csvToText(text, delimiter, stdDelimiter) {
+        let lines = text.split(stdDelimiter);
+        for (let i = 0; i < lines.length; i++) {
+            if (!lines[i] || lines[i] === "") continue;
+            lines[i] = lines[i].split(delimiter);
+
+        }
+        //Remove empty lines
+        lines = lines.filter(function (line) {
+            for (let i = 0; i < line.length; i++) {
+                if (line[i]) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        return lines;
     }
 
 
@@ -114,7 +111,7 @@ class ImportView extends Component {
             return;
         }
         reader.addEventListener('load', () => {
-            this.props.setData(csvToText(reader.result, /[,|;\t]/g, '\r\n'));
+            this.props.setData(this.csvToText(reader.result, /[,|;\t]/g, '\r\n'));
         });
         if (event.target.files) {
             reader.readAsText(event.target.files[0], 'UTF-8');

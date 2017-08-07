@@ -95,7 +95,7 @@ class InfoBar extends Component {
         if (item.type === 'literal') {
             text = <p>Raw Value</p>
         } else if (item.type === 'uri') {
-            text = <a href={item.class.uri} target="_blank" rel="noopener noreferrer">{item.class.prefix}</a>
+            text = <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.title}</a>
         } else if (item.type === 'emptyEdge') {
             text = <a href={item.link} target="_blank" rel="noopener noreferrer">{item.relation}</a>
         }
@@ -109,7 +109,6 @@ class InfoBar extends Component {
 
     renderReferences() {
         if (this.props.references && this.props.references.length > 0) {
-            console.log(this.props.references);
             return (
                 <Card>
                     <CardHeader
@@ -186,8 +185,6 @@ class DataLinkView extends Component {
     shouldComponentUpdate(nextProps, nextState) {
         const nodes = nextProps.nodes;
         const links = nextProps.links;
-        console.log(nextProps.nodes);
-        console.log(this.props.nodes);
         if (this.props.nodes !== nodes || this.props.links !== links) {
             return true;
         }
@@ -195,7 +192,6 @@ class DataLinkView extends Component {
             this.setState(nextState.selected);
             return true;
         }
-        console.log("render", "no render");
         return true;
 
     }
@@ -265,8 +261,6 @@ class DataLinkView extends Component {
                 let target;
                 if (item.source === viewNode.id) {
                     origin = viewNode.label;
-                    console.log(origin);
-                    console.log(this.getNode(item.target));
                     target = this.getNode(item.target).label;
                     edges.push({
                         subject: origin,
@@ -283,19 +277,15 @@ class DataLinkView extends Component {
                     })
                 }
             }
-            console.log('relations', edges);
             this.setState({selected: viewNode, relations: edges});
-            console.log('new selected', viewNode)
         } else {
             this.setState({selected: {}, relations: []});
-            console.log('Removed', viewNode)
 
         }
     }
 
     // Edge 'mouseUp' handler
     onSelectEdge(viewEdge) {
-        console.log('Edge selected', viewEdge);
         let target = this.getNode(viewEdge.target).label;
         let origin = this.getNode(viewEdge.source).label;
 
@@ -338,7 +328,6 @@ class DataLinkView extends Component {
             .then(function (response) {
                 return response.json()
             }).then(function (json) {
-            console.log('parsed json', json.results);
             dialog.results = json.results.map(
                 function (item) {
                     return {
@@ -399,13 +388,14 @@ class DataLinkView extends Component {
     handlePick(index) {
         let dialog = this.state.dialog;
         let result = dialog.results[index];
+        console.log(result);
         let newEdge = {
             source: this.state.dialog.source,
             target: this.state.dialog.target,
             relation: result.prefix,
             r: 30,
             type: "emptyEdge",
-            title: result.vocabPrefix,
+            title: result.prefix.split(":")[1],
             link: result.uri,
 
         };
@@ -439,7 +429,6 @@ class DataLinkView extends Component {
         const NodeTypes = GraphConfig.NodeTypes;
         const NodeSubtypes = GraphConfig.NodeSubtypes;
         const EdgeTypes = GraphConfig.EdgeTypes;
-        console.log('nodes', this.props.nodes);
         if (this.props.nodes.length > 0) {
             return (
                 <GraphView
@@ -478,7 +467,6 @@ class DataLinkView extends Component {
     render() {
         const selected = this.state.selected;
 
-        console.log('render selected', selected);
         const actions = [
             <FlatButton
                 label="Cancel"

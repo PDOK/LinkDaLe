@@ -6,6 +6,10 @@ import {Tab, Tabs} from 'material-ui/Tabs';
 import DataImport from './DataImport'
 import DataClassifyView from './DataClassifyView'
 import DataLinkView from './DataLinkView'
+import DownloadView from './DownloadView'
+import * as rdf from 'rdf-ext';
+import * as JSONLD_Serializer from 'rdf-serializer-n3';
+
 
 const States = {
     DataUpload: 11,
@@ -13,6 +17,111 @@ const States = {
     DataLinking: 13,
     DataPublishing: 14,
 };
+
+async function transformData(data, classes, links, nodes) {
+    return await convertDataToTriples(data, classes, links, nodes)
+}
+
+function convertDataToTriples(data, classes, links, nodes) {
+    // Map relations
+    let classDefinitions = [];
+    //For every node
+    for (let i = 0; i < nodes.length; i++) {
+        let subject = nodes[i];
+        //Skip when the nodes is a literal, as they can't have subjects
+        if (subject.type === 'Literal') continue;
+        let relations = [];
+        //Get all the relations of this node
+        for (let j = 0; j < links.length; j++) {
+            let relation = links[j];
+            if (relation.source === subject.id) {
+                //Push relation and class
+                relations.push({relation: relation, target: getItemById(nodes, relation.target)})
+            }
+        }
+        //When there are no relations skip the node
+        if (relations.length === 0) continue;
+        classDefinitions.push({
+            subject: subject,
+            relations: relations
+        })
+    }
+    let graph = rdf.createGraph();
+    //For every row of data except the header
+    for (let k = 1; k < data.length; k++) {
+        let dataRow = data[k];
+        //Check if the uri is in that label
+        for (let id = 0; id < classDefinitions.length; id++) {
+            let cd = classDefinitions[id];
+            //Skip when the value is not present in the data
+            console.log(cd);
+            if (!dataRow[cd.subject.column]) continue;
+            //Skip when there are no relations
+            if (cd.relations.length === 0) continue;
+            //If there is no item create a new one
+            let skip = false;
+            let dataSubject = rdf.createNamedNode(dataRow[cd.subject.column]);
+            let typeOf = rdf.createNamedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+            for (let i = 0; i < graph.length; i++) {
+                let node = graph._graph[i];
+                if (node.object === dataSubject && node.predicate === typeOf) {
+                    skip = true;
+                    break;
+                }
+            }
+            console.log(dataRow[cd.subject.column]);
+            if (!skip) {
+                graph.add(rdf.createTriple(dataSubject, typeOf, rdf.createNamedNode(cd.subject.uri)))
+            }
+            //For every relation check if there is a value
+            for (let relCounter = 0; relCounter < cd.relations.length; relCounter++) {
+                let relation = cd.relations[relCounter];
+                //If there is a relation
+                let relationNode = rdf.createNamedNode(relation.relation.link);
+                console.log(relation);
+                if (dataRow[relation.target.column]) {
+                    //The target value
+                    let targetValue = dataRow[relation.target.column];
+                    //If the relation is not mentioned yet
+                    if (relation.target.type === 'literal') {
+                        if (!Number(targetValue)) {//String literal
+                            targetValue = rdf.createLiteral(targetValue, 'en', 'http://www.w3.org/2001/XMLSchema#string')
+                        } else if (targetValue % 1 === 0) {// Integer Literal
+                            targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#integer')
+                        } else {// Float Literal
+                            targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#float')
+                        }
+                    } else {
+                        targetValue = rdf.createNamedNode(targetValue)
+                    }
+                    console.log(graph._graph);
+                    for (let gi = 0; gi < graph.length; gi++) {
+                        let occ = graph._graph[gi];
+                        if (occ.object !== dataSubject && occ.predicate !== relationNode && occ.subject !== targetValue) {
+                            graph.add(rdf.createTriple(dataSubject, relationNode, targetValue));
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+    // let serializer = new JSONLD_Serializer({outputFormat: 'string', compact: true});
+    //
+    // // forward the quads to the serializer
+    // serializer.serialize(results, function(resolve){
+    //     console.log(resolve)
+    //                                        });
+    // pipe the serializer output to stdout
+    return graph;
+}
+
+function getItemById(list, id) {
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].id === id) return list[i]
+    }
+}
 
 class DataCreation extends Component {
     constructor() {
@@ -26,9 +135,10 @@ class DataCreation extends Component {
             currentPage: 1,
             data: '',
             dataClassifications: [],
-            classes: {},
+            classes: [],
             nodes: [],
             edges: [],
+            processing: true,
         }
     }
 
@@ -56,6 +166,7 @@ class DataCreation extends Component {
         );
         let nodes = [];
         let edges = [];
+        let data = this.state.data;
         let classifications = this.state.dataClassifications.slice();
         for (let i = 0; i < classifications.length; i++) {
             let item = classifications[i];
@@ -67,17 +178,17 @@ class DataCreation extends Component {
                         type: 'literal',
                         r: 30,
                         title: item.class.name,
-                        class: item.class.uri
+                        column: i,
                     });
-                //TODO: Create uri's
                 nodes.push(
                     {
                         id: (nodes.length),
-                        label: item.class.name + '_id',
+                        label: item.class.name + '_uri',
                         type: 'uri',
                         r: 30,
-                        title: item.class.name + '_id',
-                        class: item.class
+                        title: item.class.name + '_uri',
+                        uri: item.class.uri,
+                        column: this.state.data[0].length,
                     });
                 edges.push(
                     {
@@ -87,11 +198,46 @@ class DataCreation extends Component {
                         r: 30,
                         type: "emptyEdge",
                         title: 'label',
-                        link: 'https://www.infowebml.ws/rdf-owl/label.htm'
+                        link: 'https://www.w3.org/2000/01/rdf-schema#label'
 
 
                     }
-                )
+                );
+                let uniqueCounter = 1;
+                for (let y = 0; y < data.length; y++) {
+                    if (y === 0) {
+                        data[0].push(item.class.name + '_uri');
+                        continue
+                    }
+                    if (!data[y][i]) {
+                        data[y].push('');
+                        continue;
+                    }
+                    let copyFound = false;
+                    for (let x = 0; x < y; x++) {
+                        if (data[x][i] === data[y][i]) {
+                            data[y].push(data[x][data[x].length - 1]);
+                            copyFound = true;
+                            break;
+                        }
+                    }
+                    if (!copyFound) {
+                        let baseUri = classifications[i].baseUri;
+                        if (baseUri.startsWith("http://") || baseUri.startsWith("https://")) {
+
+                        } else if (baseUri.startsWith("www")) {
+                            baseUri = "http://" + baseUri;
+                        } else {
+                            baseUri = "http://www." + baseUri;
+                        }
+                        if (classifications[i].baseUri[classifications[i].baseUri.length - 1] !== '/') {
+                            baseUri = baseUri + '/';
+                        }
+                        data[y].push(baseUri + uniqueCounter);
+                        uniqueCounter++;
+                    }
+
+                }
             } else if (item.uri) {
                 nodes.push(
                     {
@@ -99,8 +245,9 @@ class DataCreation extends Component {
                         label: item.class.name,
                         type: 'uri',
                         r: 30,
-                        title: item.class.name
-
+                        title: item.class.name,
+                        uri: item.class.uri,
+                        column: i,
                     });
             } else {
                 nodes.push(
@@ -109,12 +256,13 @@ class DataCreation extends Component {
                         label: item.columnName,
                         type: 'literal',
                         r: 30,
-                        title: item.columnName
-
+                        title: item.columnName,
+                        column: i,
                     });
             }
 
         }
+
         //Distribution algorithm
         let dX = 100;
         let dY = 100;
@@ -132,8 +280,8 @@ class DataCreation extends Component {
             }
         }
 
-
         this.setState({
+            data: data,
             currentPage: 3,
             classes: classifications,
             nodes: nodes,
@@ -151,6 +299,7 @@ class DataCreation extends Component {
                     setClass={this.setClass.bind(this)}
                     setUri={this.setUri.bind(this)}
                     setLabel={this.setLabel.bind(this)}
+                    setBaseUri={this.setBaseUri.bind(this)}
                 />
             )
         }
@@ -181,7 +330,15 @@ class DataCreation extends Component {
     goToFinalPage() {
         this.setState({
             currentPage: 4
-        })
+        });
+        transformData(this.state.data, this.state.dataClassifications, this.state.edges, this.state.nodes)
+            .then(result => {
+                this.setState({
+                    graph: result,
+                    processing: false,
+                })
+            })
+
     }
 
     setData(data) {
@@ -210,11 +367,13 @@ class DataCreation extends Component {
         let item = dataClasses[index];
         if (item.label) {
             item.label = false;
+            item.baseUri = null;
         }
         item.uri = boolean;
+        item.class = {name: 'Literal'};
         dataClasses[index] = item;
         this.setState({
-            exampleValues: dataClasses
+            dataClassifications: dataClasses
         })
 
     }
@@ -224,8 +383,11 @@ class DataCreation extends Component {
         let item = dataClasses[index];
         item.label = boolean;
         dataClasses[index] = item;
+        if (!boolean) {
+            item.baseUri = null;
+        }
         this.setState({
-            exampleValues: dataClasses
+            dataClassifications: dataClasses
         })
     }
 
@@ -235,8 +397,20 @@ class DataCreation extends Component {
         item.class = classification;
         dataClasses[index] = item;
         this.setState({
-            exampleValues: dataClasses
+            dataClassifications: dataClasses
         })
+
+    }
+
+    setBaseUri(index, classification) {
+        let classes = this.state.dataClassifications.slice();
+        let item = classes[index];
+        item.baseUri = classification;
+        classes[index] = item;
+        this.setState({
+            dataClassifications: classes
+        })
+
 
     }
 
@@ -266,7 +440,6 @@ class DataCreation extends Component {
     }
 
     renderDataLink() {
-        console.log('renderData', this.state.nodes);
         if (this.state.nodes) {
             return (
                 <DataLinkView
@@ -297,6 +470,7 @@ class DataCreation extends Component {
                     {this.renderDataLink()}
                 </Tab>
                 <Tab label="Step 4: Finished" value={4} disabled>
+                    <DownloadView processing={this.state.processing} graph={this.state.graph}/>
                 </Tab>
 
             </Tabs>)

@@ -69,8 +69,9 @@ class NavigationBar extends Component {
                     }}
                 >
                     <Divider/>
-                    <IconButton iconClassName="muidocs-icon-custom-github"
-                                href="https://github.com/GerwinBosch/rdf-paqt"/>
+                    <IconButton
+                        iconClassName="muidocs-icon-custom-github"
+                        href="https://github.com/GerwinBosch/rdf-paqt"/>
                 </div>
             </MaterialDrawer>
         )
@@ -111,7 +112,6 @@ class App extends Component {
     }
 
     handleClick(i) {
-        console.log(i);
         let title;
         if (this.state === i) {
             return

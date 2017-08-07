@@ -32,7 +32,7 @@ class DataClassifyView extends Component {
     renderSourceLink(id) {
         let object = this.props.data[id];
         if (object.class.name !== 'Literal') {
-            return <a href={object.class}>{object.class.name}</a>
+            return <a href={object.class.uri}>{object.class.name}</a>
         }
 
     }
@@ -71,7 +71,6 @@ class DataClassifyView extends Component {
             .then(function (response) {
                 return response.json()
             }).then(function (json) {
-            console.log('parsed json', json.results);
             dialog.results = json.results.map(
                 function (item) {
                     return {
@@ -91,7 +90,7 @@ class DataClassifyView extends Component {
         let dialog = this.state.dialog;
         let result = dialog.results[index];
         result.name = result.prefix.split(':')[1];
-        this.props.setClass(index, result);
+        this.props.setClass(this.state.dialog.id, result);
         this.setState({
                 dialog: {
                     open: false,
@@ -120,6 +119,9 @@ class DataClassifyView extends Component {
     toNextPage() {
         this.props.nextPage(this.state.data);
     }
+    onBaseUriChange(index,text){
+        this.props.setBaseUri(index,text)
+    }
 
     getAmountOfClasses() {
         let classes = this.props.data.slice();
@@ -132,10 +134,20 @@ class DataClassifyView extends Component {
         }
         return counter;
     }
+    continueDisabled(){
+        let classes = this.props.data.slice();
+        if(this.getAmountOfClasses() === 0) return true;
+            for(let i = 0; i < classes.length; i++){
+                let item = classes[i];
+                if(item.label && !item.baseUri) return true;
+                if(item.uri && item.class.name === 'Literal') return true;
+            }
+           return false;
+
+    }
 
 
     render() {
-        console.log(this.props.data);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -149,7 +161,7 @@ class DataClassifyView extends Component {
                     <div style={{width: '100%', display: 'inline-block'}}>
                         <FlatButton
                             label="continue"
-                            disabled={this.getAmountOfClasses() === 0}
+                            disabled={this.continueDisabled()}
                             onClick={() => this.toNextPage()}
                             style={{
                                 float: 'right',
@@ -159,15 +171,16 @@ class DataClassifyView extends Component {
 
                 </Paper>
                 <Paper zDepth={1}>
-                    <Table>
+                    <Table selectable={false}>
                         <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                             <TableRow>
                                 <TableHeaderColumn tooltip="the column name">ColumnName</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The first value">Example Value</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The class it will be defined as">Class</TableHeaderColumn>
-                                <TableHeaderColumn
+                                <TableHeaderColumn style={{width:'12px'}}
                                     tooltip="If this class should be considered a URI">Uri</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="If this class is also a label">Label</TableHeaderColumn>
+                                <TableHeaderColumn style={{width:'24px'}} tooltip="If this class is also a label">Label</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="The base URI of the class">Base URI</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="The result of the transformation">Result</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
@@ -181,13 +194,18 @@ class DataClassifyView extends Component {
                                         <TableRowColumn>{column.exampleValue}</TableRowColumn>
                                         <TableRowColumn><RaisedButton disabled={!column.uri}
                                                                       onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
-                                        <TableRowColumn><CheckBox value={index}
+                                        <TableRowColumn style={{width:'24px'}}><CheckBox value={index}
                                                                   onCheck={() => this.props.setUri(index, !column.uri)}
                                                                   checked={column.uri}/></TableRowColumn>
-                                        <TableRowColumn><CheckBox checked={column.label}
+                                        <TableRowColumn style={{width:'24px'}}><CheckBox checked={column.label}
                                                                   onCheck={() => this.props.setLabel(index, !column.label)}
                                                                   disabled={!column.uri}/></TableRowColumn>
+                                        <TableRowColumn><TextField
+                                                                  id={column.columnName}
+                                                                  onChange={(event, string) => this.onBaseUriChange(index,string)}
+                                                                  disabled={!column.label}/></TableRowColumn>
                                         <TableRowColumn>{this.renderSourceLink(index)}</TableRowColumn>
+
                                     </TableRow>
                                 )
                             }
@@ -219,10 +237,7 @@ class DataClassifyView extends Component {
                                 </TableRow>
                             </TableHeader>
                             <TableBody displayRowCheckbox={false}>
-                                //[[C1,C2,C3,C4,C5,C6]
-                                //[V1,V2,V3,V4,V5,V6]]
                                 {this.renderDialogTableBody()}
-
                             </TableBody>
 
                         </Table>
