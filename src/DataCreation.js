@@ -57,7 +57,7 @@ class DataCreation extends Component {
         uri: false,
       }));
     } else {
-      exampleValues = {};
+      exampleValues = [];
     }
     this.setState({
       data,

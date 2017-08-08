@@ -102,14 +102,14 @@ class ImportView extends Component {
       this.setState({
         selectedFile: 'No file selected',
       });
-      this.props.setData('');
+      this.props.setData([]);
       return;
     }
     if (event.target.files[0].name.split('\.').pop() !== 'csv') {
       this.setState({
         selectedFile: 'Wrong type of file selected',
       });
-      this.props.setData('');
+      this.props.setData([]);
       return;
     }
     reader.addEventListener('load', () => {
@@ -129,7 +129,7 @@ class ImportView extends Component {
 
 
   render() {
-    const toContinue = this.props.data === '';
+    const toContinue = this.props.data.length === 0;
     return (
       <div className="dataImport">
         <Paper zDepth={1}>

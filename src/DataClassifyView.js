@@ -64,6 +64,7 @@ class DataClassifyView extends Component {
 
   getAmountOfClasses() {
     const classes = this.props.data.slice();
+    if (classes.length === 0) return 0;
     let counter = 0;
     for (let i = 0; i < classes.length; i += 1) {
       const item = classes[i];
