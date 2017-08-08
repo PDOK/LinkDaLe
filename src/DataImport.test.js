@@ -12,22 +12,23 @@ describe('<DataImport/>', () => {
   const pageFunction = function () {
     pageTriggered = true;
   };
+  const setData = function (data) {
+    dataStore = data;
+    expect(dataStore).toEqual([]);
+  };
   it('renders without crashing', () => {
-    const setData = function (data) {
+    const setMyData = function (data) {
       dataStore = data;
     };
     shallow(
-      <DataImport data={dataStore} setData={setData.bind(this)} pageFunction={pageFunction} />);
+      <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />);
   });
 
-  it('Set data', () => {
+  it('set Data', () => {
     dataStore = [];
-    const setData = function (data) {
-      dataStore = data;
-      expect(dataStore).toBe([['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []]);
-    };
+    const setMyData = jest.fn();
     const wrapper = shallow(
-      <DataImport data={dataStore} setData={setData.bind(this)} pageFunction={pageFunction} />,
+      <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
     const tf = wrapper.find('input');
     const blob = new File(['gerwinbosch, x, y\nkaas,c,u'], 'test.csv');
@@ -35,15 +36,16 @@ describe('<DataImport/>', () => {
       target: { files: [blob] },
     };
     tf.simulate('change', target);
+    setTimeout(function () {
+      expect(setMyData).toBeCalled();
+      expect(setMyData).lastCalledWith([['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []]);
+    }, 15000);
   });
   it('Invalid filetype', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
-    const setData = function (data) {
-      dataStore = data;
-      expect(dataStore).toEqual([]);
-    };
+    const setMyData = jest.fn();
     const wrapper = shallow(
-      <DataImport data={dataStore} setData={setData.bind(this)} pageFunction={pageFunction} />,
+      <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
     const tf = wrapper.find('input');
     const blob = new File(['gerwinbosch, x, y\nkaas,c,u'], 'test.png');
@@ -51,15 +53,14 @@ describe('<DataImport/>', () => {
       target: { files: [blob] },
     };
     tf.simulate('change', target);
+    expect(setMyData).toBeCalled();
+    expect(setMyData).lastCalledWith([]);
   });
   it('No File selected', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
-    const setData = function (data) {
-      dataStore = data;
-      expect(dataStore).toEqual([]);
-    };
+    const setMyData = jest.fn()
     const wrapper = shallow(
-      <DataImport data={dataStore} setData={setData.bind(this)} pageFunction={pageFunction} />,
+      <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
     const tf = wrapper.find('input');
     const blob = new File([], '');
@@ -67,7 +68,32 @@ describe('<DataImport/>', () => {
       target: { files: [blob] },
     };
     tf.simulate('change', target);
+    expect(setMyData).toBeCalled();
+    expect(setMyData).lastCalledWith([]);
+  });
+  it('ContinueClick', () => {
+    dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
+    const tempPageFunction = jest.fn();
+    const wrapper = shallow(
+      <DataImport data={dataStore} setData={setData} pageFunction={tempPageFunction.bind(this)} />,
+    );
+    const tf = wrapper.find('#continue_button');
+    tf.simulate('click');
+    expect(tf.props().disabled).toBe(false);
+    expect(tempPageFunction).toBeCalled();
   });
 
+  it('Non continue click', () => {
+    // Expect tempPagefunction not te be called
+    dataStore = [];
+    const tempPageFunction = jest.fn();
+    const wrapper = shallow(
+      <DataImport data={dataStore} setData={setData} pageFunction={tempPageFunction.bind(this)} />,
+    );
+    const tf = wrapper.find('#continue_button');
+    tf.simulate('click');
+    expect(tf.props().disabled).toBe(true);
+    expect(tempPageFunction).not.toBeCalled();
+  });
 });
 

@@ -148,13 +148,14 @@ class ImportView extends Component {
             />
           </FlatButton>
           <FlatButton
+            id="continue_button"
             label="continue"
             disabled={toContinue}
             style={{
               float: 'right',
               margin: 14,
             }}
-            onClick={() => this.props.pageFunction(2)}
+            onClick={toContinue ? undefined : this.props.pageFunction(2)}
           />
         </Paper>
         <Paper zDepth={1} style={{ width: '100%' }}>
