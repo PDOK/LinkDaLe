@@ -1,256 +1,359 @@
+/* eslint-disable react/jsx-no-bind,react/jsx-filename-extension,react/forbid-prop-types */
 /**
  * Created by Gerwin Bosch on 3-7-2017.
  */
-import React, {Component} from 'react';
-import Paper from 'material-ui/Paper'
-import FlatButton from 'material-ui/FlatButton'
-import TextField from 'material-ui/TextField'
-import RaisedButton from 'material-ui/RaisedButton'
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
-import CheckBox from 'material-ui/Checkbox'
+import React, { Component } from 'react';
+import Paper from 'material-ui/Paper';
+import FlatButton from 'material-ui/FlatButton';
+import TextField from 'material-ui/TextField';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
+import CheckBox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
-import 'whatwg-fetch'
+import 'whatwg-fetch';
 import IconButton from 'material-ui/IconButton';
 import ActionSearch from 'material-ui/svg-icons/action/search';
+import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
+import PropTypes from 'prop-types';
 
 class DataClassifyView extends Component {
-    constructor(props) {
-        super(props);
-        this.state = (
-            {
-                dialog: {
-                    open: false,
-                    id: 0,
-                    searchText: '',
-                    results: []
-                }
-            }
-        )
+  constructor(props) {
+    super(props);
+    this.state = (
+    {
+      dialog: {
+        open: false,
+        id: 0,
+        searchText: '',
+        results: [],
+        stepIndex: 0,
+        vocabPickerIndex: 0,
+      },
     }
+    );
+  }
 
-    /* Renders the source link */
-    renderSourceLink(id) {
-        let object = this.props.data[id];
-        if (object.class.name !== 'Literal') {
-            return <a href={object.class.uri}>{object.class.name}</a>
-        }
+  /* Renders the source link */
 
+  onBaseUriChange(index, text) {
+    this.props.setBaseUri(index, text);
+  }
+
+  onVocabPicked(e, index) {
+    const dialog = this.state.dialog;
+    dialog.vocabPickerIndex = index;
+    this.setState({
+      dialog,
+    });
+  }
+
+  onChange(object, string) {
+    const dialog = this.state.dialog;
+    dialog.searchText = string;
+    this.setState({ dialog });
+  }
+
+  getAmountOfClasses() {
+    const classes = this.props.data.slice();
+    if (classes.length === 0) return 0;
+    let counter = 0;
+    for (let i = 0; i < classes.length; i += 1) {
+      const item = classes[i];
+      if (item.uri) {
+        counter += 1;
+      }
     }
+    return counter;
+  }
 
-    //Opens the dialog and set the row number of the item that was picked
-    handleOpen(i) {
-        this.setState({
-            dialog: {
-                open: true,
-                id: i
-            }
+  // Opens the dialog and set the row number of the item that was picked
+  handleOpen(i) {
+    const dialog = this.state.dialog;
+    dialog.open = true;
+    dialog.id = i;
+    this.setState({
+      dialog,
+    });
+  }
+
+  handleClose() {
+    const dialog = this.state.dialog;
+    dialog.open = false;
+    dialog.id = -1;
+    dialog.stepIndex = 0;
+    dialog.results = [];
+    dialog.vocabPickerIndex = 0;
+    this.setState({
+      dialog,
+    });
+  }
+
+  handleNext() {
+    const dialog = this.state.dialog;
+    dialog.stepIndex = 1;
+    this.setState({
+      dialog,
+    });
+  }
+
+  searchVocabulary(e) {
+    const query = this.state.dialog.searchText;
+    const dialog = this.state.dialog;
+    fetch(
+        `http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query}&type=class`)
+        .then(response => response.json())
+        .then((json) => {
+          dialog.results = json.results.map(
+              item => ({
+                uri: item.uri[0],
+                vocabPrefix: item['vocabulary.prefix'][0],
+                prefix: item.prefixedName[0],
+              }),
+          );
+          this.setState({ dialog });
         })
+        .catch((ex) => {
+          console.log('parsing failed', ex);
+        });
+    e.preventDefault();
+  }
+
+  handlePick() {
+    const dialog = this.state.dialog;
+    const result = dialog.results[dialog.vocabPickerIndex];
+    result.name = result.prefix.split(':')[1];
+    this.props.setClass(this.state.dialog.id, result);
+    this.props.setUri(this.state.dialog.id, true);
+    this.setState({
+      dialog: {
+        open: false,
+        id: 0,
+        searchText: '',
+        results: [],
+        stepIndex: 0,
+        vocabPickerIndex: 0,
+      },
+    },
+    );
+  }
+
+  resetItem(index) {
+    this.props.setClass(index, { name: 'Literal' });
+    this.props.setUri(index, false);
+    this.props.setBaseUri(index, null);
+  }
+
+
+  toNextPage() {
+    this.props.nextPage(this.state.data);
+  }
+
+  continueDisabled() {
+    return this.getAmountOfClasses() === 0;
+  }
+
+  startClassification(index) {
+    this.handleOpen(index);
+  }
+  renderSourceLink(id) {
+    const object = this.props.data[id];
+    if (object.class.name !== 'Literal') {
+      return <a href={object.class.uri}>{object.class.name}</a>;
     }
+    return <div />;
+  }
 
-    handleClose() {
-        this.setState(
-            {
-                dialog: {
-                    open: false,
-                    id: -1
-                }
-            }
-        )
+  renderDialogTableBody() {
+    if (this.state.dialog.results.length) {
+      const result = this.state.dialog.results.map((column, index) =>
+          (<MenuItem
+            key={column.prefix}
+            value={index}
+            label={column.prefix}
+            primaryText={column.prefix}
+          />));
+      return (
+        <DropDownMenu
+          value={this.state.dialog.vocabPickerIndex}
+          onChange={this.onVocabPicked.bind(this)}
+          openImmediately
+        >
+          {result}
+        </DropDownMenu>
+      );
     }
+    return <div />;
+  }
 
-    onChange(object, string) {
-        let dialog = this.state.dialog;
-        dialog.searchText = string;
-        this.setState({dialog: dialog});
+  renderDialogBody() {
+    const item = this.props.data[this.state.dialog.id];
+    if (!item) {
+      return <div />;
     }
-
-    searchVocabulary() {
-        let query = this.state.dialog.searchText;
-        let dialog = this.state.dialog;
-        fetch('http://lov.okfn.org/dataset/lov/api/v2/term/search?q=' + query + '&type=class')
-            .then(function (response) {
-                return response.json()
-            }).then(function (json) {
-            dialog.results = json.results.map(
-                function (item) {
-                    return {
-                        uri: item.uri[0],
-                        vocabPrefix: item['vocabulary.prefix'][0],
-                        prefix: item.prefixedName[0]
-                    };
-                }
-            );
-            this.setState({dialog: dialog});
-        }.bind(this)).catch(function (ex) {
-            console.log('parsing failed', ex)
-        })
-    }
-
-    handlePick(index) {
-        let dialog = this.state.dialog;
-        let result = dialog.results[index];
-        result.name = result.prefix.split(':')[1];
-        this.props.setClass(this.state.dialog.id, result);
-        this.setState({
-                dialog: {
-                    open: false,
-                    id: -1
-                }
-            }
-        )
-    }
-
-    renderDialogTableBody() {
-        if (this.state.dialog.results) {
-            return this.state.dialog.results.map((column, index) =>
-                <TableRow key={index}>
-                    <TableRowColumn>{column.vocabPrefix}</TableRowColumn>
-                    <TableRowColumn><a href={column.uri}>{column.uri}</a></TableRowColumn>
-                    <TableRowColumn>{column.prefix}</TableRowColumn>
-                    <TableRowColumn><RaisedButton
-                        onClick={() => this.handlePick(index)}>pick</RaisedButton></TableRowColumn>
-                </TableRow>
-            )
-
-        }
-
-    }
-
-    toNextPage() {
-        this.props.nextPage(this.state.data);
-    }
-    onBaseUriChange(index,text){
-        this.props.setBaseUri(index,text)
-    }
-
-    getAmountOfClasses() {
-        let classes = this.props.data.slice();
-        let counter = 0;
-        for (let i = 0; i < classes.length; i++) {
-            let item = classes[i];
-            if (item.uri) {
-                counter++;
-            }
-        }
-        return counter;
-    }
-    continueDisabled(){
-        let classes = this.props.data.slice();
-        if(this.getAmountOfClasses() === 0) return true;
-            for(let i = 0; i < classes.length; i++){
-                let item = classes[i];
-                if(item.label && !item.baseUri) return true;
-                if(item.uri && item.class.name === 'Literal') return true;
-            }
-           return false;
-
-    }
-
-
-    render() {
-        const actions = [
-            <FlatButton
-                label="Cancel"
-                primary={true}
-                onClick={this.handleClose.bind(this)}
-            />
-        ];
+    switch (this.state.dialog.stepIndex) {
+      case 0:
         return (
-            <div>
-                <Paper zDepth={2}>
-                    <div style={{width: '100%', display: 'inline-block'}}>
-                        <FlatButton
-                            label="continue"
-                            disabled={this.continueDisabled()}
-                            onClick={() => this.toNextPage()}
-                            style={{
-                                float: 'right',
-                                margin: 14
-                            }}/>
-                    </div>
+          <div>
+            <p>When the data is not a proper URI... Stans todo</p>
+            <p>Column name: {item.columnName}</p>
+            <p>Example value: {item.exampleValue}</p>
+            <TextField
+              name="Base-uri:"
+              type="url"
+              hintText="Input the URL from which the data will start"
+              onChange={(event, string) => this.onBaseUriChange(
+                      this.state.dialog.id, string)}
+            />
+          </div>
 
-                </Paper>
-                <Paper zDepth={1}>
-                    <Table selectable={false}>
-                        <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                            <TableRow>
-                                <TableHeaderColumn tooltip="the column name">ColumnName</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The first value">Example Value</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The class it will be defined as">Class</TableHeaderColumn>
-                                <TableHeaderColumn style={{width:'12px'}}
-                                    tooltip="If this class should be considered a URI">Uri</TableHeaderColumn>
-                                <TableHeaderColumn style={{width:'24px'}} tooltip="If this class is also a label">Label</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The base URI of the class">Base URI</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The result of the transformation">Result</TableHeaderColumn>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody displayRowCheckbox={false}>
-                            //[[C1,C2,C3,C4,C5,C6]
-                            //[V1,V2,V3,V4,V5,V6]]
-                            {
-                                this.props.data.map((column, index) =>
-                                    <TableRow key={index}>
-                                        <TableRowColumn>{column.columnName}</TableRowColumn>
-                                        <TableRowColumn>{column.exampleValue}</TableRowColumn>
-                                        <TableRowColumn><RaisedButton disabled={!column.uri}
-                                                                      onClick={() => this.handleOpen(index)}>{column.class.name}</RaisedButton></TableRowColumn>
-                                        <TableRowColumn style={{width:'24px'}}><CheckBox value={index}
-                                                                  onCheck={() => this.props.setUri(index, !column.uri)}
-                                                                  checked={column.uri}/></TableRowColumn>
-                                        <TableRowColumn style={{width:'24px'}}><CheckBox checked={column.label}
-                                                                  onCheck={() => this.props.setLabel(index, !column.label)}
-                                                                  disabled={!column.uri}/></TableRowColumn>
-                                        <TableRowColumn><TextField
-                                                                  id={column.columnName}
-                                                                  onChange={(event, string) => this.onBaseUriChange(index,string)}
-                                                                  disabled={!column.label}/></TableRowColumn>
-                                        <TableRowColumn>{this.renderSourceLink(index)}</TableRowColumn>
+        );
+      case 1:
+        return (
+          <div>
+            <p>Some text written by stan goes here</p>
+            <form onSubmit={this.searchVocabulary.bind(this)}>
+              <TextField
+                name="Search vocabularies"
+                hintText="class name"
+                onChange={this.onChange.bind(this)}
+              />
+              <IconButton type="submit"><ActionSearch /></IconButton>
+            </form>
+            <p>Some text written by stan goes here</p>
+            {this.renderDialogTableBody()}
 
-                                    </TableRow>
-                                )
-                            }
-                        </TableBody>
-
-                    </Table>
-                </Paper>
-                <Dialog
-                    actions={actions}
-                    modal={true}
-                    open={this.state.dialog.open}
-                >
-                    <div style={{width: '100%'}}>
-                        <TextField style={{width: '80%'}} floatingLabelText="Class name"
-                                   onChange={this.onChange.bind(this)}/>
-                        <IconButton>
-                            <ActionSearch onClick={this.searchVocabulary.bind(this)}/>
-                        </IconButton>
-                    </div>
-                    <div style={{minHeight: '400px'}}>
-                        <Table wrapperStyle={{paddingBottom: '27px'}}>
-                            <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                                <TableRow>
-                                    <TableHeaderColumn
-                                        tooltip="The vocabulary the class originates from">Vocabulary</TableHeaderColumn>
-                                    <TableHeaderColumn tooltip="Link to the class description">uri</TableHeaderColumn>
-                                    <TableHeaderColumn tooltip="The full prefix">Prefix</TableHeaderColumn>
-                                    <TableHeaderColumn>Select</TableHeaderColumn>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody displayRowCheckbox={false}>
-                                {this.renderDialogTableBody()}
-                            </TableBody>
-
-                        </Table>
-
-
-                    </div>
-
-
-                </Dialog>
-            </div>
-        )
+          </div>
+        );
+      default:
+        return <div />;
     }
+  }
+
+  render() {
+    const actions = [
+      <FlatButton
+        label={(this.state.dialog.stepIndex === 0) ? 'Next' : 'Finish'}
+        primary
+        onClick={(this.state.dialog.stepIndex === 0) ?
+              this.handleNext.bind(this) : this.handlePick.bind(this)}
+        disabled={(this.state.dialog.stepIndex === 0) ?
+              false : this.state.dialog.results.length === 0}
+      />,
+      <FlatButton
+        label="Cancel"
+        primary={false}
+        onClick={this.handleClose.bind(this)}
+      />,
+    ];
+    return (
+      <div>
+        <Paper zDepth={2}>
+          <div style={{ width: '100%', display: 'inline-block' }}>
+            <FlatButton
+              label="continue"
+              disabled={this.continueDisabled()}
+              onClick={() => this.toNextPage()}
+              style={{
+                float: 'right',
+                margin: 14,
+              }}
+            />
+          </div>
+
+        </Paper>
+        <Paper zDepth={1}>
+          <Table selectable={false}>
+            <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
+              <TableRow>
+                <TableHeaderColumn
+                  tooltip="the column name"
+                >ColumnName</TableHeaderColumn>
+                <TableHeaderColumn tooltip="The first value">Example
+                    Value</TableHeaderColumn>
+                <TableHeaderColumn tooltip="Is this a root node">Root
+                    node</TableHeaderColumn>
+                <TableHeaderColumn tooltip="The type">type</TableHeaderColumn>
+                <TableHeaderColumn tooltip="Base URI">Base
+                    URI</TableHeaderColumn>
+                <TableHeaderColumn tooltip="Reset">Reset</TableHeaderColumn>
+              </TableRow>
+            </TableHeader>
+            <TableBody displayRowCheckbox={false}>
+              {
+                  this.props.data.map((column, index) =>
+                      (<TableRow key={column.columnName}>
+                        <TableRowColumn>{column.columnName}</TableRowColumn>
+                        <TableRowColumn>{column.exampleValue}</TableRowColumn>
+                        <TableRowColumn>
+                          <CheckBox
+                            checked={column.uri}
+                            onCheck={() => this.startClassification(
+                                        index)}
+                            disabled={column.uri}
+                          />
+                        </TableRowColumn>
+                        <TableRowColumn>{column.class.name}</TableRowColumn>
+                        <TableRowColumn>{column.baseUri ?
+                            column.baseUri :
+                            ''}</TableRowColumn>
+                        <TableRowColumn>
+                          {
+                            column.uri ?
+                                (
+                                  <IconButton
+                                    onClick={() => this.resetItem(index)}
+                                  >
+                                    <ArrowBack />
+                                  </IconButton>
+                                ) :
+                                  <div />
+                          }
+                        </TableRowColumn>
+
+                      </TableRow>),
+                  )
+                }
+            </TableBody>
+
+          </Table>
+        </Paper>
+        <Dialog
+          actions={actions}
+          modal
+          open={this.state.dialog.open}
+        >
+          <Stepper activeStep={this.state.dialog.stepIndex}>
+            <Step>
+              <StepLabel>Pick URI</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Select class</StepLabel>
+            </Step>
+          </Stepper>
+          {this.renderDialogBody()}
+        </Dialog>
+      </div>
+    );
+  }
 
 }
 
-export default DataClassifyView
+DataClassifyView.propTypes = {
+  setBaseUri: PropTypes.func.isRequired,
+  data: PropTypes.array.isRequired,
+  setClass: PropTypes.func.isRequired,
+  setUri: PropTypes.func.isRequired,
+  nextPage: PropTypes.func.isRequired,
+
+
+};
+export default DataClassifyView;
