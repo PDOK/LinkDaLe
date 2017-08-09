@@ -155,7 +155,7 @@ class ImportView extends Component {
               float: 'right',
               margin: 14,
             }}
-            onClick={toContinue ? undefined : this.props.pageFunction(2)}
+            onClick={toContinue ? undefined : () => this.props.pageFunction(2)}
           />
         </Paper>
         <Paper zDepth={1} style={{ width: '100%' }}>
