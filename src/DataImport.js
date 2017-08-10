@@ -11,6 +11,7 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import PropTypes from 'prop-types';
+import Baby from 'babyparse';
 import './DataImport.css';
 
 const styles = {
@@ -30,20 +31,6 @@ const styles = {
 };
 
 
-function csvToText(text, delimiter, stdDelimiter) {
-  let lines = text.split(stdDelimiter);
-  lines = lines.map(row => row.split(delimiter));
-  // Remove empty lines
-  lines = lines.filter((line) => {
-    for (let i = 0; i < line.length; i += 1) {
-      if (line[i]) {
-        return true;
-      }
-    }
-    return false;
-  });
-  return lines;
-}
 function TableView(props) {
   if (props.data.length !== 0) {
     return (
@@ -113,7 +100,9 @@ class ImportView extends Component {
       return;
     }
     reader.addEventListener('load', () => {
-      this.props.setData(csvToText(reader.result, /[,|;\t]/g, '\r\n'));
+      console.log(Baby.parse(reader.result).data);
+      Baby.parse(reader.result);
+      this.props.setData(Baby.parse(reader.result).data);
     });
     if (event.target.files) {
       reader.readAsText(event.target.files[0], 'UTF-8');
