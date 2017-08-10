@@ -1,0 +1,10 @@
+Company ID;Company;Person URI;Last name;Birthplace;Age;First name;Product label;Product
+http://gerwinbosch.nl/Company;Bosch Programming;http://gerwinbosch.nl;Bosch;https://www.wikidata.org/wiki/Q992;23;Gerwin;;
+http://gerwinbosch.nl/Company;Bosch Programming;http://www.toosenhenk.nl/;Henk;https://www.wikidata.org/wiki/Q10001;43;Toos;;
+http://gerwinbosch.nl/Company;Bosch Programming;http://datingforgeeks.tumblr.com/;Yvon;https://www.wikidata.org/wiki/Q10020;25;Jasper;;
+http://gerwinbosch.nl/Company;Bosch Programming;http://dirkjan.nl/;Jan;https://www.wikidata.org/wiki/Q803;39;Dirk;;
+http://gerwinbosch.nl/Company;;http://gerwinbosch.nl;;;;;Software development;https://en.wikipedia.org/wiki/Software_development
+http://gerwinbosch.nl/Company;;;;;;;Accounting;https://en.wikipedia.org/wiki/Accounting
+http://gerwinbosch.nl/Company;;;;;;;Security hacking;https://en.wikipedia.org/wiki/Security_hacker
+http://gerwinbosch.nl/Company;;;;;;;Graphic design;https://en.wikipedia.org/wiki/Graphic_design
+http://gerwinbosch.nl/Company;;;;;;;Web-design;https://en.wikipedia.org/wiki/Web_design

@@ -102,14 +102,14 @@ class ImportView extends Component {
       this.setState({
         selectedFile: 'No file selected',
       });
-      this.props.setData('');
+      this.props.setData([]);
       return;
     }
     if (event.target.files[0].name.split('\.').pop() !== 'csv') {
       this.setState({
         selectedFile: 'Wrong type of file selected',
       });
-      this.props.setData('');
+      this.props.setData([]);
       return;
     }
     reader.addEventListener('load', () => {
@@ -129,7 +129,7 @@ class ImportView extends Component {
 
 
   render() {
-    const toContinue = this.props.data === '';
+    const toContinue = this.props.data.length === 0;
     return (
       <div className="dataImport">
         <Paper zDepth={1}>
@@ -148,13 +148,14 @@ class ImportView extends Component {
             />
           </FlatButton>
           <FlatButton
+            id="continue_button"
             label="continue"
             disabled={toContinue}
             style={{
               float: 'right',
               margin: 14,
             }}
-            onClick={() => this.props.pageFunction(2)}
+            onClick={toContinue ? undefined : () => this.props.pageFunction(2)}
           />
         </Paper>
         <Paper zDepth={1} style={{ width: '100%' }}>
