@@ -196,7 +196,7 @@ class DataCreation extends Component {
         <DataLinkView
           nodes={this.state.nodes}
           links={this.state.edges}
-          getData={this.getExampleData.bind(this)}
+          getExampleData={this.getExampleData.bind(this)}
           nextPage={this.goToFinalPage.bind(this)}
           previousPage={this.goBackTo.bind(this)}
           setNode={this.setActiveNode.bind(this)}

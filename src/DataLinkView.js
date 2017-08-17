@@ -483,8 +483,8 @@ function InfoBar(props) {
   }
   let middleCard = <div />;
   if (item.type !== 'emptyEdge') {
-    console.log(props.getExampleData(item.column, 0));
-    middleCard = props.getExampleData(item.column, 0).results.map(x => (
+    console.log(props.getData(item.column, 0));
+    middleCard = props.getData(item.column, 0).results.map(x => (
       <CardText>
         {x}
         <Divider />
