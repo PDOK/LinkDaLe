@@ -42,7 +42,7 @@ class DataCreation extends Component {
     // label: false
 
 
-  getData(column, page) {
+  getExampleData(column, page) {
     let data = this.state.data.map((row, index) => {
       if (index === 0) {
         return undefined;
@@ -196,7 +196,7 @@ class DataCreation extends Component {
         <DataLinkView
           nodes={this.state.nodes}
           links={this.state.edges}
-          getData={this.getData.bind(this)}
+          getData={this.getExampleData.bind(this)}
           nextPage={this.goToFinalPage.bind(this)}
           previousPage={this.goBackTo.bind(this)}
           setNode={this.setActiveNode.bind(this)}

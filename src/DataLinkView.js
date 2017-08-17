@@ -422,7 +422,7 @@ class DataLinkView extends Component {
             }
             selected={selected}
             references={this.state.relations}
-            getData={this.props.getData}
+            getData={this.props.getExampleData}
           />
 
 
@@ -483,8 +483,8 @@ function InfoBar(props) {
   }
   let middleCard = <div />;
   if (item.type !== 'emptyEdge') {
-    console.log(props.getData(item.column, 0));
-    middleCard = props.getData(item.column, 0).results.map(x => (
+    console.log(props.getExampleData(item.column, 0));
+    middleCard = props.getExampleData(item.column, 0).results.map(x => (
       <CardText>
         {x}
         <Divider />
