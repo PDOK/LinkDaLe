@@ -159,6 +159,7 @@ class InfoBar extends Component {
             paddingTop: '90px',
             minHeight: '700px',
             paddingLeft: '50px',
+            paddingRight: '50px',
           }
                     }
           >
