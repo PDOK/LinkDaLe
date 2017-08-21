@@ -99,7 +99,7 @@ class InfoBar extends Component {
       return <Highlight className="json">{JSON.stringify(output, null, 2)}</Highlight>;
     }
     return (
-      <Highlight>{output}</Highlight>
+      <Highlight className="xml">{output}</Highlight>
     );
   }
 
