@@ -2,6 +2,7 @@
   "name": "rdf-paqt",
   "version": "0.1.0",
   "private": true,
+  "homepage":"http://gerwinbosch.nl/rdf-paqt/",
   "dependencies": {
     "babyparse": "^0.4.6",
     "d3": "^4.9.1",
