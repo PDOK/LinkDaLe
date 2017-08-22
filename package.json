@@ -2,15 +2,18 @@
   "name": "rdf-paqt",
   "version": "0.1.0",
   "private": true,
+  "homepage":"http://gerwinbosch.nl/rdf-paqt/",
   "dependencies": {
     "babyparse": "^0.4.6",
     "d3": "^4.9.1",
     "highlight.js": "^9.12.0",
+    "gh-pages": "^1.0.0",
     "material-ui": "^0.18.5",
     "prop-types": "^15.5.10",
     "radium": "^0.19.1",
     "rdf-ext": "^0.3.0",
     "rdf-serializer-jsonld": "^0.3.0",
+    "rdf-serializer-jsonld-ext": "^1.2.0",
     "rdf-serializer-n3": "latest",
     "rdf-serializer-ntriples": "^0.3.0",
     "rdf-serializer-sparql-update": "^0.3.0",
@@ -20,8 +23,7 @@
     "react-highlight": "^0.10.0",
     "react-icons": "^2.2.5",
     "react-tap-event-plugin": "latest",
-    "whatwg-fetch": "^2.0.3",
-    "yasgui": "^2.6.14"
+    "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
     "enzyme": "^2.9.1",
@@ -31,6 +33,8 @@
     "eslint-config-airbnb": "^15.1.0"
   },
   "scripts": {
+    "predeploy":"npm run build",
+    "deploy":"gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
