@@ -8,19 +8,12 @@ import FlatButton from 'material-ui/FlatButton';
 import GraphView from 'react-digraph';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { green500 } from 'material-ui/styles/colors';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 import ActionSearch from 'material-ui/svg-icons/action/search';
+import MenuItem from 'material-ui/MenuItem';
+import DropDownMenu from 'material-ui/DropDownMenu';
 import Dialog from 'material-ui/Dialog';
 import 'whatwg-fetch';
 import IconButton from 'material-ui/IconButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 
@@ -89,6 +82,8 @@ class DataLinkView extends Component {
       selected: {},
       dialog: {
         open: false,
+        results: [],
+        vocabPickerIndex: 0,
       },
     };
   }
@@ -174,19 +169,15 @@ class DataLinkView extends Component {
     if (sourceViewNode === targetViewNode) {
       return;
     }
-
-    // const viewEdge = {
-    //     source: sourceViewNode[NODE_KEY],
-    //     target: targetViewNode[NODE_KEY],
-    //     type: type
-    // }
-    // edges.push(viewEdge);
+    if (sourceViewNode.type === 'literal') {
+      return;
+    }
+    const dialog = this.state.dialog;
+    dialog.open = true;
+    dialog.source = sourceViewNode[NODE_KEY];
+    dialog.target = targetViewNode[NODE_KEY];
     this.setState({
-      dialog: {
-        open: true,
-        source: sourceViewNode[NODE_KEY],
-        target: targetViewNode[NODE_KEY],
-      },
+      dialog,
     });
     this.forceUpdate();
   }
@@ -211,8 +202,16 @@ class DataLinkView extends Component {
       selected: {},
     });
   }
+  onVocabPicked(e, index) {
+    const dialog = this.state.dialog;
+    dialog.vocabPickerIndex = index;
+    this.setState({
+      dialog,
+    });
+  }
 
-  // Helper to find the index of a given node
+
+    // Helper to find the index of a given node
   getNodeIndex(searchNode) {
     return this.props.nodes.findIndex(node => node[NODE_KEY] === searchNode[NODE_KEY]);
   }
@@ -254,7 +253,7 @@ class DataLinkView extends Component {
   }
 
 
-  searchVocabulary() {
+  searchVocabulary(e) {
     const query = this.state.dialog.searchText;
     const dialog = this.state.dialog;
     fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
@@ -271,12 +270,13 @@ class DataLinkView extends Component {
         }).catch((ex) => {
           console.error('parsing failed', ex);
         });
+    e.preventDefault();
   }
 
 
-  handlePick(index) {
+  handlePick() {
     const dialog = this.state.dialog;
-    const result = dialog.results[index];
+    const result = dialog.results[dialog.vocabPickerIndex];
     const newEdge = {
       source: this.state.dialog.source,
       target: this.state.dialog.target,
@@ -288,34 +288,41 @@ class DataLinkView extends Component {
 
     };
     this.props.pushEdge(newEdge);
+    dialog.open = false;
+    dialog.results = [];
     this.setState({
-      dialog: {
-        open: false,
-      },
+      dialog,
     });
     this.forceUpdate();
   }
 
   handleClose() {
+    const dialog = this.state.dialog;
+    dialog.open = false;
+    dialog.results = [];
+    dialog.vocabPickerIndex = 0;
     this.setState({
-      dialog: { open: false },
+      dialog,
     });
     this.forceUpdate();
   }
   renderDialogTableBody() {
-    if (this.state.dialog.results) {
-      return this.state.dialog.results.map((column, index) =>
-          (<TableRow key={column.prefix}>
-            <TableRowColumn>{column.vocabPrefix}</TableRowColumn>
-            <TableRowColumn><a
-              href={column.uri}
-            >{column.uri}</a></TableRowColumn>
-            <TableRowColumn>{column.prefix}</TableRowColumn>
-            <TableRowColumn><RaisedButton
-              onClick={() => this.handlePick(
-                    index)}
-            >pick</RaisedButton></TableRowColumn>
-          </TableRow>),
+    if (this.state.dialog.results.length) {
+      const result = this.state.dialog.results.map((column, index) =>
+              (<MenuItem
+                key={column.prefix}
+                value={index}
+                label={column.prefix}
+                primaryText={column.prefix}
+              />));
+      return (
+        <DropDownMenu
+          value={this.state.dialog.vocabPickerIndex}
+          onChange={this.onVocabPicked.bind(this)}
+          openImmediately
+        >
+          {result}
+        </DropDownMenu>
       );
     }
     return <div />;
@@ -357,8 +364,8 @@ class DataLinkView extends Component {
           onCreateEdge={this.onCreateEdge.bind(this)}
           onSwapEdge={this.onSwapEdge.bind(this)}
           onDeleteEdge={this.onDeleteEdge.bind(this)}
-          onDeleteNode={doNothing()}
-          onCreateNode={doNothing()}
+          onDeleteNode={doNothing}
+          onCreateNode={doNothing}
         />
       );
     }
@@ -370,8 +377,14 @@ class DataLinkView extends Component {
 
     const actions = [
       <FlatButton
-        label="Cancel"
+        label={'Finish'}
         primary
+        onClick={this.handlePick.bind(this)}
+        disabled={this.state.dialog.results.length === 0}
+      />,
+
+      <FlatButton
+        label="Cancel"
         onClick={this.handleClose.bind(this)}
       />,
     ];
@@ -409,6 +422,7 @@ class DataLinkView extends Component {
             }
             selected={selected}
             references={this.state.relations}
+            getData={this.props.getExampleData}
           />
 
 
@@ -418,41 +432,20 @@ class DataLinkView extends Component {
           modal
           open={this.state.dialog.open}
         >
+
           <div style={{ width: '100%' }}>
-            <TextField
-              style={{ width: '80%' }}
-              floatingLabelText="Class name"
-              onChange={this.onChange.bind(this)}
-            />
-            <IconButton>
-              <ActionSearch onClick={this.searchVocabulary.bind(this)} />
-            </IconButton>
+            <p>Some text written by stan goes here</p>
+            <form onSubmit={this.searchVocabulary.bind(this)}>
+              <TextField
+                name="Search vocabularies"
+                hintText="relation name"
+                onChange={this.onChange.bind(this)}
+              />
+              <IconButton type="submit"><ActionSearch /></IconButton>
+            </form>
+            <p>Some text written by stan goes here</p>
+            {this.renderDialogTableBody()}
           </div>
-          <div style={{ minHeight: '400px' }}>
-            <Table wrapperStyle={{ paddingBottom: '27px' }}>
-              <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                <TableRow>
-                  <TableHeaderColumn
-                    tooltip="The vocabulary the relation originates from"
-                  >Vocabulary</TableHeaderColumn>
-                  <TableHeaderColumn
-                    tooltip="Link to the relation description"
-                  >uri</TableHeaderColumn>
-                  <TableHeaderColumn
-                    tooltip="The full prefix"
-                  >Prefix</TableHeaderColumn>
-                  <TableHeaderColumn>Select</TableHeaderColumn>
-                </TableRow>
-              </TableHeader>
-              <TableBody displayRowCheckbox={false}>
-                {this.renderDialogTableBody()}
-              </TableBody>
-
-            </Table>
-
-
-          </div>
-
 
         </Dialog>
 
@@ -489,7 +482,15 @@ function InfoBar(props) {
     >{item.relation}</a>);
   }
   let middleCard = <div />;
-  if (props.references && props.references.length > 0) {
+  if (item.type !== 'emptyEdge') {
+    console.log(props.getData(item.column, 0));
+    middleCard = props.getData(item.column, 0).results.map(x => (
+      <CardText>
+        {x}
+        <Divider />
+      </CardText>
+    ));
+  } else if (props.references && props.references.length > 0) {
     middleCard = (
       <Card>
         <CardHeader
@@ -541,5 +542,6 @@ function InfoBar(props) {
     </Card>
   );
 }
+
 
 export default DataLinkView;

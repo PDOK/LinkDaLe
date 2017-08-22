@@ -12,7 +12,8 @@
     "expect":true,
     "fetch":true,
     "FileReader":true,
-    "document":true
+    "document":true,
+    "jest": true
   },
   "react/no-multi-comp": ["off", { "ignoreStateless":true }],
   "react/jsx-no-bind": ["off", {
