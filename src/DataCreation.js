@@ -42,8 +42,24 @@ class DataCreation extends Component {
     // label: false
 
 
-  getData() {
-    return ({ nodes: this.state.nodes, links: this.state.edges });
+  getExampleData(column, page) {
+    let data = this.state.data.map((row, index) => {
+      if (index === 0) {
+        return undefined;
+      }
+      if (row[column]) {
+        return row[column];
+      }
+      return undefined;
+    });
+    data = data.filter(n => n);
+    let dataSubset;
+    if (data.length / 10 < page) {
+      dataSubset = data.slice(page * 10, data.length);
+    } else {
+      dataSubset = data.slice(page * 10, (page + 1) * 10);
+    }
+    return ({ results: dataSubset, max: data.length });
   }
 
 
@@ -180,7 +196,7 @@ class DataCreation extends Component {
         <DataLinkView
           nodes={this.state.nodes}
           links={this.state.edges}
-          getData={this.getData.bind(this)}
+          getExampleData={this.getExampleData.bind(this)}
           nextPage={this.goToFinalPage.bind(this)}
           previousPage={this.goBackTo.bind(this)}
           setNode={this.setActiveNode.bind(this)}

@@ -11,9 +11,10 @@ import * as TurtleSerializer from 'rdf-serializer-n3';
 import * as JsonLDSerializer from 'rdf-serializer-jsonld';
 import * as NTriplesSerializer from 'rdf-serializer-ntriples';
 import * as SPARQLSerializer from 'rdf-serializer-sparql-update';
+import Highlight from 'react-highlight';
 import MenuItem from 'material-ui/MenuItem';
-import { grey300 } from 'material-ui/styles/colors';
 import PropTypes from 'prop-types';
+import 'highlight.js/styles/default.css';
 
 class InfoBar extends Component {
   constructor() {
@@ -34,7 +35,7 @@ class InfoBar extends Component {
       const serializer = new TurtleSerializer();
       const text = '.turtle';
       const dataType = 'application/x-turtle';
-      serializer.serialize(graph, (x, y) => {
+      serializer.serialize(graph, () => {
       }).then((resultGraph, err) =>
                 this.setState({
                   displayText: resultGraph,
@@ -49,7 +50,7 @@ class InfoBar extends Component {
     }
     return true;
   }
-  handleChange(event, value) {
+  handleChange(_, value) {
     let serializer;
     let text;
     let dataType;
@@ -75,7 +76,7 @@ class InfoBar extends Component {
         dataType = 'application/x-turtle';
         break;
     }
-    serializer.serialize(this.props.graph, (x, y) => {
+    serializer.serialize(this.props.graph, () => {
     }).then((graph, err) =>
         this.setState({
           displayText: graph,
@@ -91,24 +92,14 @@ class InfoBar extends Component {
   }
 
   renderText(output) {
-    let text = output;
-    if (!text) {
+    if (!output) {
       return <p>Generating output</p>;
     }
-    if (typeof text === 'object') {
-      text = JSON.stringify(text);
+    if (typeof output === 'object') {
+      return <Highlight className="json">{JSON.stringify(output, null, 2)}</Highlight>;
     }
     return (
-      <div style={{
-        background: grey300,
-        marginRight: '50px',
-
-      }}
-      >
-        {text.split('\n').map(value =>
-          <p key={value} style={{ margin: '0' }}>{value}</p>,
-          )}
-      </div>
+      <Highlight className="xml">{output}</Highlight>
     );
   }
 
@@ -168,6 +159,7 @@ class InfoBar extends Component {
             paddingTop: '90px',
             minHeight: '700px',
             paddingLeft: '50px',
+            paddingRight: '50px',
           }
                     }
           >
