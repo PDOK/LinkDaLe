@@ -225,23 +225,22 @@ class DataCreation extends Component {
   render() {
     return (
       <Tabs value={this.state.currentPage}>
-        <Tab label="Step 1: Create Data" value={1} disabled>
+        <Tab label="Step 1: Upload data" value={1} disabled>
           <DataImport
             data={this.state.data}
             pageFunction={this.finishFirstStep.bind(this)}
             setData={this.setData.bind(this)}
           />
         </Tab>
-        <Tab label="Step 2: Classify Data" value={2} disabled>
+        <Tab label="Step 2: Classify data" value={2} disabled>
           {this.renderDataClassifyView()}
         </Tab>
-        <Tab label="Step 3: Link Data" value={3} disabled>
+        <Tab label="Step 3: Link data" value={3} disabled>
           {this.renderDataLink()}
         </Tab>
-        <Tab label="Step 4: Finished" value={4} disabled>
+        <Tab label="Step 4: Download / Publish" value={4} disabled>
           <DownloadView processing={this.state.processing} graph={this.state.graph} />
         </Tab>
-
       </Tabs>);
   }
 

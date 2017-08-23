@@ -64,7 +64,7 @@ function TableView(props) {
     );
     //    Return empty div
   }
-  return (<p>No Data Loaded</p>);
+  return (<p style = {{marginLeft: 'auto', marginRight: 'auto'}}>No Data Loaded</p>);
 }
 TableView.propTypes = {
   data: PropTypes.array.isRequired,
