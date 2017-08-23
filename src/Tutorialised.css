@@ -1,0 +1,11 @@
+.TutorialWrapper {
+    display: flex;
+    flex-wrap:wrap;
+}
+
+.TutorialCard {
+    width:48%;
+    float:left;
+    margin: 10px 10px 10px 10px;
+    height: 100%;
+}
