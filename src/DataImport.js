@@ -77,7 +77,7 @@ function TableView(props) {
     );
     //    Return empty div
   }
-  return (<p>No Data Loaded</p>);
+  return (<p style = {{marginLeft: 'auto', marginRight: 'auto'}}>No Data Loaded</p>);
 }
 TableView.propTypes = {
   data: PropTypes.array.isRequired,
@@ -155,7 +155,7 @@ class ImportView extends Component {
               float: 'right',
               margin: 14,
             }}
-            onClick={toContinue ? undefined : this.props.pageFunction(2)}
+            onClick={toContinue ? undefined : () => this.props.pageFunction(2)}
           />
         </Paper>
         <Paper zDepth={1} style={{ width: '100%' }}>
