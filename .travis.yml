@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "iojs"
+  - "4"
   - "7"
 cache:
   directories:
@@ -8,4 +8,9 @@ cache:
 script:
   - npm test
   - npm run build
-  - npm deploy
+deploy:
+  skip_cleanup: true
+  - provider: script
+    script: run npm deploy
+    on:
+        branch: master
