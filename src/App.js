@@ -46,12 +46,11 @@ function NavigationBar(props) {
   return (
     <MaterialDrawer>
       <Card>
-        <CardHeader>
+        <CardHeader style = {{ textAlign: 'left'}} >
             RDF-PAQT
           </CardHeader>
         <CardText>
-            RDF-PAQT is a service which will help you
-            create a semantic rich RDF data set from a csv file
+            <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80}/>
           </CardText>
       </Card>
       <FlatButton

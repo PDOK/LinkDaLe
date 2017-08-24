@@ -1,11 +1,19 @@
 .TutorialWrapper {
     display: flex;
+    flex-direction: row;
     flex-wrap:wrap;
 }
 
+.TutorialCardOld {
+     width:48%;
+     float:left;
+     margin: 10px 10px 10px 10px;
+     height: 100%;
+ }
 .TutorialCard {
-    width:48%;
-    float:left;
+    flex: 1;
     margin: 10px 10px 10px 10px;
-    height: 100%;
+}
+.TutorialCardText {
+    text-align: justify;
 }

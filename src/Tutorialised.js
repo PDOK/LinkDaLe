@@ -28,8 +28,8 @@ class Tutorialised extends React.Component {
           expanded: false,
           markdownURIs:
           [
-            `${process.env.PUBLIC_URL}/markdown/test.MD`,
-            'https://raw.githubusercontent.com/codemirror/CodeMirror/master/README.md',
+            `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`,
+            `${process.env.PUBLIC_URL}/markdown/AboutLD.MD`,
             'https://raw.githubusercontent.com/zazuko/d3-sparql/master/README.md',
           ],
         },
@@ -80,14 +80,12 @@ class Tutorialised extends React.Component {
           expanded={this.state.tutorials[1].expanded}
           onClick={() => this.expandCollapseCard(1)}
         >
-          <CardMedia
-            style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}
-          >
+          <CardMedia>
             <img src={`${process.env.PUBLIC_URL}/images/tut1.png`} />
           </CardMedia>
           <CardTitle title="Getting Started" subtitle="Learn Linked Data" />
-          <CardText expandable>
-              Linked Data is a method of publishing structured data so that it
+          <CardText className="TutorialCardText" expandable>
+            <strong>Linked Data</strong> s a method of publishing structured data so that it
               can be linked and queried.
               With this tutorial you will learn the basics of the Linked Data
               technology and will generate your first Linked Data.
@@ -113,7 +111,7 @@ class Tutorialised extends React.Component {
           onClick={() => this.expandCollapseCard(2)}
         >
           <CardMedia
-            style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto' }}
+            style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}
           >
             <img src={`${process.env.PUBLIC_URL}/images/bpil.png`} />
           </CardMedia>
@@ -122,7 +120,7 @@ class Tutorialised extends React.Component {
             subtitle="Linked Data for Supply-chain integration"
             actAsExpander
           />
-          <CardText expandable>
+          <CardText className="TutorialCardText" expandable>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
               Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam
