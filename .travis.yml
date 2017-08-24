@@ -9,7 +9,7 @@ script:
   - npm test
   - npm run build
 deploy:
-  skip_cleanup: true
+  - skip_cleanup: true
   - provider: script
     script: run npm deploy
     on:
