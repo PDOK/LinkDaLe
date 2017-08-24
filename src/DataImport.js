@@ -92,6 +92,7 @@ class ImportView extends Component {
       this.props.setData([]);
       return;
     }
+// eslint-disable-next-line no-useless-escape
     if (event.target.files[0].name.split('\.').pop() !== 'csv') {
       this.setState({
         selectedFile: 'Wrong type of file selected',
