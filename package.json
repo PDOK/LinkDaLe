@@ -10,7 +10,7 @@
     "gh-pages": "^1.0.0",
     "material-ui": "^0.18.5",
     "prop-types": "^15.5.10",
-    "radium": "^0.19.1",
+    "radium": "^0.18.1",
     "rdf-ext": "^0.3.0",
     "rdf-serializer-jsonld": "^0.3.0",
     "rdf-serializer-jsonld-ext": "^1.2.0",
