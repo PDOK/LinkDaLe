@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - "4"
   - "7"
 cache:
   directories:
@@ -9,8 +8,8 @@ script:
   - npm test
   - npm run build
 deploy:
-  - skip_cleanup: true
-  - provider: script
-    script: run npm deploy
-    on:
-        branch: master
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master
