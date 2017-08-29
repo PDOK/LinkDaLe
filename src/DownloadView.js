@@ -14,6 +14,7 @@ import * as SPARQLSerializer from 'rdf-serializer-sparql-update';
 import Highlight from 'react-highlight';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
+import Snackbar from 'material-ui/Snackbar';
 import 'highlight.js/styles/default.css';
 
 class InfoBar extends Component {
@@ -22,6 +23,11 @@ class InfoBar extends Component {
     this.state = {
       displayText: '',
       value: 0,
+      sparqlProcessing: false,
+      snackbar: {
+        open: false,
+        message: 'hi i\'m a snackbar',
+      },
 
     };
   }
@@ -49,6 +55,13 @@ class InfoBar extends Component {
       return true;
     }
     return true;
+  }
+  handleRequestClose() {
+    const snackbar = this.state.snackbar;
+    snackbar.open = false;
+    this.setState({
+      snackbar,
+    });
   }
   handleChange(_, value) {
     let serializer;
@@ -98,14 +111,29 @@ class InfoBar extends Component {
         console.error(err);
       } else {
         const query = `INSERT DATA { GRAPH <${this.props.filename}> {${graph}}}`;
-        this.props.executeQuery(query, this.errorLog);
+        this.setState({ sparqlProcessing: true });
+        this.props.executeQuery(query, this.sparqlCallback.bind(this));
       }
     });
   }
-
-  errorLog(err) {
-    console.error(err);
+  sparqlCallback(err, results) {
+    console.log(results);
+    if (err) {
+      console.error(err);
+      const snackbar = this.state.snackbar;
+      snackbar.open = true;
+      snackbar.message = 'Data-set successfully stored';
+      this.setState({ sparqlProcessing: false,
+        snackbar });
+    } else {
+      const snackbar = this.state.snackbar;
+      snackbar.open = true;
+      snackbar.message = 'Data-set successfully stored';
+      this.setState({ sparqlProcessing: false,
+        snackbar });
+    }
   }
+
   renderText(output) {
     if (!output) {
       return <p>Generating output</p>;
@@ -120,7 +148,7 @@ class InfoBar extends Component {
 
 
   renderProgress() {
-    if (this.props.processing) {
+    if (this.props.processing || this.state.sparqlProcessing) {
       return (
         <CircularProgress
           style={{
@@ -197,6 +225,12 @@ class InfoBar extends Component {
           </div>
 
         </Paper>
+        <Snackbar
+          open={this.state.snackbar.open}
+          message={this.state.snackbar.message}
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose.bind(this)}
+        />
       </div>
     );
   }
