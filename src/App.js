@@ -107,8 +107,10 @@ class App extends Component {
     };
   }
   componentDidMount() {
-    const persistent = typeof localstorage !== 'undefined';
-    console.info('No local storage found', 'Page only keeps data within this session');
+    const persistent = typeof localStorage !== 'undefined';
+    if (!persistent) {
+      console.info('No local storage found', 'Page only keeps data within this session');
+    }
     RDFStore.create({ name: 'rdfstore', persistent }, (err, graph) => {
       if (err) {
         console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
