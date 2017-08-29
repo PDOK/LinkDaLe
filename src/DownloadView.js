@@ -15,15 +15,21 @@ import Highlight from 'react-highlight';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import Snackbar from 'material-ui/Snackbar';
+import Dialog from 'material-ui/Dialog';
 import 'highlight.js/styles/default.css';
 
 class InfoBar extends Component {
   constructor() {
     super();
+    const today = new Date();
     this.state = {
       displayText: '',
       value: 0,
       sparqlProcessing: false,
+      date: `${today.getDate()}-${today.getMonth()}-${today.getYear()}`,
+      dialog: {
+        open: true,
+      },
       snackbar: {
         open: false,
         message: 'hi i\'m a snackbar',
@@ -122,7 +128,7 @@ class InfoBar extends Component {
       console.error(err);
       const snackbar = this.state.snackbar;
       snackbar.open = true;
-      snackbar.message = 'Data-set successfully stored';
+      snackbar.message = 'An error has occurred while storing your data-set';
       this.setState({ sparqlProcessing: false,
         snackbar });
     } else {
@@ -225,6 +231,30 @@ class InfoBar extends Component {
           </div>
 
         </Paper>
+        <Dialog open={this.state.dialog.open}>
+          <form>
+            <label htmlFor="filename">
+              Dataset name:<br />
+              <input name="filename" value={this.props.filename} disabled />
+            </label>
+            <br />
+            <label htmlFor="title">
+              Title:<br />
+              <input type="text" name="title" />
+            </label>
+            <br />
+            <label htmlFor="description">
+              Description:<br />
+              <textarea name="description" type="text" rows="5" />
+            </label>
+            <br />
+            <label htmlFor="date">Created on:<br />
+              <input type="date" name="date" value={this.state.date} disabled />
+            </label>
+            (// TODO: Add locale support)
+          </form>
+        </Dialog>
+
         <Snackbar
           open={this.state.snackbar.open}
           message={this.state.snackbar.message}
