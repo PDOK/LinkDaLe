@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-filename-extension,react/jsx-no-bind */
 import React, { Component } from 'react';
 import RDFStore from 'rdfstore';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -107,9 +107,11 @@ class App extends Component {
     };
   }
   componentDidMount() {
-    RDFStore.create({ name: 'rdfstore', persistent: true }, (err, graph) => {
+    const persistent = typeof localstorage !== 'undefined';
+    console.info('No local storage found', 'Page only keeps data within this session');
+    RDFStore.create({ name: 'rdfstore', persistent }, (err, graph) => {
       if (err) {
-        console.log('Class: App, Function: Create RDFstore, Line 105 ', err);
+        console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
       } else {
         this.setState({ store: graph });
         graph.registeredGraphs((success, graphs) => {
@@ -119,22 +121,27 @@ class App extends Component {
       }
     });
   }
-  executeSparql(call, errorCallback) {
+  executeSparql(call, callBack) {
+    console.info(call);
     this.state.store.execute(call, (err, results) => {
+      console.log(err);
       if (err) {
-        if (errorCallback) {
-          errorCallback(err);
+        if (callBack) {
+          callBack(err, []);
         } else {
           console.log('Error while executing query: ', call);
           console.log('Error message: ', err);
         }
-      } else {
-        console.log(results);
-        this.state.store.registeredGraphs((success, graphs) => {
-          const graphUris = graphs.map(namedNode => namedNode.nominalValue);
-          console.log(graphUris);
-        });
       }
+      console.log(callBack);
+      if (callBack) {
+        callBack('', results);
+      }
+      console.log(results);
+      this.state.store.registeredGraphs((success, graphs) => {
+        const graphUris = graphs.map(namedNode => namedNode.nominalValue);
+        console.log(graphUris);
+      });
     });
   }
 
