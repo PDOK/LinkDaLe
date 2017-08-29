@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-filename-extension */
 import React, { Component } from 'react';
+import RDFStore from 'rdfstore';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MaterialDrawer from 'material-ui/Drawer/Drawer';
@@ -102,8 +103,41 @@ class App extends Component {
     this.state = {
       state: States.Welcome,
       title: 'Welcome',
+      store: undefined,
     };
   }
+  componentDidMount() {
+    RDFStore.create({ name: 'rdfstore', persistent: true }, (err, graph) => {
+      if (err) {
+        console.log('Class: App, Function: Create RDFstore, Line 105 ', err);
+      } else {
+        this.setState({ store: graph });
+        graph.registeredGraphs((success, graphs) => {
+          const graphUris = graphs.map(namedNode => namedNode.nominalValue);
+          console.log(graphUris);
+        });
+      }
+    });
+  }
+  executeSparql(call, errorCallback) {
+    this.state.store.execute(call, (err, results) => {
+      if (err) {
+        if (errorCallback) {
+          errorCallback(err);
+        } else {
+          console.log('Error while executing query: ', call);
+          console.log('Error message: ', err);
+        }
+      } else {
+        console.log(results);
+        this.state.store.registeredGraphs((success, graphs) => {
+          const graphUris = graphs.map(namedNode => namedNode.nominalValue);
+          console.log(graphUris);
+        });
+      }
+    });
+  }
+
 
   handleClick(i) {
     let title;
@@ -135,10 +169,11 @@ class App extends Component {
     });
   }
 
+
   renderContent() {
     switch (this.state.state) {
       case States.DataCreation:
-        return <DataCreation />;
+        return <DataCreation executeQuery={this.executeSparql.bind(this)} />;
       case States.DataBrowsing:
         return <h1>WIP</h1>;
       case States.Querying:
@@ -161,7 +196,7 @@ class App extends Component {
           <div style={{ paddingLeft: 256 }}>
             <AppBar
               title={this.state.title}
-              iconClassNameRight="muidocs-icon-navigation-expand-more"
+              // iconClassNameRight="muidocs-icon-navigation-expand-more"
             />
             {
                 this.renderContent()

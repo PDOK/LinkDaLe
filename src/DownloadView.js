@@ -90,7 +90,22 @@ class InfoBar extends Component {
     });
     this.forceUpdate();
   }
+  sendSparqlInput() {
+    const serializer = new NTriplesSerializer();
+    serializer.serialize(this.props.graph, () => {
+    }).then((graph, err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const query = `INSERT DATA { GRAPH <${this.props.filename}> {${graph}}}`;
+        this.props.executeQuery(query, this.errorLog);
+      }
+    });
+  }
 
+  errorLog(err) {
+    console.error(err);
+  }
   renderText(output) {
     if (!output) {
       return <p>Generating output</p>;
@@ -102,6 +117,7 @@ class InfoBar extends Component {
       <Highlight className="xml">{output}</Highlight>
     );
   }
+
 
   renderProgress() {
     if (this.props.processing) {
@@ -130,7 +146,7 @@ class InfoBar extends Component {
               <RaisedButton
                 label="download"
                 href={`data:${this.state.dataType};charset=utf-8,${encodeURIComponent(this.state.displayText)}`}
-                download={`dataset${this.state.text}`}
+                download={`${this.props.filename}${this.state.text}`}
                 disabled={this.props.processing}
                 style={{
                   margin: '30px',
@@ -143,7 +159,8 @@ class InfoBar extends Component {
             <div style={{ width: '100%' }}>
               <RaisedButton
                 label="publish"
-                disabled
+                disabled={this.state.displayText === ''}
+                onClick={this.sendSparqlInput.bind(this)}
                 style={{
                   margin: '30px',
                   width: '40%',
@@ -187,8 +204,11 @@ class InfoBar extends Component {
 InfoBar.propTypes = {
   graph: PropTypes.object,
   processing: PropTypes.bool.isRequired,
+  executeQuery: PropTypes.func.isRequired,
+  filename: PropTypes.string,
 };
 InfoBar.defaultProps = {
   graph: undefined,
+  filename: undefined,
 };
 export default InfoBar;
