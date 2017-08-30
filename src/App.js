@@ -21,6 +21,7 @@ import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
 import './App.css';
 import DataCreation from './DataCreation';
+import DataBrowser from './DataBrowser';
 
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
 // Needed for onTouchTap
@@ -184,7 +185,7 @@ class App extends Component {
       case States.DataCreation:
         return <DataCreation executeQuery={this.executeSparql.bind(this)} />;
       case States.DataBrowsing:
-        return <h1>WIP</h1>;
+        return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
       case States.Querying:
         return <h1>WIP</h1>;
       case States.Tutorialise:

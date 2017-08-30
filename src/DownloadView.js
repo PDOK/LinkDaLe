@@ -1,7 +1,6 @@
-/* eslint-disable react/jsx-no-bind,
-react/forbid-prop-types,
-react/jsx-filename-extension,
-class-methods-use-this */
+/* eslint-disable react/jsx-indent,
+react/jsx-no-bind,react/jsx-filename-extension,
+react/forbid-prop-types */
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -49,6 +48,7 @@ class InfoBar extends Component {
       return true;
     }
     if (this.props.graph !== graph) {
+      console.log('regenerating graph');
       const serializer = new TurtleSerializer();
       const text = '.turtle';
       const dataType = 'application/x-turtle';
@@ -120,7 +120,7 @@ class InfoBar extends Component {
     const target = event.target;
     switch (target.name) {
       case 'description':
-        this.setState({ description: value });
+        this.state.description = value;
         break;
       case 'title':
         this.setState({ filename: value });
@@ -188,16 +188,16 @@ class InfoBar extends Component {
     }
   }
 
-  renderText(output) {
-    if (!output) {
+  renderText() {
+    if (!this.state.displayText) {
       return <p>Generating output</p>;
     }
-    if (typeof output === 'object') {
-      return (<Highlight className="json">{JSON.stringify(output, null,
+    if (typeof this.state.displayText === 'object') {
+      return (<Highlight className="json">{JSON.stringify(this.state.displayText, null,
           2)}</Highlight>);
     }
     return (
-      <Highlight className="xml">{output}</Highlight>
+      <Highlight className="xml">{this.state.displayText}</Highlight>
     );
   }
 
@@ -294,47 +294,43 @@ class InfoBar extends Component {
               <MenuItem value={3} primaryText="SPARQL" />
             </SelectField>
             <br />
-            {this.renderText(this.state.displayText)}
+            {this.renderText()}
             {this.renderProgress()}
             <p />
           </div>
 
         </Paper>
         <Dialog open={this.state.dialog.open} actions={actions}>
-          <form>
-            <TextField
-              name="filename"
-              value={`http://gerwinbosch.nl/rdf-paqt/${this.state.filename}`}
-              floatingLabelText="URI of the dataset"
-              disabled
-            />
-            <br />
-            <TextField
-              type="text"
-              name="title"
-              value={this.state.filename}
-              floatingLabelText="Title of the dataset"
-              onChange={this.handleChange.bind(this)}
-            />
-            <br />
-            <TextField
-              name="description"
-              type="text"
-              rows={2}
-              rowsMax={8}
-              floatingLabelText="A small description of the dataset"
-              onChange={this.handleChange.bind(this)}
-            />
-            <br />
-            <TextField
-              type="text"
-              name="date"
-              floatingLabelText="Date of creation"
-              value={this.state.date}
-              disabled
-            />
-               (// TODO: Add locale support)
-            </form>
+          <TextField
+            name="filename"
+            value={`http://gerwinbosch.nl/rdf-paqt/${this.state.filename}`}
+            floatingLabelText="URI of the dataset"
+            disabled
+          />
+          <br />
+          <TextField
+            type="text"
+            name="title"
+            floatingLabelText="Title of the dataset"
+            onChange={this.handleChange.bind(this)}
+          />
+          <br />
+          <TextField
+            name="description"
+            type="text"
+            rows={2}
+            rowsMax={8}
+            floatingLabelText="A small description of the dataset"
+            onChange={this.handleChange.bind(this)}
+          />
+          <br />
+          <TextField
+            type="text"
+            name="date"
+            floatingLabelText="Date of creation"
+            value={this.state.date}
+            disabled
+          />
         </Dialog>
 
         <Snackbar
