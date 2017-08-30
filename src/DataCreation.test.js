@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 import { shallow } from 'enzyme';
 import DataCreation from './DataCreation';
@@ -10,11 +11,11 @@ describe('<DataCreation/>', () => {
         ['d0', '', 'd2', '', 'd4'],
         ['e0', '', 'e2', 'e3', 'e4']];
   it('renders without crashing', () => {
-    shallow(<DataCreation />);
+    shallow(<DataCreation executeQuery={jest.fn()} />);
   });
 
   it('setData', () => {
-    const wrapper = shallow(<DataCreation />);
+    const wrapper = shallow(<DataCreation executeQuery={jest.fn()} />);
     const instance = wrapper.instance();
     instance.setData(defaultExampleData);
     expect(instance.state.data).toBe(defaultExampleData);
@@ -23,7 +24,7 @@ describe('<DataCreation/>', () => {
   });
 
   it('getExampleData', () => {
-    const wrapper = shallow(<DataCreation />);
+    const wrapper = shallow(<DataCreation executeQuery={jest.fn()} />);
     const instance = wrapper.instance();
     instance.setData(defaultExampleData);
     const result = instance.getExampleData(0, 0);
@@ -32,7 +33,7 @@ describe('<DataCreation/>', () => {
 
   it('getMaxTenData', () => {
     const data = [['title'], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]];
-    const wrapper = shallow(<DataCreation />);
+    const wrapper = shallow(<DataCreation executeQuery={jest.fn()} />);
     const instance = wrapper.instance();
     instance.setData(data);
     let result = instance.getExampleData(0, 0);

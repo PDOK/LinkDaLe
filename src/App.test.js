@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-filename-extension */
-import 'jsdom-global/register'; // at the top of file , even  , before importing react
+// import 'jsdom-global/register'; // Uncomment when testing locally
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 import App from './App';
 
 it('renders without crashing', () => {
-  mount(<App />);
+  shallow(<App />);
 });
 
 
@@ -52,10 +52,32 @@ it('load data in defaultgraph', (done) => {
         'PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n' +
         'PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n' +
         'PREFIX : <http://example.org/>\n' +
-        'SELECT ?s WHERE { GRAPH <dataset-uris> { ?s ?p ?o } }' +
+        'SELECT ?s { GRAPH <dataset-uris> { ?s ?p ?o } }' +
         ' LIMIT 100';
     wrapper.instance().executeSparql(queryAll, (error, result) => {
       expect(result.length).toBe(27);
+      done();
+    });
+  });
+});
+it('contextstore test', (done) => {
+  const contextQuery = 'INSERT DATA {' +
+  '<http://rdf.paqt/DATASET1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Datset> .\n' +
+      '<http://rdf.paqt/DATASET1> <http://purl.org/dc/terms/title> "Dataset1" .\n' +
+      '<http://rdf.paqt/DATASET1> <http://purl.org/dc/terms/description> "data for BPIL" .\n' +
+      '<http://rdf.paqt/DATASET1> <http://purl.org/dc/terms/created> "2017-11-17"^^<http://www.w3.org/2001/XMLSchema#date> .\n}';
+  const wrapper = mount(<App />);
+  wrapper.instance().executeSparql(contextQuery, () => {
+    // Wait until the dataset it is loaded
+    console.log('Done loading');
+    const queryAll = '' +
+        'PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n' +
+        'PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n' +
+        'PREFIX : <http://example.org/>\n' +
+        'SELECT ?s ?p ?o  { ?s ?p ?o }' +
+        ' LIMIT 100';
+    wrapper.instance().executeSparql(queryAll, (error, result) => {
+      expect(result.length).toBe(4);
       done();
     });
   });
