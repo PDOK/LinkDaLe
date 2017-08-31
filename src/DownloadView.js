@@ -23,7 +23,6 @@ class InfoBar extends Component {
   constructor(props) {
     super(props);
     const today = new Date();
-    console.log('date', `${today.getDate()}-${today.getUTCMonth() + 1}-${today.getUTCFullYear()}`);
     this.state = {
       displayText: '',
       value: 0,
@@ -48,7 +47,6 @@ class InfoBar extends Component {
       return true;
     }
     if (this.props.graph !== graph) {
-      console.log('regenerating graph');
       const serializer = new TurtleSerializer();
       const text = '.turtle';
       const dataType = 'application/x-turtle';
@@ -138,6 +136,7 @@ class InfoBar extends Component {
       if (err) {
         console.error(err);
       } else {
+        this.setState({ sparqlProcessing: true });
         const dataQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/${this.state.filename}> {${graph}}}`;
         const uri = `http://gerwinbosch.nl/rdf-paqt/${this.state.filename}`;
         const contextQuery = `INSERT DATA {
@@ -145,9 +144,9 @@ class InfoBar extends Component {
             <${uri}> <http://purl.org/dc/terms/title> "${this.state.filename}" .
             <${uri}> <http://purl.org/dc/terms/description> "${this.state.description}" .
             <${uri}> <http://purl.org/dc/terms/created> "${this.state.date}"^^<http://www.w3.org/2001/XMLSchema#date> .}`;
-        this.setState({ sparqlProcessing: true });
-        this.props.executeQuery(contextQuery, () => {});
-        this.props.executeQuery(dataQuery, this.sparqlCallback.bind(this));
+        this.props.executeQuery(contextQuery, () => {
+          this.props.executeQuery(dataQuery, this.sparqlCallback);
+        });
       }
     });
   }
@@ -166,8 +165,7 @@ class InfoBar extends Component {
     });
   }
 
-  sparqlCallback(err, results) {
-    console.log(results);
+  sparqlCallback = (err) => {
     if (err) {
       console.error(err);
       const snackbar = this.state.snackbar;
@@ -186,7 +184,7 @@ class InfoBar extends Component {
         snackbar,
       });
     }
-  }
+  };
 
   renderText() {
     if (!this.state.displayText) {

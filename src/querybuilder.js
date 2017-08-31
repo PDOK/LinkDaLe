@@ -3,5 +3,11 @@
 function getDefaultGraph() {
   return 'SELECT ?subject ?predicate ?object {?subject ?predicate ?object}';
 }
-export default { getDefaultGraph };
-export { getDefaultGraph };
+function removeData(graphname) {
+  return `DROP GRAPH <${graphname}>`;
+}
+function removeContextData(graphname) {
+  return `DELETE WHERE { <${graphname}> ?s ?o}`;
+}
+
+export { getDefaultGraph, removeData, removeContextData };

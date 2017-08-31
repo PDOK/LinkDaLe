@@ -4,7 +4,7 @@ import Proptypes from 'prop-types';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import IconButton from 'material-ui/IconButton';
 import Delete from 'material-ui/svg-icons/action/delete';
-import QueryLibrary from './querybuilder';
+import { getDefaultGraph, removeData, removeContextData } from './querybuilder';
 
 const rdfsType = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 const dcCreated = 'http://purl.org/dc/terms/created';
@@ -18,7 +18,7 @@ class DataBrowser extends Component {
       graphContexts: {},
       currentSelected: 0,
     };
-    props.executeQuery(QueryLibrary.getDefaultGraph(), (err, results) => {
+    props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
         // TODO: implement error state
       } else {
@@ -35,16 +35,35 @@ class DataBrowser extends Component {
       }
     });
   }
-  changeCurrentGraph(row, selectedIndex) {
-    console.log(row);
-    console.log(selectedIndex);
+  deleteGraph = (graphname) => {
+    this.props.executeQuery(removeContextData(graphname), (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        this.props.executeQuery(removeData(graphname), (err2) => {
+          console.log('Data deleted');
+          if (err2) {
+            console.error(err2);
+          } else {
+            console.log('Context deleted');
+          }
+        });
+      }
+    });
+  };
+
+
+  changeCurrentGraph = (row, selectedIndex) => {
     switch (selectedIndex) {
       case -1:
         this.setState({ currentSelected: row });
         break;
+      case 4:
+        // this.deleteGraph(Object.keys(this.state.graphContexts)[row]);
+        break;
       default:
     }
-  }
+  };
 
   renderGraphTable() {
     return (
@@ -61,24 +80,27 @@ class DataBrowser extends Component {
         <TableBody
           onRowSelection={this.changeCurrentGraph.bind(this)}
           deselectOnClickaway={false}
-
         >
-          {Object.keys(this.state.graphContexts).map((key, count) => {
-            const graph = this.state.graphContexts[key];
+          {
+            (Object.keys(this.state.graphContexts).length !== 0) ?
+            Object.keys(this.state.graphContexts).map((key, count) => {
+              const graph = this.state.graphContexts[key];
             // Limited filtering
-            if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
-              return (
-                <TableRow selected={count === this.state.currentSelected}>
-                  <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
-                  <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
-                  <TableRowColumn>{key}</TableRowColumn>
-                  <TableRowColumn>{graph[dcCreated]}</TableRowColumn>
-                  <TableRowColumn><IconButton><Delete /></IconButton></TableRowColumn>
-                </TableRow>
-              );
-            }
-            return '';
-          })}
+              if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
+                return (
+                  <TableRow selected={count === this.state.currentSelected}>
+                    <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
+                    <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
+                    <TableRowColumn>{key}</TableRowColumn>
+                    <TableRowColumn>{graph[dcCreated]}</TableRowColumn>
+                    <TableRowColumn><IconButton disabled><Delete /></IconButton></TableRowColumn>
+                  </TableRow>
+                );
+              }
+              return <space />;
+            }) :
+            <TableRow><TableRowColumn colSpan="5" style={{ textAlign: 'center' }}>No dataset available</TableRowColumn></TableRow>
+          }
         </TableBody>
       </Table>
     );
@@ -94,4 +116,6 @@ class DataBrowser extends Component {
 DataBrowser.propTypes = {
   executeQuery: Proptypes.func.isRequired,
 };
+
 export default DataBrowser;
+

@@ -117,17 +117,11 @@ class App extends Component {
         console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
       } else {
         this.setState({ store: graph });
-        graph.registeredGraphs((success, graphs) => {
-          const graphUris = graphs.map(namedNode => namedNode.nominalValue);
-          console.log(graphUris);
-        });
       }
     });
   }
   executeSparql(call, callBack) {
-    console.info(call);
     this.state.store.execute(call, (err, results) => {
-      console.log(err);
       if (err) {
         if (callBack) {
           callBack(err, []);
@@ -136,15 +130,9 @@ class App extends Component {
           console.log('Error message: ', err);
         }
       }
-      console.log(callBack);
       if (callBack) {
         callBack('', results);
       }
-      console.log(results);
-      this.state.store.registeredGraphs((success, graphs) => {
-        const graphUris = graphs.map(namedNode => namedNode.nominalValue);
-        console.log(graphUris);
-      });
     });
   }
 
