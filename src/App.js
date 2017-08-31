@@ -121,6 +121,7 @@ class App extends Component {
     });
   }
   executeSparql(call, callBack) {
+    console.info('call', call);
     this.state.store.execute(call, (err, results) => {
       if (err) {
         if (callBack) {
@@ -131,6 +132,7 @@ class App extends Component {
         }
       }
       if (callBack) {
+        console.info('results', results);
         callBack('', results);
       }
     });

@@ -4,7 +4,6 @@ react/forbid-prop-types */
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import SelectField from 'material-ui/SelectField';
 import * as TurtleSerializer from 'rdf-serializer-n3';
@@ -15,21 +14,16 @@ import Highlight from 'react-highlight';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import Snackbar from 'material-ui/Snackbar';
-import Dialog from 'material-ui/Dialog';
-import TextField from 'material-ui/TextField';
 import 'highlight.js/styles/default.css';
+import GraphContextForm from './GraphContextForm';
 
 class InfoBar extends Component {
   constructor(props) {
     super(props);
-    const today = new Date();
     this.state = {
-      displayText: '',
       value: 0,
       sparqlProcessing: false,
-      date: `${today.getDate()}-${today.getMonth() + 1}-${today.getUTCFullYear()}`,
       filename: props.filename,
-      description: '',
       dialog: {
         open: false,
       },
@@ -113,60 +107,47 @@ class InfoBar extends Component {
     });
     this.forceUpdate();
   }
-
-  handleChange(event, value) {
-    const target = event.target;
-    switch (target.name) {
-      case 'description':
-        this.state.description = value;
-        break;
-      case 'title':
-        this.setState({ filename: value });
-        break;
-      default:
-        console.error('unknown change', target.name);
-
-    }
-  }
-
-  sendSparqlInput() {
+  sendSparqlInput = (fileName, description, date) => {
     const serializer = new NTriplesSerializer();
     serializer.serialize(this.props.graph, () => {
     }).then((graph, err) => {
       if (err) {
         console.error(err);
       } else {
-        this.setState({ sparqlProcessing: true });
-        const dataQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/${this.state.filename}> {${graph}}}`;
-        const uri = `http://gerwinbosch.nl/rdf-paqt/${this.state.filename}`;
+        this.setState({
+          sparqlProcessing: true,
+          dialog: { open: false },
+        });
+        const dataQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/${fileName}> {${graph}}}`;
+        const uri = `http://gerwinbosch.nl/rdf-paqt/${fileName}`;
         const contextQuery = `INSERT DATA {
             <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Datset> .
-            <${uri}> <http://purl.org/dc/terms/title> "${this.state.filename}" .
-            <${uri}> <http://purl.org/dc/terms/description> "${this.state.description}" .
-            <${uri}> <http://purl.org/dc/terms/created> "${this.state.date}"^^<http://www.w3.org/2001/XMLSchema#date> .}`;
+            <${uri}> <http://purl.org/dc/terms/title> "${fileName}" .
+            <${uri}> <http://purl.org/dc/terms/description> "${description}" .
+            <${uri}> <http://purl.org/dc/terms/created> "${date}"^^<http://www.w3.org/2001/XMLSchema#date> .}`;
         this.props.executeQuery(contextQuery, () => {
           this.props.executeQuery(dataQuery, this.sparqlCallback);
         });
       }
     });
-  }
-  closeDialog() {
+  };
+  closeDialog = () => {
     const dialog = this.state.dialog;
     dialog.open = false;
     this.setState({
       dialog,
     });
-  }
-  openDialog() {
+  };
+  openDialog = () => {
     const dialog = this.state.dialog;
     dialog.open = true;
     this.setState({
       dialog,
     });
-  }
+  };
 
-  sparqlCallback = (err) => {
-    if (err) {
+  sparqlCallback = (err, result) => {
+    if (err || !result) {
       console.error(err);
       const snackbar = this.state.snackbar;
       snackbar.open = true;
@@ -218,19 +199,6 @@ class InfoBar extends Component {
   }
 
   render() {
-    const actions = [
-      <FlatButton
-        label="publish"
-        disabled={this.state.filename === ''}
-        onClick={this.sendSparqlInput.bind(this)}
-        primary
-      />,
-      <FlatButton
-        label="cancel"
-        onClick={this.closeDialog.bind(this)}
-      />,
-
-    ];
     return (
       <div style={{
         position: 'relative',
@@ -298,38 +266,6 @@ class InfoBar extends Component {
           </div>
 
         </Paper>
-        <Dialog open={this.state.dialog.open} actions={actions}>
-          <TextField
-            name="filename"
-            value={`http://gerwinbosch.nl/rdf-paqt/${this.state.filename}`}
-            floatingLabelText="URI of the dataset"
-            disabled
-          />
-          <br />
-          <TextField
-            type="text"
-            name="title"
-            floatingLabelText="Title of the dataset"
-            onChange={this.handleChange.bind(this)}
-          />
-          <br />
-          <TextField
-            name="description"
-            type="text"
-            rows={2}
-            rowsMax={8}
-            floatingLabelText="A small description of the dataset"
-            onChange={this.handleChange.bind(this)}
-          />
-          <br />
-          <TextField
-            type="text"
-            name="date"
-            floatingLabelText="Date of creation"
-            value={this.state.date}
-            disabled
-          />
-        </Dialog>
 
         <Snackbar
           open={this.state.snackbar.open}
@@ -337,6 +273,11 @@ class InfoBar extends Component {
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose.bind(this)}
         />
+            <GraphContextForm
+              open={this.state.dialog.open}
+              closeDialog={this.closeDialog}
+              onSubmitForm={this.sendSparqlInput}
+            />
       </div>
     );
   }
