@@ -68,29 +68,19 @@ class TripleVisualizer extends React.Component {
     };
   }
 
-
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props) this.dataToNodes(nextProps.data);
+  }
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps === this.props && nextState === this.state) {
       return false;
     }
-    this.dataToNodes();
     return true;
-  }
-  onUpdateNode(viewNode) {
-    const i = this.getNodeIndex(viewNode);
-    const nodes = this.state.nodes;
-    nodes[i] = viewNode;
-    this.setState(nodes);
   }
 
   // Helper to find the index of a given node
   getNodeIndex = searchNode => this.state.nodes.findIndex(
       node => node[NODE_KEY] === searchNode[NODE_KEY]);
-
-  // Helper to find the index of a given edge
-  getEdgeIndex = searchEdge =>
-      this.state.edges.findIndex(edge => edge.source === searchEdge.source &&
-        edge.target === searchEdge.target);
 
   // Given a nodeKey, return the corresponding node
   getViewNode = (nodeKey) => {
@@ -100,34 +90,33 @@ class TripleVisualizer extends React.Component {
     return this.state.nodes[i];
   };
 
-  dataToNodes = () => {
+  dataToNodes = (data) => {
     // Subject, Predicate, Object
     // Nodes = {Subject}, {Object}
     // Edges  = {o:s d:o t:Predicate}
     // id label type r title column
     let nodes = [];
     const edges = [];
-    console.log(this.props.data);
-    if (this.props.data.length > 0) {
-      this.props.data.forEach((ontology) => {
-        let subject = nodes.find(node => node.title === ontology[0].value);
+    if (data.length > 0) {
+      data.forEach((ontology) => {
+        let subject = nodes.find(node => node.label === ontology[0].value);
         if (!subject) {
           subject = {
             id: (nodes.length),
-            label: ontology[0].value,
+            title: ontology[0].value.split('/').pop(),
             r: 15,
-            title: ontology[0].value,
+            label: ontology[0].value,
             type: 'uri', // Subjects are always URI's
           };
           nodes.push(subject);
         }
-        let object = nodes.find(node => node.title === ontology[2].value);
+        let object = nodes.find(node => node.label === ontology[2].value);
         if (!object) {
           object = {
             id: (nodes.length),
-            label: ontology[2].value,
+            title: ontology[2].token === 'uri' ? ontology[2].value.split('/').pop() : ontology[2].value,
             r: 15,
-            title: ontology[2].value,
+            label: ontology[2].value,
             type: ontology[2].token,
           };
           nodes.push(object);
@@ -141,19 +130,12 @@ class TripleVisualizer extends React.Component {
       });
       nodes = distribute(nodes);
     }
-    this.setState({
-      nodes,
-      edges,
-    });
-  }
-  dataToClasses = () => {
-
-  }
+    this.setState({ nodes, edges });
+  };
   doNothing = () => {};
 
 
   render() {
-    console.log(this.state.nodes);
     return (
       <Tabs>
         <Tab label="Table">
@@ -207,7 +189,6 @@ class TripleVisualizer extends React.Component {
             onDeleteNode={this.doNothing}
             onCreateNode={this.doNothing}
           />
-
         </Tab>
       </Tabs>
     );
