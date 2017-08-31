@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-filename-extension */
-import 'jsdom-global/register'; // Uncomment when testing locally
+// import 'jsdom-global/register'; // Uncomment when testing locally
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 import App from './App';
