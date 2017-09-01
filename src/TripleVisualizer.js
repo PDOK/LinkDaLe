@@ -104,9 +104,9 @@ class TripleVisualizer extends React.Component {
   onSelectClassNode = (viewNode) => {
     // Deselect events will send Null viewNode
     if (viewNode !== null) {
-      this.setState({ selected: viewNode });
+      this.setState({ selectedClass: viewNode });
     } else {
-      this.setState({ selected: {} });
+      this.setState({ selectedClass: {} });
     }
   };
 
