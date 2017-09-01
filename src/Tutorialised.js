@@ -30,7 +30,7 @@ class Tutorialised extends React.Component {
           [
             `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`,
             `${process.env.PUBLIC_URL}/markdown/AboutLD.MD`,
-            'https://raw.githubusercontent.com/zazuko/d3-sparql/master/README.md',
+            `${process.env.PUBLIC_URL}/markdown/myFirstLD.MD`,
           ],
         },
         2: {
@@ -81,11 +81,11 @@ class Tutorialised extends React.Component {
           onClick={() => this.expandCollapseCard(1)}
         >
           <CardMedia>
-            <img src={`${process.env.PUBLIC_URL}/images/tut1.png`} />
+            <img src={`${process.env.PUBLIC_URL}/images/tut1.png`} alt="Getting Started" />
           </CardMedia>
           <CardTitle title="Getting Started" subtitle="Learn Linked Data" />
           <CardText className="TutorialCardText" expandable>
-            <strong>Linked Data</strong> s a method of publishing structured data so that it
+            <strong>Linked Data</strong> is a method of publishing structured data so that it
               can be linked and queried.
               With this tutorial you will learn the basics of the Linked Data
               technology and will generate your first Linked Data.
@@ -113,7 +113,7 @@ class Tutorialised extends React.Component {
           <CardMedia
             style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}
           >
-            <img src={`${process.env.PUBLIC_URL}/images/bpil.png`} />
+            <img src={`${process.env.PUBLIC_URL}/images/bpil.png`} alt="Business Process Integration Lab"/>
           </CardMedia>
           <CardTitle
             title="Business Process Integration Lab"
@@ -131,7 +131,6 @@ class Tutorialised extends React.Component {
           <CardActions expandable>
             <FlatButton
               label="Exercise 1: Unicorn Trade"
-
               onClick={() => this.openRemoteMarkdown(2, 1)}
             />
             <FlatButton label="Exercise 2" onClick={() => this.openRemoteMarkdown(2, 0)} />
