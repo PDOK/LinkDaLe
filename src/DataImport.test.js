@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-filename-extension,react/jsx-no-bind,no-undef */
 /**
  * Created by Gerwin Bosch on 3-7-2017.
  */
@@ -36,7 +36,7 @@ describe('<DataImport/>', () => {
       target: { files: [blob] },
     };
     tf.simulate('change', target);
-    setTimeout(function () {
+    setTimeout(() => {
       expect(setMyData).toBeCalled();
       expect(setMyData).lastCalledWith([['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []]);
     }, 15000);
@@ -54,11 +54,11 @@ describe('<DataImport/>', () => {
     };
     tf.simulate('change', target);
     expect(setMyData).toBeCalled();
-    expect(setMyData).lastCalledWith([]);
+    expect(setMyData).lastCalledWith([], '');
   });
   it('No File selected', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
-    const setMyData = jest.fn()
+    const setMyData = jest.fn();
     const wrapper = shallow(
       <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
@@ -69,7 +69,7 @@ describe('<DataImport/>', () => {
     };
     tf.simulate('change', target);
     expect(setMyData).toBeCalled();
-    expect(setMyData).lastCalledWith([]);
+    expect(setMyData).lastCalledWith([], '');
   });
   it('ContinueClick', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];

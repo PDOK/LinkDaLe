@@ -89,20 +89,24 @@ class ImportView extends Component {
       this.setState({
         selectedFile: 'No file selected',
       });
-      this.props.setData([]);
+      this.props.setData([], '');
       return;
     }
+// eslint-disable-next-line no-useless-escape
     if (event.target.files[0].name.split('\.').pop() !== 'csv') {
       this.setState({
         selectedFile: 'Wrong type of file selected',
       });
-      this.props.setData([]);
+      this.props.setData([], '');
       return;
     }
+// eslint-disable-next-line no-useless-escape
+    const filename = event.target.files[0].name.split('\.')[0];
     reader.addEventListener('load', () => {
       console.log(Baby.parse(reader.result).data);
       Baby.parse(reader.result);
-      this.props.setData(Baby.parse(reader.result).data);
+// eslint-disable-next-line no-useless-escape
+      this.props.setData(Baby.parse(reader.result).data, filename);
     });
     if (event.target.files) {
       reader.readAsText(event.target.files[0], 'UTF-8');

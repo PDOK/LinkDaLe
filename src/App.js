@@ -1,5 +1,6 @@
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-filename-extension,react/jsx-no-bind */
 import React, { Component } from 'react';
+import RDFStore from 'rdfstore';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MaterialDrawer from 'material-ui/Drawer/Drawer';
@@ -20,7 +21,8 @@ import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
 import './App.css';
 import DataCreation from './DataCreation';
-import Tutorialised from './Tutorialised'
+import Tutorialised from './Tutorialised';
+import DataBrowser from './DataBrowser';
 
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
 // Needed for onTouchTap
@@ -102,8 +104,40 @@ class App extends Component {
     this.state = {
       state: States.Welcome,
       title: 'Welcome',
+      store: undefined,
     };
   }
+  componentDidMount() {
+    const persistent = typeof localStorage !== 'undefined';
+    if (!persistent) {
+      console.info('No local storage found', 'Page only keeps data within this session');
+    }
+    RDFStore.create({ name: 'rdfstore', persistent }, (err, graph) => {
+      if (err) {
+        console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
+      } else {
+        this.setState({ store: graph });
+      }
+    });
+  }
+  executeSparql(call, callBack) {
+    console.info('call', call);
+    this.state.store.execute(call, (err, results) => {
+      if (err) {
+        if (callBack) {
+          callBack(err, []);
+        } else {
+          console.log('Error while executing query: ', call);
+          console.log('Error message: ', err);
+        }
+      }
+      if (callBack) {
+        console.info('results', results);
+        callBack('', results);
+      }
+    });
+  }
+
 
   handleClick(i) {
     let title;
@@ -138,9 +172,9 @@ class App extends Component {
   renderContent() {
     switch (this.state.state) {
       case States.DataCreation:
-        return <DataCreation />;
+        return <DataCreation executeQuery={this.executeSparql.bind(this)} />;
       case States.DataBrowsing:
-        return <h1>WIP</h1>;
+        return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
       case States.Querying:
         return <h1>WIP</h1>;
       case States.Tutorialise:
@@ -161,7 +195,7 @@ class App extends Component {
           <div style={{ paddingLeft: 256 }}>
             <AppBar
               title={this.state.title}
-              iconClassNameRight="muidocs-icon-navigation-expand-more"
+              // iconClassNameRight="muidocs-icon-navigation-expand-more"
             />
             {
                 this.renderContent()

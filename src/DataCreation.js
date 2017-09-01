@@ -3,6 +3,7 @@
  * Created by Gerwin Bosch on 30-6-2017.
  */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Tab, Tabs } from 'material-ui/Tabs';
 import DataImport from './DataImport';
 import DataClassifyView from './DataClassifyView';
@@ -31,6 +32,7 @@ class DataCreation extends Component {
       nodes: [],
       edges: [],
       processing: true,
+      filename: '',
     };
   }
 
@@ -63,7 +65,7 @@ class DataCreation extends Component {
   }
 
 
-  setData(data) {
+  setData(data, filename) {
     let exampleValues;
     if (data.length > 1) {
       exampleValues = data[0].map((column, index) => ({
@@ -78,6 +80,7 @@ class DataCreation extends Component {
     this.setState({
       data,
       dataClassifications: exampleValues,
+      filename,
     });
   }
 
@@ -239,12 +242,20 @@ class DataCreation extends Component {
           {this.renderDataLink()}
         </Tab>
         <Tab label="Step 4: Download / Publish" value={4} disabled>
-          <DownloadView processing={this.state.processing} graph={this.state.graph} />
+          <DownloadView
+            processing={this.state.processing}
+            graph={this.state.graph}
+            executeQuery={this.props.executeQuery}
+            filename={this.state.filename}
+          />
         </Tab>
       </Tabs>);
   }
 
 
 }
+DataCreation.propTypes = {
+  executeQuery: PropTypes.func.isRequired,
+};
 
 export default DataCreation;

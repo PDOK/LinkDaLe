@@ -1,7 +1,6 @@
-/* eslint-disable react/jsx-no-bind,
-react/forbid-prop-types,
-react/jsx-filename-extension,
-class-methods-use-this */
+/* eslint-disable react/jsx-indent,
+react/jsx-no-bind,react/jsx-filename-extension,
+react/forbid-prop-types */
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -14,14 +13,24 @@ import * as SPARQLSerializer from 'rdf-serializer-sparql-update';
 import Highlight from 'react-highlight';
 import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
+import Snackbar from 'material-ui/Snackbar';
 import 'highlight.js/styles/default.css';
+import GraphContextForm from './GraphContextForm';
 
 class InfoBar extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      displayText: '',
       value: 0,
+      sparqlProcessing: false,
+      filename: props.filename,
+      dialog: {
+        open: false,
+      },
+      snackbar: {
+        open: false,
+        message: 'hi i\'m a snackbar',
+      },
 
     };
   }
@@ -37,11 +46,11 @@ class InfoBar extends Component {
       const dataType = 'application/x-turtle';
       serializer.serialize(graph, () => {
       }).then((resultGraph, err) =>
-                this.setState({
-                  displayText: resultGraph,
-                  error: err,
-                }),
-            );
+          this.setState({
+            displayText: resultGraph,
+            error: err,
+          }),
+      );
       this.setState({
         text,
         dataType,
@@ -50,7 +59,15 @@ class InfoBar extends Component {
     }
     return true;
   }
-  handleChange(_, value) {
+
+  handleRequestClose() {
+    const snackbar = this.state.snackbar;
+    snackbar.open = false;
+    this.setState({
+      snackbar,
+    });
+  }
+  handleDropdownChange(_, value) {
     let serializer;
     let text;
     let dataType;
@@ -90,21 +107,81 @@ class InfoBar extends Component {
     });
     this.forceUpdate();
   }
+  sendSparqlInput = (fileName, description, date) => {
+    const serializer = new NTriplesSerializer();
+    serializer.serialize(this.props.graph, () => {
+    }).then((graph, err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        this.setState({
+          sparqlProcessing: true,
+          dialog: { open: false },
+        });
+        const dataQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/${fileName}> {${graph}}}`;
+        const uri = `http://gerwinbosch.nl/rdf-paqt/${fileName}`;
+        const contextQuery = `INSERT DATA {
+            <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Datset> .
+            <${uri}> <http://purl.org/dc/terms/title> "${fileName}" .
+            <${uri}> <http://purl.org/dc/terms/description> "${description}" .
+            <${uri}> <http://purl.org/dc/terms/created> "${date}"^^<http://www.w3.org/2001/XMLSchema#date> .}`;
+        this.props.executeQuery(contextQuery, () => {
+          this.props.executeQuery(dataQuery, this.sparqlCallback);
+        });
+      }
+    });
+  };
+  closeDialog = () => {
+    const dialog = this.state.dialog;
+    dialog.open = false;
+    this.setState({
+      dialog,
+    });
+  };
+  openDialog = () => {
+    const dialog = this.state.dialog;
+    dialog.open = true;
+    this.setState({
+      dialog,
+    });
+  };
 
-  renderText(output) {
-    if (!output) {
+  sparqlCallback = (err, result) => {
+    if (err || !result) {
+      console.error(err);
+      const snackbar = this.state.snackbar;
+      snackbar.open = true;
+      snackbar.message = 'An error has occurred while storing your data-set';
+      this.setState({
+        sparqlProcessing: false,
+        snackbar,
+      });
+    } else {
+      const snackbar = this.state.snackbar;
+      snackbar.open = true;
+      snackbar.message = 'Data-set successfully stored';
+      this.setState({
+        sparqlProcessing: false,
+        snackbar,
+      });
+    }
+  };
+
+  renderText() {
+    if (!this.state.displayText) {
       return <p>Generating output</p>;
     }
-    if (typeof output === 'object') {
-      return <Highlight className="json">{JSON.stringify(output, null, 2)}</Highlight>;
+    if (typeof this.state.displayText === 'object') {
+      return (<Highlight className="json">{JSON.stringify(this.state.displayText, null,
+          2)}</Highlight>);
     }
     return (
-      <Highlight className="xml">{output}</Highlight>
+      <Highlight className="xml">{this.state.displayText}</Highlight>
     );
   }
 
   renderProgress() {
-    if (this.props.processing) {
+    if (this.props.processing || this.state.sparqlProcessing) {
       return (
         <CircularProgress
           style={{
@@ -123,14 +200,21 @@ class InfoBar extends Component {
 
   render() {
     return (
-      <div style={{ position: 'relative', width: '100%', minHeight: '100%', height: '100%' }}>
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        minHeight: '100%',
+        height: '100%',
+      }}
+      >
         <Paper>
           <div style={{ width: '100%%' }}>
             <div style={{ width: '100%' }}>
               <RaisedButton
                 label="download"
-                href={`data:${this.state.dataType};charset=utf-8,${encodeURIComponent(this.state.displayText)}`}
-                download={`dataset${this.state.text}`}
+                href={`data:${this.state.dataType};charset=utf-8,${encodeURIComponent(
+                        this.state.displayText)}`}
+                download={`${this.props.filename}${this.state.text}`}
                 disabled={this.props.processing}
                 style={{
                   margin: '30px',
@@ -143,7 +227,8 @@ class InfoBar extends Component {
             <div style={{ width: '100%' }}>
               <RaisedButton
                 label="publish"
-                disabled
+                disabled={this.state.displayText === ''}
+                onClick={this.openDialog.bind(this)}
                 style={{
                   margin: '30px',
                   width: '40%',
@@ -161,12 +246,13 @@ class InfoBar extends Component {
             paddingLeft: '50px',
             paddingRight: '50px',
           }
-                    }
+            }
           >
             <SelectField
-              floatingLabelText="Frequency"
+              floatingLabelText="File type"
               value={this.state.value}
-              onChange={this.handleChange.bind(this)}
+              onChange={this.handleDropdownChange.bind(this)}
+              name="fileType"
             >
               <MenuItem value={0} primaryText="Turtle" />
               <MenuItem value={1} primaryText="JSON-LD" />
@@ -174,21 +260,37 @@ class InfoBar extends Component {
               <MenuItem value={3} primaryText="SPARQL" />
             </SelectField>
             <br />
-            {this.renderText(this.state.displayText)}
+            {this.renderText()}
             {this.renderProgress()}
             <p />
           </div>
 
         </Paper>
+
+        <Snackbar
+          open={this.state.snackbar.open}
+          message={this.state.snackbar.message}
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose.bind(this)}
+        />
+            <GraphContextForm
+              open={this.state.dialog.open}
+              closeDialog={this.closeDialog}
+              onSubmitForm={this.sendSparqlInput}
+            />
       </div>
     );
   }
 }
+
 InfoBar.propTypes = {
   graph: PropTypes.object,
   processing: PropTypes.bool.isRequired,
+  executeQuery: PropTypes.func.isRequired,
+  filename: PropTypes.string,
 };
 InfoBar.defaultProps = {
   graph: undefined,
+  filename: undefined,
 };
 export default InfoBar;
