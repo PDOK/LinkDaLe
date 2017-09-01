@@ -48,12 +48,12 @@ function NavigationBar(props) {
   return (
     <MaterialDrawer>
       <Card>
-        <CardHeader style = {{ textAlign: 'left'}} >
+        <CardHeader style={{ textAlign: 'left' }} >
             RDF-PAQT
           </CardHeader>
         <CardText>
-            <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80}/>
-          </CardText>
+          <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
+        </CardText>
       </Card>
       <FlatButton
         label="Create Linked Data"
@@ -178,7 +178,7 @@ class App extends Component {
       case States.Querying:
         return <h1>WIP</h1>;
       case States.Tutorialise:
-        return <Tutorialised/>;
+        return <Tutorialised />;
       default:
         return <h1>Welcome</h1>;
 
