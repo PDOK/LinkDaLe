@@ -30,6 +30,7 @@ class Tutorialised extends React.Component {
           [
             `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`,
             `${process.env.PUBLIC_URL}/markdown/AboutLD.MD`,
+            `${process.env.PUBLIC_URL}/markdown/AboutLOD.MD`,
             `${process.env.PUBLIC_URL}/markdown/myFirstLD.MD`,
           ],
         },
@@ -47,7 +48,6 @@ class Tutorialised extends React.Component {
   }
 
   handleClose() {
-    console.log('Class: Tutorialised, Function: handleClose, Line 48 Please close(Please close: ', 'close');
     this.setState({ dialogOpen: false });
   }
 
@@ -101,8 +101,12 @@ class Tutorialised extends React.Component {
               onClick={() => this.openRemoteMarkdown(1, 1)}
             />
             <FlatButton
-              label="Exercise: My first Linked Data"
+              label="About Linked Open Data Cloud"
               onClick={() => this.openRemoteMarkdown(1, 2)}
+            />
+            <FlatButton
+              label="Exercise: My first Linked Data"
+              onClick={() => this.openRemoteMarkdown(1, 3)}
             />
           </CardActions>
         </Card>
