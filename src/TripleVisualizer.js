@@ -5,6 +5,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import PropTypes from 'prop-types';
 import GraphView from 'react-digraph';
 import { green500 } from 'material-ui/styles/colors';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { distribute } from './dataprocessing';
 
 const GraphConfig = {
@@ -71,6 +72,8 @@ class TripleVisualizer extends React.Component {
       edges: [],
       classNodes: [],
       classEdges: [],
+      selected: {},
+      selectedClass: {},
 
     };
   }
@@ -84,6 +87,44 @@ class TripleVisualizer extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return !(nextProps === this.props && nextState === this.state);
   }
+  // Edge 'mouseUp' handler
+  onSelectEdge = (viewEdge) => {
+    this.setState({
+      selected: viewEdge,
+    });
+  };
+  // Edge 'mouseUp' handler
+  onSelectClassEdge = (viewEdge) => {
+    this.setState({
+      selectedClass: viewEdge,
+    });
+  };
+
+  // Node 'mouseUp' handler
+  onSelectClassNode = (viewNode) => {
+    // Deselect events will send Null viewNode
+    if (viewNode !== null) {
+      this.setState({ selected: viewNode });
+    } else {
+      this.setState({ selected: {} });
+    }
+  };
+
+  // Node 'mouseUp' handler
+  onSelectNode = (viewNode) => {
+    // Deselect events will send Null viewNode
+    if (viewNode !== null) {
+      // const allRelations = this.state.edges.filter(
+      //     edge => edge.source === viewNode.id || edge.target === viewNode.id);
+      // const relations = allRelations.map(relation =>
+      // `${this.getViewNode(relation.source).title} ${relation.label.split('/').pop()}
+      // ${this.getViewNode(relation.target).title}`);
+      this.setState({ selected: viewNode });
+    } else {
+      this.setState({ selected: {}, relations: [] });
+    }
+  };
+
 
   // Helper to find the index of a given node
   getNodeIndex = searchNode => this.state.nodes.findIndex(
@@ -132,9 +173,15 @@ class TripleVisualizer extends React.Component {
     library.forEach((classification) => {
       const classified = nodes.find(node => node.label === classification.class);
       if (!classified) {
+        let shortTitle = classification.class;
+        if (shortTitle.split('/').pop() &&
+            !(shortTitle.split('/').pop() === '')) {
+          shortTitle = classification.class.split('/').pop();
+        }
+
         nodes.push({
           id: (nodes.length),
-          title: classification.class.split('/').pop(),
+          title: shortTitle,
           r: 15,
           label: classification.class,
           type: 'uri',
@@ -188,9 +235,15 @@ class TripleVisualizer extends React.Component {
       data.forEach((ontology) => {
         let subject = nodes.find(node => node.label === ontology[0].value);
         if (!subject) {
+          let shortTitle = ontology[0].value;
+          if (shortTitle.split('/').pop() &&
+              !(shortTitle.split('/').pop() === '')) {
+            shortTitle = ontology[0].value.split('/').pop();
+          }
+
           subject = {
             id: (nodes.length),
-            title: ontology[0].value.split('/').pop(),
+            title: shortTitle,
             r: 15,
             label: ontology[0].value,
             type: 'uri', // Subjects are always URI's
@@ -220,7 +273,68 @@ class TripleVisualizer extends React.Component {
     this.setState({ nodes, edges });
   };
   doNothing = () => {};
+  renderCard = () => {
+    let cardText = '';
+    let title = '';
+    let subtitle = '';
+    if (this.state.selected) {
+      if (this.state.selected.type === 'literal') {
+        cardText = <p>{this.state.selected.label}</p>;
+        title = this.state.selected.title;
+        subtitle = 'Literal';
+      } else if (this.state.selected.type === 'emptyEdge') {
+        cardText = <a href={this.state.selected.label}>{this.state.selected.label}</a>;
+        title = this.state.selected.label;
+        subtitle = 'Reference';
+      } else if (this.state.selected.type === 'uri') {
+        cardText = <a href={this.state.selected.label}>{this.state.selected.label}</a>;
+        title = this.state.selected.title;
+        subtitle = 'URI';
+      }
+    }
 
+    return (
+      <Card style={{ position: 'absolute', right: '15px', bottom: '15px', width: 'fit-content', zIndex: '10' }}>
+        <CardHeader
+          title={title}
+          subtitle={subtitle}
+        />
+        <CardText>
+          {cardText}
+        </CardText>
+      </Card>
+    );
+  };
+  renderClassCard = () => {
+    let cardText = '';
+    let title = '';
+    let subtitle = '';
+    if (this.state.selectedClass) {
+      if (this.state.selectedClass.type === 'literal') {
+        title = this.state.selectedClass.title;
+        subtitle = 'Literal';
+      } else if (this.state.selectedClass.type === 'emptyEdge') {
+        title = this.state.selectedClass.label;
+        subtitle = 'Reference';
+      } else if (this.state.selectedClass.type === 'uri') {
+        title = this.state.selectedClass.title;
+        subtitle = 'URI';
+      }
+      cardText = <a href={this.state.selectedClass.label}>{this.state.selectedClass.label}</a>;
+    }
+
+    return (
+      <Card style={{ position: 'absolute', right: '15px', bottom: '15px', width: 'fit-content', zIndex: '10' }}>
+        <CardHeader
+          title={title}
+          subtitle={subtitle}
+        />
+        <CardText>
+          {cardText}
+        </CardText>
+      </Card>
+    );
+  };
   render() {
     return (
       <Tabs>
@@ -246,12 +360,11 @@ class TripleVisualizer extends React.Component {
             </TableBody>
           </Table>
         </Tab>
-        <Tab label="Graph view">
+        <Tab label="Graph view" style={{ position: 'relative' }}>
           <GraphView
             style={
             {
-              height: '50vh',
-              flex: '0 0 85%',
+              height: '48vh',
             }
               }
             primary={green500}
@@ -266,22 +379,24 @@ class TripleVisualizer extends React.Component {
             nodeSubtypes={GraphConfig.NodeSubtypes}
             edgeTypes={GraphConfig.EdgeTypes}
             getViewNode={this.getViewNode}
-            onSelectNode={this.doNothing}
+            onSelectNode={this.onSelectNode}
             onUpdateNode={this.doNothing}
-            onSelectEdge={this.doNothing}
+            onSelectEdge={this.onSelectEdge}
             onCreateEdge={this.doNothing}
             onSwapEdge={this.doNothing}
             onDeleteEdge={this.doNothing}
             onDeleteNode={this.doNothing}
             onCreateNode={this.doNothing}
           />
+          {this.renderCard()}
+
+
         </Tab>
         <Tab label="Class graph">
           <GraphView
             style={
             {
               height: '50vh',
-              flex: '0 0 85%',
             }
               }
             primary={green500}
@@ -291,20 +406,22 @@ class TripleVisualizer extends React.Component {
             emptyType={EMPTY_TYPE}
             nodes={this.state.classNodes}
             edges={this.state.classEdges}
-            selected={this.state.selected}
+            selected={this.state.selectedClass}
             nodeTypes={GraphConfig.NodeTypes}
             nodeSubtypes={GraphConfig.NodeSubtypes}
             edgeTypes={GraphConfig.EdgeTypes}
             getViewNode={this.getViewClassNode}
-            onSelectNode={this.doNothing}
+            onSelectNode={this.onSelectClassNode}
             onUpdateNode={this.doNothing}
-            onSelectEdge={this.doNothing}
+            onSelectEdge={this.onSelectClassEdge}
             onCreateEdge={this.doNothing}
             onSwapEdge={this.doNothing}
             onDeleteEdge={this.doNothing}
             onDeleteNode={this.doNothing}
             onCreateNode={this.doNothing}
           />
+          {this.renderClassCard()}
+
         </Tab>
       </Tabs>
     );
