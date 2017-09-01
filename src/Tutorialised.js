@@ -37,8 +37,9 @@ class Tutorialised extends React.Component {
           expanded: false,
           markdownURIs:
           [
-            'https://raw.githubusercontent.com/codemirror/CodeMirror/master/README.md',
-            'https://raw.githubusercontent.com/zazuko/d3-sparql/master/README.md',
+            `${process.env.PUBLIC_URL}/markdown/aboutBPIL.MD`,
+            `${process.env.PUBLIC_URL}/markdown/BPIL1.MD`,
+            `${process.env.PUBLIC_URL}/markdown/BPIL2.MD`,
           ],
         },
       },
@@ -113,7 +114,7 @@ class Tutorialised extends React.Component {
           <CardMedia
             style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}
           >
-            <img src={`${process.env.PUBLIC_URL}/images/bpil.png`} alt="Business Process Integration Lab"/>
+            <img src={`${process.env.PUBLIC_URL}/images/bpil.png`} alt="Business Process Integration Lab" />
           </CardMedia>
           <CardTitle
             title="Business Process Integration Lab"
@@ -130,10 +131,14 @@ class Tutorialised extends React.Component {
             </CardText>
           <CardActions expandable>
             <FlatButton
-              label="Exercise 1: Unicorn Trade"
+              label="About the course"
+              onClick={() => this.openRemoteMarkdown(2, 0)}
+            />
+            <FlatButton
+              label="Exercise 1: Explain yourself"
               onClick={() => this.openRemoteMarkdown(2, 1)}
             />
-            <FlatButton label="Exercise 2" onClick={() => this.openRemoteMarkdown(2, 0)} />
+            <FlatButton label="Exercise 2:Link it" onClick={() => this.openRemoteMarkdown(2, 2)} />
           </CardActions>
         </Card>
         <Dialog

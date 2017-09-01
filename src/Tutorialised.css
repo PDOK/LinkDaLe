@@ -13,6 +13,7 @@
 .TutorialCard {
     flex: 1;
     margin: 10px 10px 10px 10px;
+    height: fit-content;
 }
 .TutorialCardText {
     text-align: justify;
