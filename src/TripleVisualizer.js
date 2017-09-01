@@ -5,7 +5,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import PropTypes from 'prop-types';
 import GraphView from 'react-digraph';
 import { green500 } from 'material-ui/styles/colors';
-import { distribute } from './Dataprocessing';
+import { distribute } from './dataprocessing';
 
 const GraphConfig = {
   NodeTypes: {
@@ -58,24 +58,31 @@ const NODE_KEY = 'id'; // Key used to identify nodes
 // so this has to be passed in if that behavior is desired.
 const EMPTY_TYPE = 'empty'; // Empty node type
 
+const SUBJECT = 0;
+const PREDICATE = 1;
+const OBJECT = 2;
+
+
 class TripleVisualizer extends React.Component {
   constructor() {
     super();
     this.state = {
       nodes: [],
       edges: [],
+      classNodes: [],
+      classEdges: [],
 
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps !== this.props) this.dataToNodes(nextProps.data);
+    if (nextProps !== this.props) {
+      this.dataToNodes(nextProps.data);
+      this.getClassfromData(nextProps.data);
+    }
   }
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps === this.props && nextState === this.state) {
-      return false;
-    }
-    return true;
+    return !(nextProps === this.props && nextState === this.state);
   }
 
   // Helper to find the index of a given node
@@ -89,7 +96,87 @@ class TripleVisualizer extends React.Component {
     const i = this.getNodeIndex(searchNode);
     return this.state.nodes[i];
   };
+  // Helper to find the index of a given node
+  getNodeClassIndex = searchNode => this.state.classNodes.findIndex(
+      node => node[NODE_KEY] === searchNode[NODE_KEY]);
 
+  // Given a nodeKey, return the corresponding node
+  getViewClassNode = (nodeKey) => {
+    const searchNode = {};
+    searchNode[NODE_KEY] = nodeKey;
+    const i = this.getNodeClassIndex(searchNode);
+    return this.state.classNodes[i];
+  };
+
+
+  getClassfromData = (data) => {
+    let nodes = [];
+    const edges = [];
+    const library = [];
+    data.forEach((ontology) => {
+      let node = library.find(classification => classification.value === ontology[SUBJECT].value);
+      if (!node) {
+        node = {
+          value: ontology[SUBJECT].value,
+          relations: [],
+        };
+        library.push(node);
+      }
+      if (ontology[PREDICATE].value === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+        node.class = ontology[OBJECT].value;
+      } else {
+        node.relations.push(
+            { classification: ontology[PREDICATE].value, target: ontology[OBJECT].value });
+      }
+    });
+    library.forEach((classification) => {
+      const classified = nodes.find(node => node.label === classification.class);
+      if (!classified) {
+        nodes.push({
+          id: (nodes.length),
+          title: classification.class.split('/').pop(),
+          r: 15,
+          label: classification.class,
+          type: 'uri',
+          values: [classification.value],
+        });
+      } else {
+        const idx = nodes.findIndex(node => node.id === classified.id);
+        if (!classified.values.includes(classification.value)) {
+          classified.values.push(classification.value);
+        }
+        nodes[idx] = classified;
+      }
+    });
+    library.forEach((classification) => {
+      const startNode = nodes.find(node => node.values.includes(classification.value));
+      classification.relations.forEach((relation) => {
+        let endNode = nodes.find(node => node.values.includes(relation.target));
+        if (!endNode) {
+          endNode = nodes.find(node => node.label === relation.classification);
+          if (!endNode) {
+            endNode = {
+              id: (nodes.length),
+              title: relation.classification.split('/').pop(),
+              r: 15,
+              label: relation.classification,
+              type: 'literal',
+              values: [],
+            };
+            nodes.push(endNode);
+          }
+        }
+        edges.push({
+          source: startNode.id,
+          target: endNode.id,
+          label: relation.classification,
+          type: 'emptyEdge',
+        });
+      });
+    });
+    nodes = distribute(nodes);
+    this.setState({ classNodes: nodes, classEdges: edges });
+  };
   dataToNodes = (data) => {
     // Subject, Predicate, Object
     // Nodes = {Subject}, {Object}
@@ -133,7 +220,6 @@ class TripleVisualizer extends React.Component {
     this.setState({ nodes, edges });
   };
   doNothing = () => {};
-
 
   render() {
     return (
@@ -180,6 +266,36 @@ class TripleVisualizer extends React.Component {
             nodeSubtypes={GraphConfig.NodeSubtypes}
             edgeTypes={GraphConfig.EdgeTypes}
             getViewNode={this.getViewNode}
+            onSelectNode={this.doNothing}
+            onUpdateNode={this.doNothing}
+            onSelectEdge={this.doNothing}
+            onCreateEdge={this.doNothing}
+            onSwapEdge={this.doNothing}
+            onDeleteEdge={this.doNothing}
+            onDeleteNode={this.doNothing}
+            onCreateNode={this.doNothing}
+          />
+        </Tab>
+        <Tab label="Class graph">
+          <GraphView
+            style={
+            {
+              height: '50vh',
+              flex: '0 0 85%',
+            }
+              }
+            primary={green500}
+              // eslint-disable-next-line react/no-string-refs
+            ref="GraphView"
+            nodeKey={NODE_KEY}
+            emptyType={EMPTY_TYPE}
+            nodes={this.state.classNodes}
+            edges={this.state.classEdges}
+            selected={this.state.selected}
+            nodeTypes={GraphConfig.NodeTypes}
+            nodeSubtypes={GraphConfig.NodeSubtypes}
+            edgeTypes={GraphConfig.EdgeTypes}
+            getViewNode={this.getViewClassNode}
             onSelectNode={this.doNothing}
             onUpdateNode={this.doNothing}
             onSelectEdge={this.doNothing}
