@@ -2,11 +2,12 @@
 import React from 'react';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
+import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 
-class TripleVisualizer extends React.Component {
-  constructor() {
-    super();
+class SparqlVisualizer extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
       nodes: [],
       edges: [],
@@ -18,13 +19,18 @@ class TripleVisualizer extends React.Component {
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return !(nextProps === this.props && nextState === this.state);
-  }
-  // Helper to find the index of a given node
+  renderErrorBox = this.props.error ? (
+    <Tab>
+      <Paper>
+        <h1>Something went wrong</h1>
+        {this.props.error}
+      </Paper>
+    </Tab>
+    ) : (null)
   render() {
     return (
       <Tabs>
+        {this.renderErrorBox}
         <Tab label="Table">
           <Table selectable={false} wrapperStyle={{ maxHeight: '50vh' }}>
             <TableHeader displaySelectAll={false}>
@@ -47,9 +53,14 @@ class TripleVisualizer extends React.Component {
     );
   }
 }
-TripleVisualizer.propTypes = {
+SparqlVisualizer.propTypes = {
   data: PropTypes.array.isRequired,
   headers: PropTypes.array.isRequired,
+  error: PropTypes.string,
 };
 
-export default TripleVisualizer;
+SparqlVisualizer.defaultProps = {
+  error: '',
+};
+
+export default SparqlVisualizer;

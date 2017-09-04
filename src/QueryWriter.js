@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/sparql/sparql';
 import 'codemirror/theme/material.css';
-import TripleVisualizer from './SparqlVisualizer';
+import SparqlVisualizer from './SparqlVisualizer';
 import { getDefaultGraph } from './querybuilder';
 
 class QueryWriter extends React.Component {
@@ -22,6 +22,7 @@ class QueryWriter extends React.Component {
       graphContexts: [],
       selectedGraph: {},
       headers: [],
+      error: '',
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
@@ -89,7 +90,11 @@ class QueryWriter extends React.Component {
           onClick={this.onFireQuery}
         >
           <Play /></FloatingActionButton>
-        <TripleVisualizer data={this.state.data} headers={this.state.headers} />
+        <SparqlVisualizer
+          data={this.state.data}
+          headers={this.state.headers}
+          error={this.state.error}
+        />
       </div>
     );
   }
