@@ -2,6 +2,8 @@
 import React from 'react';
 import CodeMirror from 'react-codemirror';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
+import SelectField from 'material-ui/SelectField';
+import Divider from 'material-ui/Divider';
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/sparql/sparql';
@@ -20,6 +22,8 @@ class QueryWriter extends React.Component {
   render() {
     return (
       <div style={{ textAlign: 'start' }}>
+        <SelectField />
+        <Divider />
         <CodeMirror
           options={{
             mode: 'sparql',
