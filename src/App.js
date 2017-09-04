@@ -178,7 +178,7 @@ class App extends Component {
       case States.DataBrowsing:
         return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
       case States.Querying:
-        return <QueryWriter />;
+        return <QueryWriter executeQuery={this.executeSparql.bind(this)} />;
       case States.Tutorialise:
         return <h1>WIP</h1>;
       default:
