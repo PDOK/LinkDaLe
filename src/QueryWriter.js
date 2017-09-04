@@ -10,17 +10,18 @@ import PropTypes from 'prop-types';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/sparql/sparql';
 import 'codemirror/theme/material.css';
-import TripleVisualizer from './TripleVisualizer';
+import TripleVisualizer from './SparqlVisualizer';
 import { getDefaultGraph } from './querybuilder';
 
 class QueryWriter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: 'SELECT ?s ?p ?o',
+      query: 'SELECT ?s ?p ?o {?s ?p ?o}',
       data: [],
       graphContexts: [],
       selectedGraph: {},
+      headers: [],
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
@@ -44,7 +45,22 @@ class QueryWriter extends React.Component {
   onDataSourceChange = (event, index, value) => {
     console.log(value);
     this.setState({ selectedGraph: value });
-  }
+  };
+
+  onQueryChange = (query) => {
+    // TOOD: implement validation and safeguards?
+    this.setState({ query });
+  };
+
+  onFireQuery = () => {
+    this.props.executeQuery(this.state.query, this.onQueryCallBack);
+  };
+
+  onQueryCallBack = (err, results) => {
+    const data = results.map(result => Object.keys(result).map(value => result[value]));
+    const headers = Object.keys(results[0]);
+    this.setState({ data, headers });
+  };
 
   render() {
     return (
@@ -66,9 +82,14 @@ class QueryWriter extends React.Component {
           }}
           name="sparql query editor"
           value={this.state.query}
+          onChange={this.onQueryChange}
         />
-        <FloatingActionButton style={{ right: '40px', top: '100px', position: 'absolute' }}><Play /></FloatingActionButton>
-        <TripleVisualizer data={this.state.data} />
+        <FloatingActionButton
+          style={{ right: '40px', top: '100px', position: 'absolute' }}
+          onClick={this.onFireQuery}
+        >
+          <Play /></FloatingActionButton>
+        <TripleVisualizer data={this.state.data} headers={this.state.headers} />
       </div>
     );
   }
