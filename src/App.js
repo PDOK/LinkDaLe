@@ -121,7 +121,7 @@ class App extends Component {
       }
     });
   }
-  executeSparql(call, callBack) {
+  executeSparql = (call, callBack) => {
     console.info('call', call);
     try {
       this.state.store.execute(call, (err, results) => {
@@ -141,7 +141,7 @@ class App extends Component {
     } catch (error) {
       callBack(error, null);
     }
-  }
+  };
   executeSparqlEnv = (call, enviroment, callBack) => {
     console.info('call', call);
     try {
@@ -162,10 +162,10 @@ class App extends Component {
     } catch (error) {
       callBack(error, null);
     }
-  }
+  };
 
 
-  handleClick(i) {
+  handleClick = (i) => {
     let title;
     if (this.state === i) {
       return;
@@ -193,19 +193,19 @@ class App extends Component {
       state: i,
       title,
     });
-  }
+  };
 
 
-  renderContent() {
+  renderContent = () => {
     switch (this.state.state) {
       case States.DataCreation:
-        return <DataCreation executeQuery={this.executeSparql.bind(this)} />;
+        return <DataCreation executeQuery={this.executeSparql} />;
       case States.DataBrowsing:
-        return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
+        return <DataBrowser executeQuery={this.executeSparql} />;
       case States.Querying:
         return (<QueryWriter
-          executeQuery={this.executeSparql.bind(this)}
-          executeQueryInEnviroment={this.executeSparqlEnv}
+          executeQuery={this.executeSparql}
+          executeQueryInEnvironment={this.executeSparqlEnv}
 
         />);
       case States.Tutorialise:
@@ -214,7 +214,7 @@ class App extends Component {
         return <h1>Welcome</h1>;
 
     }
-  }
+  };
 
   render() {
     return (

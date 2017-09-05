@@ -54,14 +54,20 @@ class QueryWriter extends React.Component {
   };
 
   onFireQuery = () => {
-    this.props.executeQueryInEnviroment(
+    this.props.executeQueryInEnvironment(
         this.state.query, this.state.selectedGraph.uri, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
-    const data = results.map(result => Object.keys(result).map(value => result[value]));
-    const headers = Object.keys(results[0]);
-    this.setState({ data, headers });
+    if (err) {
+      this.setState({ error: err.message, data: [], headers: [] });
+    } else if (results.length === 0) {
+      this.setState({ error: '', data: [], headers: [] });
+    } else {
+      const data = results.map(result => Object.keys(result).map(value => result[value]));
+      const headers = Object.keys(results[0]);
+      this.setState({ data, headers, error: '' });
+    }
   };
 
   render() {
@@ -105,6 +111,6 @@ export default QueryWriter;
 
 QueryWriter.propTypes = {
   executeQuery: PropTypes.func.isRequired,
-  executeQueryInEnviroment: PropTypes.func.isRequired,
+  executeQueryInEnvironment: PropTypes.func.isRequired,
 };
 

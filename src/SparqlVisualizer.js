@@ -19,18 +19,18 @@ class SparqlVisualizer extends React.Component {
     };
   }
 
-  renderErrorBox = this.props.error ? (
-    <Tab>
-      <Paper>
-        <h1>Something went wrong</h1>
-        {this.props.error}
-      </Paper>
-    </Tab>
-    ) : (null)
   render() {
+    const renderErrorBox = this.props.error ? (
+      <Tab label="Error">
+        <Paper>
+          <h1>Something went wrong</h1>
+          {this.props.error}
+        </Paper>
+      </Tab>
+    ) : (null);
     return (
       <Tabs>
-        {this.renderErrorBox}
+        {renderErrorBox}
         <Tab label="Table">
           <Table selectable={false} wrapperStyle={{ maxHeight: '50vh' }}>
             <TableHeader displaySelectAll={false}>
