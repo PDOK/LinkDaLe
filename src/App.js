@@ -123,20 +123,45 @@ class App extends Component {
   }
   executeSparql(call, callBack) {
     console.info('call', call);
-    this.state.store.execute(call, (err, results) => {
-      if (err) {
-        if (callBack) {
-          callBack(err, []);
-        } else {
-          console.log('Error while executing query: ', call);
-          console.log('Error message: ', err);
+    try {
+      this.state.store.execute(call, (err, results) => {
+        if (err) {
+          if (callBack) {
+            callBack(err, []);
+          } else {
+            console.log('Error while executing query: ', call);
+            console.log('Error message: ', err);
+          }
         }
-      }
-      if (callBack) {
-        console.info('results', results);
-        callBack('', results);
-      }
-    });
+        if (callBack) {
+          console.info('results', results);
+          callBack('', results);
+        }
+      });
+    } catch (error) {
+      callBack(error, null);
+    }
+  }
+  executeSparqlEnv = (call, enviroment, callBack) => {
+    console.info('call', call);
+    try {
+      this.state.store.execute(call, [enviroment], [], (err, results) => {
+        if (err) {
+          if (callBack) {
+            callBack(err, []);
+          } else {
+            console.log('Error while executing query: ', call);
+            console.log('Error message: ', err);
+          }
+        }
+        if (callBack) {
+          console.info('results', results);
+          callBack('', results);
+        }
+      });
+    } catch (error) {
+      callBack(error, null);
+    }
   }
 
 
@@ -178,7 +203,11 @@ class App extends Component {
       case States.DataBrowsing:
         return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
       case States.Querying:
-        return <QueryWriter executeQuery={this.executeSparql.bind(this)} />;
+        return (<QueryWriter
+          executeQuery={this.executeSparql.bind(this)}
+          executeQueryInEnviroment={this.executeSparqlEnv}
+
+        />);
       case States.Tutorialise:
         return <h1>WIP</h1>;
       default:

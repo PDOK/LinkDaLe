@@ -54,7 +54,8 @@ class QueryWriter extends React.Component {
   };
 
   onFireQuery = () => {
-    this.props.executeQuery(this.state.query, this.onQueryCallBack);
+    this.props.executeQueryInEnviroment(
+        this.state.query, this.state.selectedGraph.uri, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
@@ -104,5 +105,6 @@ export default QueryWriter;
 
 QueryWriter.propTypes = {
   executeQuery: PropTypes.func.isRequired,
+  executeQueryInEnviroment: PropTypes.func.isRequired,
 };
 
