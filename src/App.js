@@ -121,26 +121,51 @@ class App extends Component {
       }
     });
   }
-  executeSparql(call, callBack) {
+  executeSparql = (call, callBack) => {
     console.info('call', call);
-    this.state.store.execute(call, (err, results) => {
-      if (err) {
-        if (callBack) {
-          callBack(err, []);
-        } else {
-          console.log('Error while executing query: ', call);
-          console.log('Error message: ', err);
+    try {
+      this.state.store.execute(call, (err, results) => {
+        if (err) {
+          if (callBack) {
+            callBack(err, []);
+          } else {
+            console.log('Error while executing query: ', call);
+            console.log('Error message: ', err);
+          }
         }
-      }
-      if (callBack) {
-        console.info('results', results);
-        callBack('', results);
-      }
-    });
-  }
+        if (callBack) {
+          console.info('results', results);
+          callBack('', results);
+        }
+      });
+    } catch (error) {
+      callBack(error, null);
+    }
+  };
+  executeSparqlEnv = (call, enviroment, callBack) => {
+    console.info('call', call);
+    try {
+      this.state.store.execute(call, [enviroment], [], (err, results) => {
+        if (err) {
+          if (callBack) {
+            callBack(err, []);
+          } else {
+            console.log('Error while executing query: ', call);
+            console.log('Error message: ', err);
+          }
+        }
+        if (callBack) {
+          console.info('results', results);
+          callBack('', results);
+        }
+      });
+    } catch (error) {
+      callBack(error, null);
+    }
+  };
 
 
-  handleClick(i) {
+  handleClick = (i) => {
     let title;
     if (this.state === i) {
       return;
@@ -168,23 +193,26 @@ class App extends Component {
       state: i,
       title,
     });
-  }
+  };
 
-  renderContent() {
+  renderContent = () => {
     switch (this.state.state) {
       case States.DataCreation:
-        return <DataCreation executeQuery={this.executeSparql.bind(this)} />;
+        return <DataCreation executeQuery={this.executeSparql} />;
       case States.DataBrowsing:
-        return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
+        return <DataBrowser executeQuery={this.executeSparql} />;
       case States.Querying:
-        return <QueryWriter />;
+        return (<QueryWriter
+          executeQuery={this.executeSparql}
+          executeQueryInEnvironment={this.executeSparqlEnv}
+        />);
       case States.Tutorialise:
         return <Tutorialised />;
       default:
         return <h1>Welcome</h1>;
 
     }
-  }
+  };
 
   render() {
     return (
