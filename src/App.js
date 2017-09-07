@@ -23,6 +23,7 @@ import './App.css';
 import DataCreation from './DataCreation';
 import Tutorialised from './Tutorialised';
 import DataBrowser from './DataBrowser';
+import QueryWriter from './QueryWriter';
 
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
 // Needed for onTouchTap
@@ -176,7 +177,7 @@ class App extends Component {
       case States.DataBrowsing:
         return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
       case States.Querying:
-        return <h1>WIP</h1>;
+        return <QueryWriter />;
       case States.Tutorialise:
         return <Tutorialised />;
       default:
