@@ -21,6 +21,7 @@ import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
 import './App.css';
 import DataCreation from './DataCreation';
+import DataBrowser from './DataBrowser';
 
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
 // Needed for onTouchTap
@@ -116,17 +117,12 @@ class App extends Component {
         console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
       } else {
         this.setState({ store: graph });
-        graph.registeredGraphs((success, graphs) => {
-          const graphUris = graphs.map(namedNode => namedNode.nominalValue);
-          console.log(graphUris);
-        });
       }
     });
   }
   executeSparql(call, callBack) {
-    console.info(call);
+    console.info('call', call);
     this.state.store.execute(call, (err, results) => {
-      console.log(err);
       if (err) {
         if (callBack) {
           callBack(err, []);
@@ -135,15 +131,10 @@ class App extends Component {
           console.log('Error message: ', err);
         }
       }
-      console.log(callBack);
       if (callBack) {
+        console.info('results', results);
         callBack('', results);
       }
-      console.log(results);
-      this.state.store.registeredGraphs((success, graphs) => {
-        const graphUris = graphs.map(namedNode => namedNode.nominalValue);
-        console.log(graphUris);
-      });
     });
   }
 
@@ -184,7 +175,7 @@ class App extends Component {
       case States.DataCreation:
         return <DataCreation executeQuery={this.executeSparql.bind(this)} />;
       case States.DataBrowsing:
-        return <h1>WIP</h1>;
+        return <DataBrowser executeQuery={this.executeSparql.bind(this)} />;
       case States.Querying:
         return <h1>WIP</h1>;
       case States.Tutorialise:
