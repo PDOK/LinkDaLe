@@ -276,12 +276,11 @@ class DataClassifyView extends Component {
               <TableRow>
                 <TableHeaderColumn
                   tooltip="the column name"
-                >ColumnName</TableHeaderColumn>
-                <TableHeaderColumn tooltip="The first value">Example
+                >Column Name</TableHeaderColumn>
+                <TableHeaderColumn tooltip="The first value">Example Data
                     Value</TableHeaderColumn>
-                <TableHeaderColumn tooltip="Is this a root node">Root
-                    node</TableHeaderColumn>
-                <TableHeaderColumn tooltip="The type">type</TableHeaderColumn>
+                <TableHeaderColumn tooltip="Is this a URI">Is it a URI?</TableHeaderColumn>
+                <TableHeaderColumn tooltip="The type">Class of objects</TableHeaderColumn>
                 <TableHeaderColumn tooltip="Base URI">Base
                     URI</TableHeaderColumn>
                 <TableHeaderColumn tooltip="Reset">Reset</TableHeaderColumn>
