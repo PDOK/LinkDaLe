@@ -4,7 +4,8 @@ import Proptypes from 'prop-types';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import IconButton from 'material-ui/IconButton';
 import Delete from 'material-ui/svg-icons/action/delete';
-import { getDefaultGraph, removeData, removeContextData } from './querybuilder';
+import { getDefaultGraph, removeData, removeContextData, getAllDataFrom } from './querybuilder';
+import TripleVisualizer from './TripleVisualizer';
 
 const rdfsType = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 const dcCreated = 'http://purl.org/dc/terms/created';
@@ -17,6 +18,7 @@ class DataBrowser extends Component {
     this.state = {
       graphContexts: {},
       currentSelected: 0,
+      data: [],
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
@@ -32,9 +34,20 @@ class DataBrowser extends Component {
           });
         }
         this.setState({ graphContexts: currentstore });
+        this.getGraphData(Object.keys(currentstore)[0]);
       }
     });
   }
+  getGraphData = (graphname) => {
+    this.props.executeQuery(getAllDataFrom(graphname), (err, result) => {
+      if (err) {
+        console.error('Couldnt Grab data');
+      } else {
+        const data = result.map(row => [row.s.value, row.p.value, row.o.value]);
+        this.setState({ data });
+      }
+    });
+  };
   deleteGraph = (graphname) => {
     this.props.executeQuery(removeContextData(graphname), (err) => {
       if (err) {
@@ -57,9 +70,10 @@ class DataBrowser extends Component {
     switch (selectedIndex) {
       case -1:
         this.setState({ currentSelected: row });
+        this.getGraphData(Object.keys(this.state.graphContexts)[row]);
         break;
       case 4:
-        // this.deleteGraph(Object.keys(this.state.graphContexts)[row]);
+        this.deleteGraph(Object.keys(this.state.graphContexts)[row]);
         break;
       default:
     }
@@ -67,7 +81,7 @@ class DataBrowser extends Component {
 
   renderGraphTable() {
     return (
-      <Table selectable onCellClick={this.changeCurrentGraph.bind(this)}>
+      <Table selectable onCellClick={this.changeCurrentGraph.bind(this)} wrapperStyle={{ maxHeight: '40vh' }} >
         <TableHeader displaySelectAll={false}>
           <TableRow>
             <TableHeaderColumn tooltip="the Title">Title</TableHeaderColumn>
@@ -80,6 +94,7 @@ class DataBrowser extends Component {
         <TableBody
           onRowSelection={this.changeCurrentGraph.bind(this)}
           deselectOnClickaway={false}
+          style={{ maxHeight: '20vh' }}
         >
           {
             (Object.keys(this.state.graphContexts).length !== 0) ?
@@ -107,9 +122,15 @@ class DataBrowser extends Component {
   }
   render() {
     return (
-      <div>
-        {this.renderGraphTable()}
+      <div style={{ display: 'flex', maxHeight: 'auto', height: '100%', flexDirection: 'column', overflow: 'hidden', minHeight: 'min-content', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ overflow: 'auto', flex: 1, display: 'flex', alignItems: 'stretch' }}>
+          {this.renderGraphTable()}
+        </div>
+        <div style={{ overflow: 'auto', flex: 1, display: 'flex', alignItems: 'stretch' }}>
+          <TripleVisualizer data={this.state.data} />
+        </div>
       </div>
+
     );
   }
 }
