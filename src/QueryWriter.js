@@ -113,4 +113,3 @@ QueryWriter.propTypes = {
   executeQuery: PropTypes.func.isRequired,
   executeQueryInEnvironment: PropTypes.func.isRequired,
 };
-

@@ -205,7 +205,6 @@ class App extends Component {
         return (<QueryWriter
           executeQuery={this.executeSparql}
           executeQueryInEnvironment={this.executeSparqlEnv}
-
         />);
       case States.Tutorialise:
         return <Tutorialised />;
