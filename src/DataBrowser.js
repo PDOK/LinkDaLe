@@ -43,7 +43,7 @@ class DataBrowser extends Component {
       if (err) {
         console.error('Couldnt Grab data');
       } else {
-        const data = result.map(row => [row.s.value, row.p.value, row.o.value]);
+        const data = result.map(row => [row.s, row.p, row.o]);
         this.setState({ data });
       }
     });
