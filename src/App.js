@@ -21,6 +21,7 @@ import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
 import './App.css';
 import DataCreation from './DataCreation';
+import Tutorialised from './Tutorialised';
 import DataBrowser from './DataBrowser';
 import QueryWriter from './QueryWriter';
 
@@ -48,13 +49,12 @@ function NavigationBar(props) {
   return (
     <MaterialDrawer>
       <Card>
-        <CardHeader>
+        <CardHeader style={{ textAlign: 'left' }} >
             RDF-PAQT
           </CardHeader>
         <CardText>
-            RDF-PAQT is a service which will help you
-            create a semantic rich RDF data set from a csv file
-          </CardText>
+          <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
+        </CardText>
       </Card>
       <FlatButton
         label="Create Linked Data"
@@ -72,7 +72,7 @@ function NavigationBar(props) {
         onClick={() => props.onClick(States.Querying)}
       />
       <FlatButton
-        label="Query Data"
+        label="Tutorial"
         fullWidth
         onClick={() => props.onClick(States.Tutorialise)}
       />
@@ -170,7 +170,6 @@ class App extends Component {
     });
   }
 
-
   renderContent() {
     switch (this.state.state) {
       case States.DataCreation:
@@ -180,7 +179,7 @@ class App extends Component {
       case States.Querying:
         return <QueryWriter />;
       case States.Tutorialise:
-        return <h1>WIP</h1>;
+        return <Tutorialised />;
       default:
         return <h1>Welcome</h1>;
 
