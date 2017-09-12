@@ -17,13 +17,29 @@ async function transformData(data, links, nodes) {
 
 
 class DataCreation extends Component {
+  static getFirstValues = (data) => {
+    if (!data) {
+      return undefined;
+    }
+    if (data.length !== 0) {
+      const firstValues = new Array(data[0].length).fill('');
+      data.some((column, idx) => {
+        if (idx !== 0) {
+          firstValues.forEach((value, index) => {
+            if (column[index] && !value) {
+              firstValues[index] = column[index];
+            }
+          });
+        }
+        return firstValues.filter(value => !value).length === 0;
+      });
+      return firstValues;
+    }
+    return [];
+  };
+
   constructor() {
     super();
-    if (this.state) {
-      if (this.state.data) {
-        console.error('DATA ALREADY EXISTS');
-      }
-    }
     this.state = {
       currentPage: 1,
       data: [],
@@ -68,9 +84,10 @@ class DataCreation extends Component {
   setData(data, filename) {
     let exampleValues;
     if (data.length > 1) {
+      const firstValues = this.getFirstValues(data);
       exampleValues = data[0].map((column, index) => ({
         columnName: column,
-        exampleValue: data[1][index],
+        exampleValue: firstValues[index],
         class: { name: 'Literal' },
         uri: false,
       }));
