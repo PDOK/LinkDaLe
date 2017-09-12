@@ -44,7 +44,7 @@ class SparqlVisualizer extends React.Component {
             >
               {this.props.data.map(row => (
                 <TableRow>
-                  {row.map(data => <TableRowColumn>{data.value}</TableRowColumn>)}
+                  {row.map(data => <TableRowColumn>{data ? data.value : 'null'}</TableRowColumn>)}
                 </TableRow>))}
             </TableBody>
           </Table>
