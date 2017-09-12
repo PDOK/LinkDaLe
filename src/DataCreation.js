@@ -84,7 +84,7 @@ class DataCreation extends Component {
   setData(data, filename) {
     let exampleValues;
     if (data.length > 1) {
-      const firstValues = this.getFirstValues(data);
+      const firstValues = this.constructor.getFirstValues(data);
       exampleValues = data[0].map((column, index) => ({
         columnName: column,
         exampleValue: firstValues[index],
