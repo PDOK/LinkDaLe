@@ -254,10 +254,10 @@ class TripleVisualizer extends React.Component {
         if (!object) {
           object = {
             id: (nodes.length),
-            title: ontology[2].token === 'uri' ? ontology[2].value.split('/').pop() : ontology[2].value,
+            title: ontology[2].type === 'uri' ? ontology[2].value.split('/').pop() : ontology[2].value,
             r: 15,
             label: ontology[2].value,
-            type: ontology[2].token,
+            type: ontology[2].type === 'uri' ? 'uri' : 'literal',
           };
           nodes.push(object);
         }

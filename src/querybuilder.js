@@ -1,7 +1,7 @@
 // This file contain methods to create queries
 
 function getDefaultGraph() {
-  return 'SELECT ?subject ?predicate ?object {?subject ?predicate ?object}';
+  return 'SELECT ?subject ?predicate ?object WHERE { GRAPH <http://gerwinbosch.nl/rdf-paqt/metadata> {?subject ?predicate ?object}}';
 }
 function removeData(graphname) {
   return `DROP GRAPH <${graphname}>`;

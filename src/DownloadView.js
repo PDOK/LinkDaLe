@@ -107,7 +107,7 @@ class InfoBar extends Component {
     });
     this.forceUpdate();
   }
-  sendSparqlInput = (fileName, description, date) => {
+  sendSparqlInput = (graphName, description, date) => {
     const serializer = new NTriplesSerializer();
     serializer.serialize(this.props.graph, () => {
     }).then((graph, err) => {
@@ -118,13 +118,13 @@ class InfoBar extends Component {
           sparqlProcessing: true,
           dialog: { open: false },
         });
-        const dataQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/${fileName}> {${graph}}}`;
-        const uri = `http://gerwinbosch.nl/rdf-paqt/${fileName}`;
-        const contextQuery = `INSERT DATA {
+        const uri = `http://gerwinbosch.nl/rdf-paqt/data/${graphName}`;
+        const dataQuery = `INSERT DATA { GRAPH <${uri}> {${graph}}}`;
+        const contextQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/metadata> {
             <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Datset> .
-            <${uri}> <http://purl.org/dc/terms/title> "${fileName}" .
+            <${uri}> <http://purl.org/dc/terms/title> "${graphName}" .
             <${uri}> <http://purl.org/dc/terms/description> "${description}" .
-            <${uri}> <http://purl.org/dc/terms/created> "${date}"^^<http://www.w3.org/2001/XMLSchema#date> .}`;
+            <${uri}> <http://purl.org/dc/terms/created> "${date}"^^<http://www.w3.org/2001/XMLSchema#date> .}}`;
         this.props.executeQuery(contextQuery, () => {
           this.props.executeQuery(dataQuery, this.sparqlCallback);
         });

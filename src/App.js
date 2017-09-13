@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-filename-extension,react/jsx-no-bind */
 import React, { Component } from 'react';
-import RDFStore from 'rdfstore';
+import { SparqlClient } from 'sparql-client-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MaterialDrawer from 'material-ui/Drawer/Drawer';
@@ -105,26 +105,13 @@ class App extends Component {
     this.state = {
       state: States.Welcome,
       title: 'Welcome',
-      store: undefined,
+      client: new SparqlClient('http://almere.pilod.nl:8890/sparql'),
     };
-  }
-  componentDidMount() {
-    const persistent = typeof localStorage !== 'undefined';
-    if (!persistent) {
-      console.info('No local storage found', 'Page only keeps data within this session');
-    }
-    RDFStore.create({ name: 'rdfstore', persistent }, (err, graph) => {
-      if (err) {
-        console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
-      } else {
-        this.setState({ store: graph });
-      }
-    });
   }
   executeSparql = (call, callBack) => {
     console.info('call', call);
     try {
-      this.state.store.execute(call, (err, results) => {
+      this.state.client.query(call).execute((err, results) => {
         if (err) {
           if (callBack) {
             callBack(err, []);
@@ -135,7 +122,7 @@ class App extends Component {
         }
         if (callBack) {
           console.info('results', results);
-          callBack('', results);
+          callBack('', results.results.bindings);
         }
       });
     } catch (error) {
@@ -145,7 +132,7 @@ class App extends Component {
   executeSparqlEnv = (call, enviroment, callBack) => {
     console.info('call', call);
     try {
-      this.state.store.execute(call, [enviroment], [], (err, results) => {
+      this.state.client.query(call).execute((err, results) => {
         if (err) {
           if (callBack) {
             callBack(err, []);
@@ -156,7 +143,7 @@ class App extends Component {
         }
         if (callBack) {
           console.info('results', results);
-          callBack('', results);
+          callBack('', results.results.bindings);
         }
       });
     } catch (error) {
