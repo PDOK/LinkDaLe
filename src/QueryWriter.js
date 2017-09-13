@@ -123,6 +123,7 @@ class QueryWriter extends React.Component {
         <FloatingActionButton
           style={{ right: '40px', top: '100px', position: 'absolute' }}
           onClick={this.onFireQuery}
+          disabled={this.state.processing}
         >
           <Play /></FloatingActionButton>
         <SparqlVisualizer
