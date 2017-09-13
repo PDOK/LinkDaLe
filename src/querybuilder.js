@@ -4,10 +4,10 @@ function getDefaultGraph() {
   return 'SELECT ?subject ?predicate ?object WHERE { GRAPH <http://gerwinbosch.nl/rdf-paqt/metadata> {?subject ?predicate ?object}}';
 }
 function removeData(graphname) {
-  return `DROP GRAPH <${graphname}>`;
+  return `CLEAR GRAPH <${graphname}>`;
 }
 function removeContextData(graphname) {
-  return `DELETE WHERE { <${graphname}> ?s ?o}`;
+  return `DELETE WHERE { GRAPH <http://gerwinbosch.nl/rdf-paqt/metadata>{ <${graphname}> ?s ?o}}`;
 }
 function getAllDataFrom(graphname) {
   return `SELECT ?s ?p ?o { GRAPH <${graphname}> { ?s ?p ?o } }`;

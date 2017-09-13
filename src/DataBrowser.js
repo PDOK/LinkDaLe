@@ -42,7 +42,7 @@ class DataBrowser extends Component {
   getGraphData = (graphname) => {
     this.props.executeQuery(getAllDataFrom(graphname), (err, result) => {
       if (err) {
-        console.error('Couldnt Grab data');
+        this.setState({ error: err.message });
       } else {
         const data = result.map(row => [row.s, row.p, row.o]);
         this.setState({ data });
@@ -52,13 +52,13 @@ class DataBrowser extends Component {
   deleteGraph = (graphname) => {
     this.props.executeQuery(removeContextData(graphname), (err) => {
       if (err) {
-        console.error(err);
+        this.setState({ error: err.message });
       } else {
         this.props.executeQuery(removeData(graphname), (err2) => {
-          console.log('Data deleted');
           if (err2) {
-            console.error(err2);
+            this.setState({ error: err2.message });
           } else {
+            // TODO: Create hamburger to notify user
             console.log('Context deleted');
           }
         });
@@ -109,7 +109,7 @@ class DataBrowser extends Component {
                     <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
                     <TableRowColumn>{key}</TableRowColumn>
                     <TableRowColumn>{graph[dcCreated]}</TableRowColumn>
-                    <TableRowColumn><IconButton disabled><Delete /></IconButton></TableRowColumn>
+                    <TableRowColumn><IconButton><Delete /></IconButton></TableRowColumn>
                   </TableRow>
                 );
               }
