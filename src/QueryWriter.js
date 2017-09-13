@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-filename-extension,no-return-assign */
 import React from 'react';
 import CodeMirror from 'react-codemirror';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -48,7 +48,10 @@ class QueryWriter extends React.Component {
     });
   }
   onDataSourceChange = (event, index, value) => {
-    this.setState({ selectedGraph: value });
+    console.log(value);
+    this.setState({
+      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}` });
+    this.cm.codeMirror.setValue(`SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`);
   };
 
   onQueryChange = (query) => {
@@ -107,6 +110,7 @@ class QueryWriter extends React.Component {
         </DropDownMenu>
         <Divider />
         <CodeMirror
+          ref={el => this.cm = el}
           options={{
             mode: 'sparql',
             lineNumbers: true,
