@@ -28,6 +28,7 @@
     "react-markdown": "^2.5.0",
     "react-tap-event-plugin": "latest",
     "sparql-client-2": "^0.6.2",
+    "sparqljs": "^1.5.1",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {

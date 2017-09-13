@@ -10,6 +10,7 @@ import CardText from 'material-ui/Card/CardText';
 import FlatButton from 'material-ui/FlatButton/';
 import AppBar from 'material-ui/AppBar/';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import SparqlJs from 'sparqljs';
 import {
   green400,
   green500,
@@ -106,6 +107,7 @@ class App extends Component {
       state: States.Welcome,
       title: 'Welcome',
       client: new SparqlClient('http://almere.pilod.nl:8890/sparql'),
+      parser: new SparqlJs.Parser(),
     };
   }
   executeSparql = (call, callBack) => {
@@ -130,18 +132,18 @@ class App extends Component {
     }
   };
   executeSparqlEnv = (call, enviroment, callBack) => {
-    console.info('call', call);
     try {
+      this.state.parser.parse(call);
       this.state.client.query(call).execute((err, results) => {
         if (err) {
           if (callBack) {
+            console.log(err);
             callBack(err, []);
           } else {
             console.log('Error while executing query: ', call);
             console.log('Error message: ', err);
           }
-        }
-        if (callBack) {
+        } else if (callBack) {
           console.info('results', results);
           callBack('', results.results.bindings);
         }
