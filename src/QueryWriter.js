@@ -44,7 +44,6 @@ class QueryWriter extends React.Component {
     });
   }
   onDataSourceChange = (event, index, value) => {
-    console.log(value);
     this.setState({ selectedGraph: value });
   };
 
@@ -54,8 +53,8 @@ class QueryWriter extends React.Component {
   };
 
   onFireQuery = () => {
-    this.props.executeQueryInEnvironment(
-        this.state.query, this.state.selectedGraph.uri, this.onQueryCallBack);
+    this.props.executeQuery(
+        this.state.query, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
@@ -111,5 +110,4 @@ export default QueryWriter;
 
 QueryWriter.propTypes = {
   executeQuery: PropTypes.func.isRequired,
-  executeQueryInEnvironment: PropTypes.func.isRequired,
 };

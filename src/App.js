@@ -113,34 +113,11 @@ class App extends Component {
   executeSparql = (call, callBack) => {
     console.info('call', call);
     try {
-      this.state.client.query(call).execute((err, results) => {
-        if (err) {
-          if (callBack) {
-            callBack(err, []);
-          } else {
-            console.log('Error while executing query: ', call);
-            console.log('Error message: ', err);
-          }
-        } else if (callBack) {
-          console.info('results', results);
-          callBack('', results.results.bindings);
-        }
-      });
-    } catch (error) {
-      callBack(error, null);
-    }
-  };
-  executeSparqlEnv = (call, enviroment, callBack) => {
-    try {
       this.state.parser.parse(call);
       this.state.client.query(call).execute((err, results) => {
         if (err) {
           if (callBack) {
-            console.log(err);
             callBack(err, []);
-          } else {
-            console.log('Error while executing query: ', call);
-            console.log('Error message: ', err);
           }
         } else if (callBack) {
           console.info('results', results);
@@ -151,7 +128,6 @@ class App extends Component {
       callBack(error, null);
     }
   };
-
 
   handleClick = (i) => {
     let title;
@@ -192,7 +168,6 @@ class App extends Component {
       case States.Querying:
         return (<QueryWriter
           executeQuery={this.executeSparql}
-          executeQueryInEnvironment={this.executeSparqlEnv}
         />);
       case States.Tutorialise:
         return <Tutorialised />;
