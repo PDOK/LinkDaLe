@@ -92,6 +92,9 @@ class DataLinkView extends Component {
     this.forceUpdate();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props !== nextProps) { this.forceUpdate(); }
+  }
   shouldComponentUpdate(nextProps, nextState) {
     const nodes = nextProps.nodes;
     const links = nextProps.links;
@@ -104,6 +107,7 @@ class DataLinkView extends Component {
     }
     return true;
   }
+
   onChange(object, string) {
     const dialog = this.state.dialog;
     dialog.searchText = string;

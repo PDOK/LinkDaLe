@@ -9,7 +9,7 @@ import DataImport from './DataImport';
 import DataClassifyView from './DataClassifyView';
 import DataLinkView from './DataLinkView';
 import DownloadView from './DownloadView';
-import { convertDataToTriples, nodeCreation } from './Dataprocessing';
+import { convertDataToTriples, nodeCreation } from './dataprocessing';
 
 async function transformData(data, links, nodes) {
   return convertDataToTriples(data, links, nodes);

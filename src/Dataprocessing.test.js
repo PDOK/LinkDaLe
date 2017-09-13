@@ -1,4 +1,4 @@
-import { createClassDefinitions, nodeCreation } from './Dataprocessing';
+import { createClassDefinitions, nodeCreation } from './dataprocessing';
 
 
 it('create relation definitions', () => {

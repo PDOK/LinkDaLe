@@ -206,4 +206,4 @@ function nodeCreation(data, classifications) {
     nodes,
   });
 }
-export { convertDataToTriples, createClassDefinitions, nodeCreation };
+export { convertDataToTriples, createClassDefinitions, nodeCreation, distribute };
