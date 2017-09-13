@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - "7"
+warnings_are_errors: false
 cache:
   directories:
     - node_modules
