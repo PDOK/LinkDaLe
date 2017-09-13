@@ -1,19 +1,19 @@
 /* eslint-disable react/jsx-filename-extension */
 // import 'jsdom-global/register'; // Uncomment when testing locally
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import App from './App';
 
 it('renders without crashing', () => {
-  shallow(<App />);
+  mount(<App />);
 });
 
 
-it('datastore did mount', () => {
-  const wrapper = mount(<App />);
-  expect(wrapper.state().store).toBeDefined();
-});
-
+// it('datastore did mount', () => {
+//   const wrapper = mount(<App />);
+//   expect(wrapper.state().store).toBeDefined();
+// });
+//
 // it('load data in named graph', (done) => {
 //   const wrapper = mount(<App />);
 //   const query = 'INSERT DATA { GRAPH <dataset-uris> {\n' +

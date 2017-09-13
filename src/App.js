@@ -121,8 +121,7 @@ class App extends Component {
             console.log('Error while executing query: ', call);
             console.log('Error message: ', err);
           }
-        }
-        if (callBack) {
+        } else if (callBack) {
           console.info('results', results);
           callBack('', results.results.bindings);
         }
