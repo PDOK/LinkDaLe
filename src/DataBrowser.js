@@ -4,6 +4,7 @@ import Proptypes from 'prop-types';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import IconButton from 'material-ui/IconButton';
 import Delete from 'material-ui/svg-icons/action/delete';
+import Snackbar from 'material-ui/Snackbar';
 import { getDefaultGraph, removeData, removeContextData, getAllDataFrom } from './querybuilder';
 import TripleVisualizer from './TripleVisualizer';
 
@@ -20,6 +21,10 @@ class DataBrowser extends Component {
       currentSelected: 0,
       data: [],
       error: '',
+      snackbar: {
+        open: false,
+        message: 'hi i\'m a snackbar',
+      },
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
@@ -58,13 +63,25 @@ class DataBrowser extends Component {
           if (err2) {
             this.setState({ error: err2.message });
           } else {
-            // TODO: Create hamburger to notify user
+            const snackbar = this.state.snackbar;
+            snackbar.open = true;
+            snackbar.message = 'Graph successfully removed';
+            this.setState({
+              snackbar,
+            });
             console.log('Context deleted');
           }
         });
       }
     });
   };
+  handleRequestClose = () => {
+    const snackbar = this.state.snackbar;
+    snackbar.open = false;
+    this.setState({
+      snackbar,
+    });
+  }
 
 
   changeCurrentGraph = (row, selectedIndex) => {
@@ -133,6 +150,12 @@ class DataBrowser extends Component {
             error={this.state.error}
           />
         </div>
+        <Snackbar
+          open={this.state.snackbar.open}
+          message={this.state.snackbar.message}
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose.bind(this)}
+        />
       </div>
 
     );
