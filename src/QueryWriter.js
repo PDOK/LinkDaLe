@@ -26,8 +26,7 @@ class QueryWriter extends React.Component {
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
-        // TODO: implement error state
-        this.setState({ error: err });
+        this.setState({ error: err.message, data: [], headers: [] });
       } else {
         const currentstore = {};
         if (results.length !== 0) {

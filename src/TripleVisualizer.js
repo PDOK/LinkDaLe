@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import GraphView from 'react-digraph';
 import { green500 } from 'material-ui/styles/colors';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
+import Paper from 'material-ui/Paper';
 import { distribute } from './dataprocessing';
 
 const GraphConfig = {
@@ -336,9 +337,19 @@ class TripleVisualizer extends React.Component {
     );
   };
   render() {
+    const renderErrorBox = this.props.error ? (
+      <Tab label="Error">
+        <Paper>
+          <h1>Something went wrong</h1>
+          {this.props.error}
+        </Paper>
+      </Tab>
+    ) : (null);
+
     return (
       <Tabs>
-        <Tab label="Table">
+        {renderErrorBox}
+        <Tab label="Table" disabled={!this.props.error}>
           <Table selectable={false} wrapperStyle={{ maxHeight: '50vh' }}>
             <TableHeader displaySelectAll={false}>
               <TableRow>
@@ -360,7 +371,7 @@ class TripleVisualizer extends React.Component {
             </TableBody>
           </Table>
         </Tab>
-        <Tab label="Graph view" style={{ position: 'relative' }}>
+        <Tab label="Graph view" style={{ position: 'relative' }} disabled={!this.props.error}>
           <GraphView
             style={
             {
@@ -392,7 +403,7 @@ class TripleVisualizer extends React.Component {
 
 
         </Tab>
-        <Tab label="Class graph">
+        <Tab label="Class graph" disabled={!this.props.error}>
           <GraphView
             style={
             {
@@ -429,6 +440,11 @@ class TripleVisualizer extends React.Component {
 }
 TripleVisualizer.propTypes = {
   data: PropTypes.array.isRequired,
+  error: PropTypes.string,
+};
+
+TripleVisualizer.defaultProps = {
+  error: '',
 };
 
 export default TripleVisualizer;

@@ -19,10 +19,11 @@ class DataBrowser extends Component {
       graphContexts: {},
       currentSelected: 0,
       data: [],
+      error: '',
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
-        // TODO: implement error state
+        this.setState({ error: err.message, data: [], headers: [] });
       } else {
         const currentstore = {};
         if (results.length !== 0) {
@@ -127,7 +128,10 @@ class DataBrowser extends Component {
           {this.renderGraphTable()}
         </div>
         <div style={{ overflow: 'auto', flex: 1, display: 'flex', alignItems: 'stretch' }}>
-          <TripleVisualizer data={this.state.data} />
+          <TripleVisualizer
+            data={this.state.data}
+            error={this.state.error}
+          />
         </div>
       </div>
 
