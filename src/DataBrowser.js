@@ -5,6 +5,9 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import IconButton from 'material-ui/IconButton';
 import Delete from 'material-ui/svg-icons/action/delete';
 import Snackbar from 'material-ui/Snackbar';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+
 import { getDefaultGraph, removeData, removeContextData, getAllDataFrom } from './querybuilder';
 import TripleVisualizer from './TripleVisualizer';
 
@@ -25,6 +28,10 @@ class DataBrowser extends Component {
         open: false,
         message: 'hi i\'m a snackbar',
       },
+      dialog: {
+        open: false,
+      },
+
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
@@ -74,6 +81,7 @@ class DataBrowser extends Component {
         });
       }
     });
+    this.closeDialog();
   };
   handleRequestClose = () => {
     const snackbar = this.state.snackbar;
@@ -81,7 +89,9 @@ class DataBrowser extends Component {
     this.setState({
       snackbar,
     });
-  }
+  };
+  openDialog = row => this.setState({ dialog: { open: true, row } });
+  closeDialog = () => this.setState({ dialog: { open: false, row: -1 } });
 
 
   changeCurrentGraph = (row, selectedIndex) => {
@@ -91,7 +101,7 @@ class DataBrowser extends Component {
         this.getGraphData(Object.keys(this.state.graphContexts)[row]);
         break;
       case 4:
-        this.deleteGraph(Object.keys(this.state.graphContexts)[row]);
+        this.openDialog(row);
         break;
       default:
     }
@@ -139,6 +149,10 @@ class DataBrowser extends Component {
     );
   }
   render() {
+    const dialogActions = [
+      <FlatButton label={'No'} primary onClick={this.closeDialog} />,
+      <FlatButton label={'Yes'} secondary onClick={() => this.deleteGraph(Object.keys(this.state.graphContexts)[this.state.dialog.row])} />,
+    ];
     return (
       <div style={{ display: 'flex', maxHeight: 'auto', height: '100%', flexDirection: 'column', overflow: 'hidden', minHeight: 'min-content', justifyContent: 'center', alignItems: 'center' }}>
         <div style={{ overflow: 'auto', flex: 1, display: 'flex', alignItems: 'stretch' }}>
@@ -156,6 +170,7 @@ class DataBrowser extends Component {
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose.bind(this)}
         />
+        <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open} />
       </div>
 
     );
