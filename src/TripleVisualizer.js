@@ -371,7 +371,7 @@ class TripleVisualizer extends React.Component {
             </TableBody>
           </Table>
         </Tab>
-        <Tab label="Graph view" style={{ position: 'relative' }} disabled={!this.props.error}>
+        <Tab label="Data graph" style={{ position: 'relative' }} disabled={!this.props.error}>
           <GraphView
             style={
             {
