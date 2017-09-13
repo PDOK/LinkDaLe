@@ -228,7 +228,8 @@ class DataClassifyView extends Component {
         return (
           <div>
             <p>This dialog allows specifying the class of things described by the data.
-            For example, if your data features people then you can use <em> foaf:Person </em> </p>
+            For example, if your data features people then you can use
+                <em> foaf:Person </em> </p>
             <p>Examples are: person, company, animal etc.</p>
             <form onSubmit={this.searchVocabulary.bind(this)}>
               <TextField
