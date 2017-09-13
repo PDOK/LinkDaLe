@@ -14,7 +14,9 @@ import {
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import Markdown from 'react-markdown';
+import { green500 } from 'material-ui/styles/colors';
 import './Tutorialised.css';
+
 
 class Tutorialised extends React.Component {
   constructor() {
@@ -105,6 +107,7 @@ class Tutorialised extends React.Component {
               onClick={() => this.openRemoteMarkdown(1, 2)}
             />
             <FlatButton
+              backgroundColor={green500}
               label="Exercise: My first Linked Data"
               onClick={() => this.openRemoteMarkdown(1, 3)}
             />
