@@ -7,6 +7,7 @@ cache:
     - node_modules
 script:
   - npm test
+  - unset CI
   - npm run build
 deploy:
   provider: pages
