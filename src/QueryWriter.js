@@ -7,10 +7,13 @@ import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import PropTypes from 'prop-types';
+import { CircularProgress } from 'material-ui';
+import { orangeA200 } from 'material-ui/styles/colors';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/sparql/sparql';
 import 'codemirror/theme/material.css';
 import SparqlVisualizer from './SparqlVisualizer';
+
 import { getDefaultGraph } from './querybuilder';
 
 class QueryWriter extends React.Component {
@@ -23,6 +26,7 @@ class QueryWriter extends React.Component {
       selectedGraph: {},
       headers: [],
       error: '',
+      processing: false,
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
@@ -48,26 +52,47 @@ class QueryWriter extends React.Component {
   };
 
   onQueryChange = (query) => {
-    // TOOD: implement validation and safeguards?
     this.setState({ query });
   };
 
   onFireQuery = () => {
+    this.setState({ processing: true });
+
     this.props.executeQuery(
         this.state.query, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
     if (err) {
-      this.setState({ error: err.message, data: [], headers: [] });
+      this.setState({ error: err.message, data: [], headers: [], processing: false });
     } else if (results.length === 0) {
-      this.setState({ error: '', data: [], headers: [] });
+      this.setState({ error: '', data: [], headers: [], processing: false });
     } else {
       const data = results.map(result => Object.keys(result).map(value => result[value]));
       const headers = Object.keys(results[0]);
-      this.setState({ data, headers, error: '' });
+      this.setState({ data, headers, error: '', processing: false });
     }
   };
+  renderProgress = () => {
+    if (this.state.processing) {
+      return (
+        <CircularProgress
+          style={{
+            margin: 'auto',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%,-50%)',
+          }}
+          size={100}
+          thickness={7}
+          color={orangeA200}
+        />
+      );
+    }
+    return null;
+  };
+
 
   render() {
     return (
@@ -101,6 +126,7 @@ class QueryWriter extends React.Component {
           headers={this.state.headers}
           error={this.state.error}
         />
+        {this.renderProgress()}
       </div>
     );
   }
