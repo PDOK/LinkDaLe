@@ -34,15 +34,19 @@ class Tutorialised extends React.Component {
             `${process.env.PUBLIC_URL}/markdown/AboutLD.MD`,
             `${process.env.PUBLIC_URL}/markdown/AboutLOD.MD`,
             `${process.env.PUBLIC_URL}/markdown/myFirstLD.MD`,
+            `${process.env.PUBLIC_URL}/markdown/BrowseLD.MD`,
+            `${process.env.PUBLIC_URL}/markdown/QueryLD.MD`,
+            `${process.env.PUBLIC_URL}/markdown/EnrichLD.MD`,
           ],
         },
         2: {
           expanded: false,
           markdownURIs:
           [
-            `${process.env.PUBLIC_URL}/markdown/aboutBPIL.MD`,
+            `${process.env.PUBLIC_URL}/markdown/AboutBPIL.MD`,
             `${process.env.PUBLIC_URL}/markdown/BPIL1.MD`,
             `${process.env.PUBLIC_URL}/markdown/BPIL2.MD`,
+            `${process.env.PUBLIC_URL}/markdown/BPIL3.MD`,
           ],
         },
       },
@@ -108,8 +112,23 @@ class Tutorialised extends React.Component {
             />
             <FlatButton
               backgroundColor={green500}
-              label="Exercise: My first Linked Data"
+              label="Tutorial: My first Linked Data"
               onClick={() => this.openRemoteMarkdown(1, 3)}
+            />
+            <FlatButton
+              backgroundColor={green500}
+              label="Tutorial: Browse Linked Data"
+              onClick={() => this.openRemoteMarkdown(1, 4)}
+            />
+            <FlatButton
+              backgroundColor={green500}
+              label="Tutorial: Query Linked Data"
+              onClick={() => this.openRemoteMarkdown(1, 5)}
+            />
+            <FlatButton
+              backgroundColor={green500}
+              label="Tutorial: Enrich Linked Data"
+              onClick={() => this.openRemoteMarkdown(1, 6)}
             />
           </CardActions>
         </Card>
@@ -129,23 +148,23 @@ class Tutorialised extends React.Component {
             actAsExpander
           />
           <CardText className="TutorialCardText" expandable>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-              Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam
-              sed pellentesque.
-              Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis
-              odio.
+            <strong> BPIL </strong> is a course at University of Twente where students
+              learn how to build and integrate systems between different parties in a supply chain.
+              Linked Data is a technology that helps to simplify
+              data management and exchange between parties.
             </CardText>
           <CardActions expandable>
             <FlatButton
-              label="About the course"
+              label="About BPIL"
               onClick={() => this.openRemoteMarkdown(2, 0)}
             />
             <FlatButton
-              label="Exercise 1: Explain yourself"
+              label="Assignment 1: Explain Yourself"
               onClick={() => this.openRemoteMarkdown(2, 1)}
             />
-            <FlatButton label="Exercise 2:Link it" onClick={() => this.openRemoteMarkdown(2, 2)} />
+            <FlatButton label="Assignment 2: Enrich It" onClick={() => this.openRemoteMarkdown(2, 2)} />
+            <FlatButton label="Assignment 3: Use it" onClick={() => this.openRemoteMarkdown(2, 3)} />
+
           </CardActions>
         </Card>
         <Dialog

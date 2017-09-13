@@ -2,7 +2,7 @@ My First Linked Data
 ======
 
 ## In short
-In this exercise you will learn how to create Linked Data representation of a simple table using ontologies.
+In this tutorial you will learn how to create Linked Data representation of a simple table using ontologies.
 The source for conversion is a table in a *.csv format. With the help of the tool this CSV-file will be converted into Linked Data. 
 
 **Comma-separated values (CSV)** is a widespread format for spreadsheets and simple databases. 
@@ -193,7 +193,16 @@ Click **Continue** to get to the next step.
 Congratulations! You can see and read your newly created data from this screen. You can change serialisation (Turtle, JSON-LD, N-Triples) and download the data by clicking **Download**
 button. 
  
-**Publish** button will insert your data into a remote [triplestore](http://almere.pilod.nl:8890/sparql). This will make your data published on the Web Of Data! You can browse your data from **Browse data** screen or query it from **Query data** screen. 
+**Publish** button will insert your data into a remote [triplestore](http://almere.pilod.nl:8890/sparql). This will make your data published on the Web Of Data! Just provide useful metadata by filling a form 
+as it shown below.
+
+
+<img src="/markdown/images/publish.png" height="500" title="Metadata dialog"/> 
+
+
+CLick **Publish** and you are done!
+
+You can browse your data from **Browse data** screen or query it from **Query data** screen. 
  
 
 
