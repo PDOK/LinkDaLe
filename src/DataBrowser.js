@@ -4,6 +4,10 @@ import Proptypes from 'prop-types';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import IconButton from 'material-ui/IconButton';
 import Delete from 'material-ui/svg-icons/action/delete';
+import Snackbar from 'material-ui/Snackbar';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+
 import { getDefaultGraph, removeData, removeContextData, getAllDataFrom } from './querybuilder';
 import TripleVisualizer from './TripleVisualizer';
 
@@ -19,10 +23,19 @@ class DataBrowser extends Component {
       graphContexts: {},
       currentSelected: 0,
       data: [],
+      error: '',
+      snackbar: {
+        open: false,
+        message: 'hi i\'m a snackbar',
+      },
+      dialog: {
+        open: false,
+      },
+
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
-        // TODO: implement error state
+        this.setState({ error: err.message, data: [], headers: [] });
       } else {
         const currentstore = {};
         if (results.length !== 0) {
@@ -41,7 +54,7 @@ class DataBrowser extends Component {
   getGraphData = (graphname) => {
     this.props.executeQuery(getAllDataFrom(graphname), (err, result) => {
       if (err) {
-        console.error('Couldnt Grab data');
+        this.setState({ error: err.message });
       } else {
         const data = result.map(row => [row.s, row.p, row.o]);
         this.setState({ data });
@@ -51,18 +64,34 @@ class DataBrowser extends Component {
   deleteGraph = (graphname) => {
     this.props.executeQuery(removeContextData(graphname), (err) => {
       if (err) {
-        console.error(err);
+        this.setState({ error: err.message });
       } else {
         this.props.executeQuery(removeData(graphname), (err2) => {
           if (err2) {
-            console.error(err2);
+            this.setState({ error: err2.message });
           } else {
+            const snackbar = this.state.snackbar;
+            snackbar.open = true;
+            snackbar.message = 'Graph successfully removed';
+            this.setState({
+              snackbar,
+            });
             console.log('Context deleted');
           }
         });
       }
     });
+    this.closeDialog();
   };
+  handleRequestClose = () => {
+    const snackbar = this.state.snackbar;
+    snackbar.open = false;
+    this.setState({
+      snackbar,
+    });
+  };
+  openDialog = row => this.setState({ dialog: { open: true, row } });
+  closeDialog = () => this.setState({ dialog: { open: false, row: -1 } });
 
 
   changeCurrentGraph = (row, selectedIndex) => {
@@ -72,7 +101,7 @@ class DataBrowser extends Component {
         this.getGraphData(Object.keys(this.state.graphContexts)[row]);
         break;
       case 4:
-        this.deleteGraph(Object.keys(this.state.graphContexts)[row]);
+        this.openDialog(row);
         break;
       default:
     }
@@ -107,7 +136,7 @@ class DataBrowser extends Component {
                     <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
                     <TableRowColumn>{key}</TableRowColumn>
                     <TableRowColumn>{graph[dcCreated]}</TableRowColumn>
-                    <TableRowColumn><IconButton disabled><Delete /></IconButton></TableRowColumn>
+                    <TableRowColumn><IconButton><Delete /></IconButton></TableRowColumn>
                   </TableRow>
                 );
               }
@@ -120,14 +149,28 @@ class DataBrowser extends Component {
     );
   }
   render() {
+    const dialogActions = [
+      <FlatButton label={'No'} primary onClick={this.closeDialog} />,
+      <FlatButton label={'Yes'} secondary onClick={() => this.deleteGraph(Object.keys(this.state.graphContexts)[this.state.dialog.row])} />,
+    ];
     return (
       <div style={{ display: 'flex', maxHeight: 'auto', height: '100%', flexDirection: 'column', overflow: 'hidden', minHeight: 'min-content', justifyContent: 'center', alignItems: 'center' }}>
         <div style={{ overflow: 'auto', flex: 1, display: 'flex', alignItems: 'stretch' }}>
           {this.renderGraphTable()}
         </div>
         <div style={{ overflow: 'auto', flex: 1, display: 'flex', alignItems: 'stretch' }}>
-          <TripleVisualizer data={this.state.data} />
+          <TripleVisualizer
+            data={this.state.data}
+            error={this.state.error}
+          />
         </div>
+        <Snackbar
+          open={this.state.snackbar.open}
+          message={this.state.snackbar.message}
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose.bind(this)}
+        />
+        <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open} />
       </div>
 
     );

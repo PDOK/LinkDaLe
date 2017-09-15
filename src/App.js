@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-filename-extension,react/jsx-no-bind */
 import React, { Component } from 'react';
-import RDFStore from 'rdfstore';
+import { SparqlClient } from 'sparql-client-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MaterialDrawer from 'material-ui/Drawer/Drawer';
@@ -10,6 +10,7 @@ import CardText from 'material-ui/Card/CardText';
 import FlatButton from 'material-ui/FlatButton/';
 import AppBar from 'material-ui/AppBar/';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import SparqlJs from 'sparqljs';
 import {
   green400,
   green500,
@@ -105,65 +106,28 @@ class App extends Component {
     this.state = {
       state: States.Welcome,
       title: 'Welcome',
-      store: undefined,
+      client: new SparqlClient('http://almere.pilod.nl:8890/sparql'),
+      parser: new SparqlJs.Parser(),
     };
-  }
-  componentDidMount() {
-    const persistent = typeof localStorage !== 'undefined';
-    if (!persistent) {
-      console.info('No local storage found', 'Page only keeps data within this session');
-    }
-    RDFStore.create({ name: 'rdfstore', persistent }, (err, graph) => {
-      if (err) {
-        console.error('Class: App, Function: Create RDFstore, Line 105 ', err);
-      } else {
-        this.setState({ store: graph });
-      }
-    });
   }
   executeSparql = (call, callBack) => {
     console.info('call', call);
     try {
-      this.state.store.execute(call, (err, results) => {
+      this.state.parser.parse(call);
+      this.state.client.query(call).execute((err, results) => {
         if (err) {
           if (callBack) {
             callBack(err, []);
-          } else {
-            console.log('Error while executing query: ', call);
-            console.log('Error message: ', err);
           }
-        }
-        if (callBack) {
+        } else if (callBack) {
           console.info('results', results);
-          callBack('', results);
+          callBack('', results.results.bindings);
         }
       });
     } catch (error) {
       callBack(error, null);
     }
   };
-  executeSparqlEnv = (call, enviroment, callBack) => {
-    console.info('call', call);
-    try {
-      this.state.store.execute(call, [enviroment], [], (err, results) => {
-        if (err) {
-          if (callBack) {
-            callBack(err, []);
-          } else {
-            console.log('Error while executing query: ', call);
-            console.log('Error message: ', err);
-          }
-        }
-        if (callBack) {
-          console.info('results', results);
-          callBack('', results);
-        }
-      });
-    } catch (error) {
-      callBack(error, null);
-    }
-  };
-
 
   handleClick = (i) => {
     let title;
@@ -204,7 +168,6 @@ class App extends Component {
       case States.Querying:
         return (<QueryWriter
           executeQuery={this.executeSparql}
-          executeQueryInEnvironment={this.executeSparqlEnv}
         />);
       case States.Tutorialise:
         return <Tutorialised />;

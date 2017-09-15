@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-filename-extension,no-return-assign */
 import React from 'react';
 import CodeMirror from 'react-codemirror';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -7,10 +7,13 @@ import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import PropTypes from 'prop-types';
+import { CircularProgress } from 'material-ui';
+import { orangeA200 } from 'material-ui/styles/colors';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/sparql/sparql';
 import 'codemirror/theme/material.css';
 import SparqlVisualizer from './SparqlVisualizer';
+
 import { getDefaultGraph } from './querybuilder';
 
 class QueryWriter extends React.Component {
@@ -23,10 +26,11 @@ class QueryWriter extends React.Component {
       selectedGraph: {},
       headers: [],
       error: '',
+      processing: false,
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
       if (err) {
-        // TODO: implement error state
+        this.setState({ error: err.message, data: [], headers: [] });
       } else {
         const currentstore = {};
         if (results.length !== 0) {
@@ -44,30 +48,53 @@ class QueryWriter extends React.Component {
     });
   }
   onDataSourceChange = (event, index, value) => {
-    this.setState({ selectedGraph: value });
+    this.setState({
+      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}` });
+    this.cm.codeMirror.setValue(`SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`);
   };
 
   onQueryChange = (query) => {
-    // TOOD: implement validation and safeguards?
     this.setState({ query });
   };
 
   onFireQuery = () => {
-    this.props.executeQueryInEnvironment(
-        this.state.query, this.state.selectedGraph.uri, this.onQueryCallBack);
+    this.setState({ processing: true });
+
+    this.props.executeQuery(
+        this.state.query, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
     if (err) {
-      this.setState({ error: err.message, data: [], headers: [] });
+      this.setState({ error: err.message, data: [], headers: [], processing: false });
     } else if (results.length === 0) {
-      this.setState({ error: '', data: [], headers: [] });
+      this.setState({ error: '', data: [], headers: [], processing: false });
     } else {
       const data = results.map(result => Object.keys(result).map(value => result[value]));
       const headers = Object.keys(results[0]);
-      this.setState({ data, headers, error: '' });
+      this.setState({ data, headers, error: '', processing: false });
     }
   };
+  renderProgress = () => {
+    if (this.state.processing) {
+      return (
+        <CircularProgress
+          style={{
+            margin: 'auto',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%,-50%)',
+          }}
+          size={100}
+          thickness={7}
+          color={orangeA200}
+        />
+      );
+    }
+    return null;
+  };
+
 
   render() {
     return (
@@ -82,6 +109,7 @@ class QueryWriter extends React.Component {
         </SelectField>
         <Divider />
         <CodeMirror
+          ref={el => this.cm = el}
           options={{
             mode: 'sparql',
             lineNumbers: true,
@@ -94,6 +122,7 @@ class QueryWriter extends React.Component {
         <FloatingActionButton
           style={{ right: '40px', top: '100px', position: 'absolute' }}
           onClick={this.onFireQuery}
+          disabled={this.state.processing}
         >
           <Play /></FloatingActionButton>
         <SparqlVisualizer
@@ -101,6 +130,7 @@ class QueryWriter extends React.Component {
           headers={this.state.headers}
           error={this.state.error}
         />
+        {this.renderProgress()}
       </div>
     );
   }
@@ -110,5 +140,4 @@ export default QueryWriter;
 
 QueryWriter.propTypes = {
   executeQuery: PropTypes.func.isRequired,
-  executeQueryInEnvironment: PropTypes.func.isRequired,
 };
