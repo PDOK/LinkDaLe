@@ -30,6 +30,7 @@ class DataBrowser extends Component {
       dialog: {
         open: false,
       },
+      mounted: true,
 
     };
     props.executeQuery(getDefaultGraph(), (err, results) => {
@@ -45,18 +46,25 @@ class DataBrowser extends Component {
             currentstore[result.subject.value][result.predicate.value] = result.object.value;
           });
         }
-        this.setState({ graphContexts: currentstore });
-        this.getGraphData(Object.keys(currentstore)[0]);
+        if (this.state.mounted) {
+          this.setState({ graphContexts: currentstore });
+          this.getGraphData(Object.keys(currentstore)[0]);
+        }
       }
     });
+  }
+  componentWillUnmount() {
+    this.setState({ mounted: false });
   }
   getGraphData = (graphname) => {
     this.props.executeQuery(getAllDataFrom(graphname), (err, result) => {
       if (err) {
         this.setState({ error: err.message });
-      } else {
+      } else if (this.state.mounted) {
         const data = result.map(row => [row.s, row.p, row.o]);
-        this.setState({ data });
+        if (this.state.mounted) {
+          this.setState({ data });
+        }
       }
     });
   };
