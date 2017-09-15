@@ -281,7 +281,7 @@ class InfoBar extends Component {
 }
 
 InfoBar.propTypes = {
-  graph: PropTypes.objectOf(PropTypes.array),
+  graph: PropTypes.objectOf(PropTypes.object),
   processing: PropTypes.bool.isRequired,
   executeQuery: PropTypes.func.isRequired,
   filename: PropTypes.string,

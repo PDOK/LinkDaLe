@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types,react/jsx-filename-extension */
 import React from 'react';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -55,8 +54,8 @@ class SparqlVisualizer extends React.Component {
   }
 }
 SparqlVisualizer.propTypes = {
-  data: PropTypes.array.isRequired,
-  headers: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  headers: PropTypes.arrayOf(PropTypes.string).isRequired,
   error: PropTypes.string,
 };
 
