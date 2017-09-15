@@ -42,4 +42,23 @@ describe('<DataCreation/>', () => {
     expect(result).toEqual({ max: 15, results: [11, 12, 13, 14, 15] });
   });
   // Skipping setters
+  it('getFirstData', () => {
+    const result = DataCreation.getFirstValues(defaultExampleData);
+    expect(result).toEqual(['b0', 'b1', 'b2', 'c3', 'b4']);
+  });
+
+  it('getFirstData empty array check', () => {
+    const result = DataCreation.getFirstValues([]);
+    expect(result).toEqual([]);
+  });
+
+  it('getFirstData empty matrix check', () => {
+    const result = DataCreation.getFirstValues([[]]);
+    expect(result).toEqual([]);
+  });
+
+  it('getFirstData nullCall', () => {
+    const result = DataCreation.getFirstValues();
+    expect(result).toEqual(undefined);
+  });
 });
