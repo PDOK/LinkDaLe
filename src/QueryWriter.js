@@ -2,7 +2,7 @@
 import React from 'react';
 import CodeMirror from 'react-codemirror';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import DropDownMenu from 'material-ui/DropDownMenu';
+import SelectField from 'material-ui/SelectField';
 import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import Play from 'material-ui/svg-icons/av/play-arrow';
@@ -44,7 +44,6 @@ class QueryWriter extends React.Component {
     });
   }
   onDataSourceChange = (event, index, value) => {
-    console.log(value);
     this.setState({ selectedGraph: value });
   };
 
@@ -73,14 +72,14 @@ class QueryWriter extends React.Component {
   render() {
     return (
       <div style={{ textAlign: 'start' }}>
-        <DropDownMenu
+        <SelectField
           floatingLabelText="Selected Database"
           value={this.state.selectedGraph}
           onChange={this.onDataSourceChange}
         >
           {this.state.graphContexts.map(
-              graph => <MenuItem value={graph} primaryText={graph.name} />)}
-        </DropDownMenu>
+              graph => <MenuItem key={graph.name} value={graph} primaryText={graph.name} />)}
+        </SelectField>
         <Divider />
         <CodeMirror
           options={{
