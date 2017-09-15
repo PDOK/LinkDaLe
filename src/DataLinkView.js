@@ -1,4 +1,3 @@
-
 /**
  * Created by Gerwin Bosch on 6-7-2017.
  */
@@ -16,6 +15,7 @@ import 'whatwg-fetch';
 import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
+import PropTypes from 'prop-types';
 
 function doNothing() {
 
@@ -108,7 +108,7 @@ class DataLinkView extends Component {
     return true;
   }
 
-  onChange = (_, string) => {
+  onChange = (object, string) => {
     const dialog = this.state.dialog;
     dialog.searchText = string;
     this.setState({ dialog });
@@ -188,9 +188,6 @@ class DataLinkView extends Component {
 
   // Called when an edge is reattached to a different target.
   onSwapEdge = (sourceViewNode, targetViewNode, viewEdge) => {
-    if (sourceViewNode.type === 'literal') {
-      return; // No swapping to primary literal
-    }
     const edges = this.props.links;
     const i = this.getEdgeIndex(viewEdge);
     const edge = JSON.parse(JSON.stringify(edges[i]));
@@ -219,14 +216,15 @@ class DataLinkView extends Component {
 
 
   // Helper to find the index of a given node
-  getNodeIndex = (searchNode) => {
-    this.props.nodes.findIndex(node => node[NODE_KEY] === searchNode[NODE_KEY]);
-  };
+  getNodeIndex(searchNode) {
+    return this.props.nodes.findIndex(node => node[NODE_KEY] === searchNode[NODE_KEY]);
+  }
 
   // Helper to find the index of a given edge
-  getEdgeIndex = searchEdge =>
-    this.props.links.findIndex(edge => edge.source === searchEdge.source &&
+  getEdgeIndex(searchEdge) {
+    return this.props.links.findIndex(edge => edge.source === searchEdge.source &&
           edge.target === searchEdge.target);
+  }
 
   // Given a nodeKey, return the corresponding node
   getViewNode = (nodeKey) => {
@@ -240,23 +238,23 @@ class DataLinkView extends Component {
    * Handlers/Interaction
    */
 
-  getNode = (id) => {
+  getNode(id) {
     for (let i = 0; i < this.props.nodes.length; i += 1) {
       if (this.props.nodes[i].id === id) {
         return this.props.nodes[i];
       }
     }
     return undefined;
-  };
+  }
 
-  toNextPage = () => {
+  toNextPage() {
     this.props.nextPage();
-  };
+  }
 
 
-  toPreviousPage = () => {
+  toPreviousPage() {
     this.props.previousPage(2);
-  };
+  }
 
 
   searchVocabulary = (e) => {
@@ -312,8 +310,7 @@ class DataLinkView extends Component {
     });
     this.forceUpdate();
   };
-
-  renderDialogTableBody = () => {
+  renderDialogTableBody() {
     if (this.state.dialog.results.length) {
       const result = this.state.dialog.results.map((column, index) =>
         (<MenuItem
@@ -333,10 +330,10 @@ class DataLinkView extends Component {
       );
     }
     return <div />;
-  };
+  }
 
 
-  renderGraph = () => {
+  renderGraph() {
     const nodes = this.props.nodes;
     const edges = this.props.links;
     const selected = this.state.selected;
@@ -377,7 +374,7 @@ class DataLinkView extends Component {
       );
     }
     return <div />;
-  };
+  }
 
   render() {
     const selected = this.state.selected;
@@ -493,8 +490,9 @@ function InfoBar(props) {
   }
   let middleCard = <div />;
   if (item.type !== 'emptyEdge') {
-    middleCard = props.getData(item.column, 0).results.map(x => (
-      <CardText>
+    middleCard = props.getData(item.column, 0).results.map((x, idx) => (
+      // eslint-disable-next-line react/no-array-index-key
+      <CardText key={idx}>
         {x}
         <Divider />
       </CardText>
@@ -552,9 +550,10 @@ function InfoBar(props) {
     </Card>
   );
 }
+
 DataLinkView.propTypes = {
-  nodes: PropTypes.arrayOf.objectOf(PropTypes.string).isRequired,
-  links: PropTypes.arrayOf.objectOf(PropTypes.string).isRequired,
+  nodes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  links: PropTypes.arrayOf(PropTypes.object).isRequired,
   setNode: PropTypes.func.isRequired,
   deleteEdge: PropTypes.func.isRequired,
   nextPage: PropTypes.func.isRequired,
@@ -563,9 +562,14 @@ DataLinkView.propTypes = {
   getExampleData: PropTypes.func.isRequired,
 };
 InfoBar.propTypes = {
-  selected: PropTypes.objectOf(PropTypes.string).isRequired,
+  selected: PropTypes.objectOf(PropTypes.any),
   getData: PropTypes.func.isRequired,
-  references: PropTypes.arrayOf.objectOf(PropTypes.string).isRequired,
+  references: PropTypes.arrayOf(PropTypes.object),
+};
+
+InfoBar.defaultProps = {
+  references: [],
+  selected: undefined,
 };
 
 
