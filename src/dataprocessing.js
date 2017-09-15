@@ -169,7 +169,7 @@ function nodeCreation(data, classifications) {
           if (classification.baseUri[classification.baseUri.length - 1] !== '/') {
             baseUri += '/';
           }
-          return baseUri + item;
+          return baseUri + encodeURI(item);
         });
       }
       data.forEach((dataRow, idx) => dataRow.push(newRow[idx]));
