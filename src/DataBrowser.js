@@ -54,7 +54,6 @@ class DataBrowser extends Component {
         console.error(err);
       } else {
         this.props.executeQuery(removeData(graphname), (err2) => {
-          console.log('Data deleted');
           if (err2) {
             console.error(err2);
           } else {
@@ -103,7 +102,7 @@ class DataBrowser extends Component {
             // Limited filtering
               if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
                 return (
-                  <TableRow selected={count === this.state.currentSelected}>
+                  <TableRow key={graph[dcTitle]} selected={count === this.state.currentSelected}>
                     <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
                     <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
                     <TableRowColumn>{key}</TableRowColumn>
