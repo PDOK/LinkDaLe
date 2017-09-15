@@ -35,7 +35,8 @@ class SparqlVisualizer extends React.Component {
           <Table selectable={false} wrapperStyle={{ maxHeight: '50vh' }}>
             <TableHeader displaySelectAll={false}>
               <TableRow>
-                {this.props.headers.map(header => <TableHeaderColumn>{header}</TableHeaderColumn>)}
+                {this.props.headers.map(header =>
+                  <TableHeaderColumn key={header}>{header}</TableHeaderColumn>)}
               </TableRow>
             </TableHeader>
             <TableBody
@@ -43,8 +44,8 @@ class SparqlVisualizer extends React.Component {
               style={{ maxHeight: '20vh' }}
             >
               {this.props.data.map(row => (
-                <TableRow>
-                  {row.map(data => <TableRowColumn>{data.value}</TableRowColumn>)}
+                <TableRow key={row.map(data => data.value)}>
+                  {row.map(data => <TableRowColumn key={data}>{data ? data.value : 'null'}</TableRowColumn>)}
                 </TableRow>))}
             </TableBody>
           </Table>
