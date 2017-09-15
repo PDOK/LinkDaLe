@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types,react/jsx-filename-extension */
 import React from 'react';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -129,7 +128,7 @@ class TripleVisualizer extends React.Component {
 
   // Helper to find the index of a given node
   getNodeIndex = searchNode => this.state.nodes.findIndex(
-      node => node[NODE_KEY] === searchNode[NODE_KEY]);
+    node => node[NODE_KEY] === searchNode[NODE_KEY]);
 
   // Given a nodeKey, return the corresponding node
   getViewNode = (nodeKey) => {
@@ -140,7 +139,7 @@ class TripleVisualizer extends React.Component {
   };
   // Helper to find the index of a given node
   getNodeClassIndex = searchNode => this.state.classNodes.findIndex(
-      node => node[NODE_KEY] === searchNode[NODE_KEY]);
+    node => node[NODE_KEY] === searchNode[NODE_KEY]);
 
   // Given a nodeKey, return the corresponding node
   getViewClassNode = (nodeKey) => {
@@ -168,7 +167,7 @@ class TripleVisualizer extends React.Component {
         node.class = ontology[OBJECT].value;
       } else {
         node.relations.push(
-            { classification: ontology[PREDICATE].value, target: ontology[OBJECT].value });
+          { classification: ontology[PREDICATE].value, target: ontology[OBJECT].value });
       }
     });
     library.forEach((classification) => {
@@ -374,12 +373,12 @@ class TripleVisualizer extends React.Component {
         <Tab label="Data graph" style={{ position: 'relative' }} disabled={this.props.error}>
           <GraphView
             style={
-            {
-              height: '48vh',
-            }
+              {
+                height: '48vh',
               }
+            }
             primary={green500}
-              // eslint-disable-next-line react/no-string-refs
+            // eslint-disable-next-line react/no-string-refs
             ref="GraphView"
             nodeKey={NODE_KEY}
             emptyType={EMPTY_TYPE}
@@ -406,12 +405,12 @@ class TripleVisualizer extends React.Component {
         <Tab label="Class graph" disabled={this.props.error}>
           <GraphView
             style={
-            {
-              height: '50vh',
-            }
+              {
+                height: '50vh',
               }
+            }
             primary={green500}
-              // eslint-disable-next-line react/no-string-refs
+            // eslint-disable-next-line react/no-string-refs
             ref="GraphView"
             nodeKey={NODE_KEY}
             emptyType={EMPTY_TYPE}
@@ -439,7 +438,7 @@ class TripleVisualizer extends React.Component {
   }
 }
 TripleVisualizer.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(PropTypes.array).isRequired,
   error: PropTypes.string,
 };
 

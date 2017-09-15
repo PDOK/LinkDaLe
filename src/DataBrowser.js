@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind,react/jsx-filename-extension */
 import React, { Component } from 'react';
 import Proptypes from 'prop-types';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -76,7 +75,6 @@ class DataBrowser extends Component {
             this.setState({
               snackbar,
             });
-            console.log('Context deleted');
           }
         });
       }
@@ -109,7 +107,7 @@ class DataBrowser extends Component {
 
   renderGraphTable() {
     return (
-      <Table selectable onCellClick={this.changeCurrentGraph.bind(this)} wrapperStyle={{ maxHeight: '40vh' }} >
+      <Table selectable onCellClick={this.changeCurrentGraph} wrapperStyle={{ maxHeight: '40vh' }} >
         <TableHeader displaySelectAll={false}>
           <TableRow>
             <TableHeaderColumn tooltip="the Title">Title</TableHeaderColumn>
@@ -120,29 +118,29 @@ class DataBrowser extends Component {
           </TableRow>
         </TableHeader>
         <TableBody
-          onRowSelection={this.changeCurrentGraph.bind(this)}
+          onRowSelection={this.changeCurrentGraph}
           deselectOnClickaway={false}
           style={{ maxHeight: '20vh' }}
         >
           {
             (Object.keys(this.state.graphContexts).length !== 0) ?
-            Object.keys(this.state.graphContexts).map((key, count) => {
-              const graph = this.state.graphContexts[key];
-            // Limited filtering
-              if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
-                return (
-                  <TableRow key={graph[dcTitle]} selected={count === this.state.currentSelected}>
-                    <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
-                    <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
-                    <TableRowColumn>{key}</TableRowColumn>
-                    <TableRowColumn>{graph[dcCreated]}</TableRowColumn>
-                    <TableRowColumn><IconButton><Delete /></IconButton></TableRowColumn>
-                  </TableRow>
-                );
-              }
-              return <space />;
-            }) :
-            <TableRow><TableRowColumn colSpan="5" style={{ textAlign: 'center' }}>No dataset available</TableRowColumn></TableRow>
+              Object.keys(this.state.graphContexts).map((key, count) => {
+                const graph = this.state.graphContexts[key];
+                // Limited filtering
+                if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
+                  return (
+                    <TableRow key={graph[dcTitle]} selected={count === this.state.currentSelected}>
+                      <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
+                      <TableRowColumn>{graph[dcDescription]}</TableRowColumn>
+                      <TableRowColumn>{key}</TableRowColumn>
+                      <TableRowColumn>{graph[dcCreated]}</TableRowColumn>
+                      <TableRowColumn><IconButton><Delete /></IconButton></TableRowColumn>
+                    </TableRow>
+                  );
+                }
+                return <space />;
+              }) :
+              <TableRow><TableRowColumn colSpan="5" style={{ textAlign: 'center' }}>No dataset available</TableRowColumn></TableRow>
           }
         </TableBody>
       </Table>
@@ -168,7 +166,7 @@ class DataBrowser extends Component {
           open={this.state.snackbar.open}
           message={this.state.snackbar.message}
           autoHideDuration={4000}
-          onRequestClose={this.handleRequestClose.bind(this)}
+          onRequestClose={this.handleRequestClose}
         />
         <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open} />
       </div>

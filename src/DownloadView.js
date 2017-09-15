@@ -1,6 +1,3 @@
-/* eslint-disable react/jsx-indent,
-react/jsx-no-bind,react/jsx-filename-extension,
-react/forbid-prop-types */
 import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -46,10 +43,10 @@ class InfoBar extends Component {
       const dataType = 'application/x-turtle';
       serializer.serialize(graph, () => {
       }).then((resultGraph, err) =>
-          this.setState({
-            displayText: resultGraph,
-            error: err,
-          }),
+        this.setState({
+          displayText: resultGraph,
+          error: err,
+        }),
       );
       this.setState({
         text,
@@ -60,14 +57,14 @@ class InfoBar extends Component {
     return true;
   }
 
-  handleRequestClose() {
+  handleRequestClose = () => {
     const snackbar = this.state.snackbar;
     snackbar.open = false;
     this.setState({
       snackbar,
     });
-  }
-  handleDropdownChange(_, value) {
+  };
+  handleDropdownChange = (_, value) => {
     let serializer;
     let text;
     let dataType;
@@ -95,10 +92,10 @@ class InfoBar extends Component {
     }
     serializer.serialize(this.props.graph, () => {
     }).then((graph, err) =>
-        this.setState({
-          displayText: graph,
-          error: err,
-        }),
+      this.setState({
+        displayText: graph,
+        error: err,
+      }),
     );
     this.setState({
       text,
@@ -106,7 +103,7 @@ class InfoBar extends Component {
       value,
     });
     this.forceUpdate();
-  }
+  };
   sendSparqlInput = (graphName, description, date) => {
     const serializer = new NTriplesSerializer();
     serializer.serialize(this.props.graph, () => {
@@ -167,18 +164,18 @@ class InfoBar extends Component {
     }
   };
 
-  renderText() {
+  renderText = () => {
     if (!this.state.displayText) {
       return <p>Generating output</p>;
     }
     if (typeof this.state.displayText === 'object') {
       return (<Highlight className="json">{JSON.stringify(this.state.displayText, null,
-          2)}</Highlight>);
+        2)}</Highlight>);
     }
     return (
       <Highlight className="xml">{this.state.displayText}</Highlight>
     );
-  }
+  };
 
   renderProgress() {
     if (this.props.processing || this.state.sparqlProcessing) {
@@ -213,7 +210,7 @@ class InfoBar extends Component {
               <RaisedButton
                 label="download"
                 href={`data:${this.state.dataType};charset=utf-8,${encodeURIComponent(
-                        this.state.displayText)}`}
+                  this.state.displayText)}`}
                 download={`${this.props.filename}${this.state.text}`}
                 disabled={this.props.processing}
                 style={{
@@ -228,7 +225,7 @@ class InfoBar extends Component {
               <RaisedButton
                 label="publish"
                 disabled={this.state.displayText === ''}
-                onClick={this.openDialog.bind(this)}
+                onClick={this.openDialog}
                 style={{
                   margin: '30px',
                   width: '40%',
@@ -240,18 +237,18 @@ class InfoBar extends Component {
 
           </div>
           <div style={
-          {
-            paddingTop: '90px',
-            minHeight: '700px',
-            paddingLeft: '50px',
-            paddingRight: '50px',
-          }
+            {
+              paddingTop: '90px',
+              minHeight: '700px',
+              paddingLeft: '50px',
+              paddingRight: '50px',
             }
+          }
           >
             <SelectField
               floatingLabelText="File type"
               value={this.state.value}
-              onChange={this.handleDropdownChange.bind(this)}
+              onChange={this.handleDropdownChange}
               name="fileType"
             >
               <MenuItem value={0} primaryText="Turtle" />
@@ -271,20 +268,20 @@ class InfoBar extends Component {
           open={this.state.snackbar.open}
           message={this.state.snackbar.message}
           autoHideDuration={4000}
-          onRequestClose={this.handleRequestClose.bind(this)}
+          onRequestClose={this.handleRequestClose}
         />
-            <GraphContextForm
-              open={this.state.dialog.open}
-              closeDialog={this.closeDialog}
-              onSubmitForm={this.sendSparqlInput}
-            />
+        <GraphContextForm
+          open={this.state.dialog.open}
+          closeDialog={this.closeDialog}
+          onSubmitForm={this.sendSparqlInput}
+        />
       </div>
     );
   }
 }
 
 InfoBar.propTypes = {
-  graph: PropTypes.object,
+  graph: PropTypes.objectOf(PropTypes.array),
   processing: PropTypes.bool.isRequired,
   executeQuery: PropTypes.func.isRequired,
   filename: PropTypes.string,

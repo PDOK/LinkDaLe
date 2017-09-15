@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import * as rdf from 'rdf-ext';
 
 function createClassDefinitions(nodes, links) {
@@ -49,9 +48,9 @@ function convertDataToTriples(data, links, nodes) {
       if (graph.filter(relation => relation.object === dataSubject
               && relation.predicate === typeOf).length === 0) {
         graph.add(rdf.createTriple(
-            dataSubject,
-            typeOf,
-            rdf.createNamedNode(classDefinition.subject.uri)));
+          dataSubject,
+          typeOf,
+          rdf.createNamedNode(classDefinition.subject.uri)));
       }
       // For every relation check if there is a value
       classDefinition.relations.forEach((relation) => {
@@ -71,6 +70,7 @@ function convertDataToTriples(data, links, nodes) {
           } else {
             targetValue = rdf.createNamedNode(targetValue);
           }
+          // eslint-disable-next-line no-underscore-dangle
           if (graph._graph.filter(node => (node.object === dataSubject
                   && node.predicate === relationNode
                   && node.subject === targetValue)).length === 0) {
@@ -87,7 +87,7 @@ function distribute(data) {
   let dX = 100;
   let dY = 100;
   const rowLength = Math.ceil(Math.sqrt(data.length));
-  const distributedData = data.map((dataItem, index) => {
+  return data.map((dataItem, index) => {
     if (index % rowLength === 0 && index !== 0) {
       dX = 100;
       dY += 225;
@@ -100,7 +100,6 @@ function distribute(data) {
     }
     return dataCopy;
   });
-  return distributedData;
 }
 
 function nodeCreation(data, classifications) {

@@ -6,10 +6,10 @@ import DataCreation from './DataCreation';
 describe('<DataCreation/>', () => {
   const defaultExampleData =
     [['t0', 't1', 't2', 't3', 't4'],
-        ['b0', 'b1', 'b2', '', 'b4'],
-        ['c0', 'c1', 'c2', 'c3', 'c4'],
-        ['d0', '', 'd2', '', 'd4'],
-        ['e0', '', 'e2', 'e3', 'e4']];
+      ['b0', 'b1', 'b2', '', 'b4'],
+      ['c0', 'c1', 'c2', 'c3', 'c4'],
+      ['d0', '', 'd2', '', 'd4'],
+      ['e0', '', 'e2', 'e3', 'e4']];
   it('renders without crashing', () => {
     shallow(<DataCreation executeQuery={jest.fn()} />);
   });
@@ -20,7 +20,7 @@ describe('<DataCreation/>', () => {
     instance.setData(defaultExampleData);
     expect(instance.state.data).toBe(defaultExampleData);
     expect(instance.state.dataClassifications[0]).toEqual(
-        { columnName: 't0', exampleValue: 'b0', class: { name: 'Literal' }, uri: false });
+      { columnName: 't0', exampleValue: 'b0', class: { name: 'Literal' }, uri: false });
   });
 
   it('getExampleData', () => {

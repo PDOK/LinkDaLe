@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-filename-extension */
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
@@ -18,9 +17,9 @@ class GraphContextForm extends Component {
   }
   onSubmit = () => {
     this.props.onSubmitForm(
-        this.state.fileName,
-        this.state.description,
-        this.state.date);
+      this.state.fileName,
+      this.state.description,
+      this.state.date);
   };
   handleChange = (event, value) => {
     const target = event.target;
@@ -33,7 +32,6 @@ class GraphContextForm extends Component {
         break;
       default:
         console.error('unknown change', target.name);
-
     }
   };
 

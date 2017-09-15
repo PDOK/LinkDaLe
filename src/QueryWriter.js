@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-filename-extension,no-return-assign */
 import React from 'react';
 import CodeMirror from 'react-codemirror';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -42,7 +41,7 @@ class QueryWriter extends React.Component {
           });
         }
         const graphData = Object.keys(currentstore).map(
-            item => ({ name: currentstore[item]['http://purl.org/dc/terms/title'], uri: item }));
+          item => ({ name: currentstore[item]['http://purl.org/dc/terms/title'], uri: item }));
         this.setState({ graphContexts: graphData });
       }
     });
@@ -61,7 +60,7 @@ class QueryWriter extends React.Component {
     this.setState({ processing: true });
 
     this.props.executeQuery(
-        this.state.query, this.onQueryCallBack);
+      this.state.query, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
@@ -105,10 +104,11 @@ class QueryWriter extends React.Component {
           onChange={this.onDataSourceChange}
         >
           {this.state.graphContexts.map(
-              graph => <MenuItem key={graph.name} value={graph} primaryText={graph.name} />)}
+            graph => <MenuItem key={graph.name} value={graph} primaryText={graph.name} />)}
         </SelectField>
         <Divider />
         <CodeMirror
+          // eslint-disable-next-line no-return-assign
           ref={el => this.cm = el}
           options={{
             mode: 'sparql',

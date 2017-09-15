@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types,react/jsx-no-bind,react/jsx-filename-extension */
+
 /**
  * Created by Gerwin Bosch on 6-7-2017.
  */
@@ -108,20 +108,20 @@ class DataLinkView extends Component {
     return true;
   }
 
-  onChange(object, string) {
+  onChange = (_, string) => {
     const dialog = this.state.dialog;
     dialog.searchText = string;
     this.setState({ dialog });
-  }
+  };
 
   // Called by 'drag' handler, etc..
   // to sync updates from D3 with the graph
-  onUpdateNode(viewNode) {
+  onUpdateNode = (viewNode) => {
     const i = this.getNodeIndex(viewNode);
     this.props.setNode(i, viewNode);
-  }
+  };
   // Edge 'mouseUp' handler
-  onSelectEdge(viewEdge) {
+  onSelectEdge = (viewEdge) => {
     const target = this.getNode(viewEdge.target).label;
     const origin = this.getNode(viewEdge.source).label;
 
@@ -134,10 +134,10 @@ class DataLinkView extends Component {
           object: target,
         }],
     });
-  }
+  };
 
   // Node 'mouseUp' handler
-  onSelectNode(viewNode) {
+  onSelectNode = (viewNode) => {
     // Deselect events will send Null viewNode
     if (viewNode !== null) {
       const edges = [];
@@ -167,9 +167,9 @@ class DataLinkView extends Component {
     } else {
       this.setState({ selected: {}, relations: [] });
     }
-  }
+  };
   // Creates a new node between two edges
-  onCreateEdge(sourceViewNode, targetViewNode) {
+  onCreateEdge = (sourceViewNode, targetViewNode) => {
     if (sourceViewNode === targetViewNode) {
       return;
     }
@@ -184,10 +184,13 @@ class DataLinkView extends Component {
       dialog,
     });
     this.forceUpdate();
-  }
+  };
 
   // Called when an edge is reattached to a different target.
-  onSwapEdge(sourceViewNode, targetViewNode, viewEdge) {
+  onSwapEdge = (sourceViewNode, targetViewNode, viewEdge) => {
+    if (sourceViewNode.type === 'literal') {
+      return; // No swapping to primary literal
+    }
     const edges = this.props.links;
     const i = this.getEdgeIndex(viewEdge);
     const edge = JSON.parse(JSON.stringify(edges[i]));
@@ -197,88 +200,87 @@ class DataLinkView extends Component {
     edges[i] = edge;
 
     this.setState({ links: edges });
-  }
+  };
   // Called when an edge is deleted
-  onDeleteEdge(viewEdge) {
+  onDeleteEdge = (viewEdge) => {
     const i = this.getEdgeIndex(viewEdge);
     this.props.deleteEdge(i, viewEdge);
     this.setState({
       selected: {},
     });
-  }
-  onVocabPicked(e, index) {
+  };
+  onVocabPicked = (_, index) => {
     const dialog = this.state.dialog;
     dialog.vocabPickerIndex = index;
     this.setState({
       dialog,
     });
-  }
+  };
 
 
-    // Helper to find the index of a given node
-  getNodeIndex(searchNode) {
-    return this.props.nodes.findIndex(node => node[NODE_KEY] === searchNode[NODE_KEY]);
-  }
+  // Helper to find the index of a given node
+  getNodeIndex = (searchNode) => {
+    this.props.nodes.findIndex(node => node[NODE_KEY] === searchNode[NODE_KEY]);
+  };
 
   // Helper to find the index of a given edge
-  getEdgeIndex(searchEdge) {
-    return this.props.links.findIndex(edge => edge.source === searchEdge.source &&
+  getEdgeIndex = searchEdge =>
+    this.props.links.findIndex(edge => edge.source === searchEdge.source &&
           edge.target === searchEdge.target);
-  }
 
   // Given a nodeKey, return the corresponding node
-  getViewNode(nodeKey) {
+  getViewNode = (nodeKey) => {
     const searchNode = {};
     searchNode[NODE_KEY] = nodeKey;
     const i = this.getNodeIndex(searchNode);
     return this.props.nodes[i];
-  }
+  };
 
   /*
    * Handlers/Interaction
    */
 
-  getNode(id) {
+  getNode = (id) => {
     for (let i = 0; i < this.props.nodes.length; i += 1) {
       if (this.props.nodes[i].id === id) {
         return this.props.nodes[i];
       }
     }
     return undefined;
-  }
+  };
 
-  toNextPage() {
+  toNextPage = () => {
     this.props.nextPage();
-  }
+  };
 
 
-  toPreviousPage() {
+  toPreviousPage = () => {
     this.props.previousPage(2);
-  }
+  };
 
 
-  searchVocabulary(e) {
+  searchVocabulary = (e) => {
     const query = this.state.dialog.searchText;
     const dialog = this.state.dialog;
     fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
-        }&type=property`).then(response => response.json()).then((json) => {
-          dialog.results = json.results.map(
-          item => ({
-            uri: item.uri[0],
-            vocabPrefix: item['vocabulary.prefix'][0],
-            prefix: item.prefixedName[0],
-          }),
+    }&type=property`).then(response => response.json()).then((json) => {
+      dialog.results = json.results.map(
+        item => ({
+          uri: item.uri[0],
+          vocabPrefix: item['vocabulary.prefix'][0],
+          prefix: item.prefixedName[0],
+        }),
       );
-          this.setState({ dialog });
-          this.forceUpdate();
-        }).catch((ex) => {
-          console.error('parsing failed', ex);
-        });
+      this.setState({ dialog });
+      this.forceUpdate();
+    }).catch((ex) => {
+      console.error('parsing failed', ex);
+    });
     e.preventDefault();
-  }
+  };
 
 
-  handlePick() {
+  handlePick = () => {
     const dialog = this.state.dialog;
     const result = dialog.results[dialog.vocabPickerIndex];
     const newEdge = {
@@ -298,9 +300,9 @@ class DataLinkView extends Component {
       dialog,
     });
     this.forceUpdate();
-  }
+  };
 
-  handleClose() {
+  handleClose = () => {
     const dialog = this.state.dialog;
     dialog.open = false;
     dialog.results = [];
@@ -309,20 +311,21 @@ class DataLinkView extends Component {
       dialog,
     });
     this.forceUpdate();
-  }
-  renderDialogTableBody() {
+  };
+
+  renderDialogTableBody = () => {
     if (this.state.dialog.results.length) {
       const result = this.state.dialog.results.map((column, index) =>
-              (<MenuItem
-                key={column.prefix}
-                value={index}
-                label={column.prefix}
-                primaryText={column.prefix}
-              />));
+        (<MenuItem
+          key={column.prefix}
+          value={index}
+          label={column.prefix}
+          primaryText={column.prefix}
+        />));
       return (
         <DropDownMenu
           value={this.state.dialog.vocabPickerIndex}
-          onChange={this.onVocabPicked.bind(this)}
+          onChange={this.onVocabPicked}
           openImmediately
         >
           {result}
@@ -330,10 +333,10 @@ class DataLinkView extends Component {
       );
     }
     return <div />;
-  }
+  };
 
 
-  renderGraph() {
+  renderGraph = () => {
     const nodes = this.props.nodes;
     const edges = this.props.links;
     const selected = this.state.selected;
@@ -345,13 +348,13 @@ class DataLinkView extends Component {
       return (
         <GraphView
           style={
-          {
-            height: window.innerHeight - 190,
-            flex: '0 0 85%',
+            {
+              height: window.innerHeight - 190,
+              flex: '0 0 85%',
+            }
           }
-              }
           primary={green500}
-// eslint-disable-next-line react/no-string-refs
+          // eslint-disable-next-line react/no-string-refs
           ref="GraphView"
           nodeKey={NODE_KEY}
           emptyType={EMPTY_TYPE}
@@ -361,20 +364,20 @@ class DataLinkView extends Component {
           nodeTypes={NodeTypes}
           nodeSubtypes={NodeSubtypes}
           edgeTypes={EdgeTypes}
-          getViewNode={this.getViewNode.bind(this)}
-          onSelectNode={this.onSelectNode.bind(this)}
-          onUpdateNode={this.onUpdateNode.bind(this)}
-          onSelectEdge={this.onSelectEdge.bind(this)}
-          onCreateEdge={this.onCreateEdge.bind(this)}
-          onSwapEdge={this.onSwapEdge.bind(this)}
-          onDeleteEdge={this.onDeleteEdge.bind(this)}
+          getViewNode={this.getViewNode}
+          onSelectNode={this.onSelectNode}
+          onUpdateNode={this.onUpdateNode}
+          onSelectEdge={this.onSelectEdge}
+          onCreateEdge={this.onCreateEdge}
+          onSwapEdge={this.onSwapEdge}
+          onDeleteEdge={this.onDeleteEdge}
           onDeleteNode={doNothing}
           onCreateNode={doNothing}
         />
       );
     }
     return <div />;
-  }
+  };
 
   render() {
     const selected = this.state.selected;
@@ -383,13 +386,13 @@ class DataLinkView extends Component {
       <FlatButton
         label={'Finish'}
         primary
-        onClick={this.handlePick.bind(this)}
+        onClick={this.handlePick}
         disabled={this.state.dialog.results.length === 0}
       />,
 
       <FlatButton
         label="Cancel"
-        onClick={this.handleClose.bind(this)}
+        onClick={this.handleClose}
       />,
     ];
 
@@ -420,9 +423,9 @@ class DataLinkView extends Component {
           {this.renderGraph()}
           <InfoBar
             style={
-            {
-              flex: 0,
-            }
+              {
+                flex: 0,
+              }
             }
             selected={selected}
             references={this.state.relations}
@@ -441,11 +444,11 @@ class DataLinkView extends Component {
             <p>This dialog allows specifying relationships between data items that was linked.
                 In RDF this is called a predicate.</p>
             <p>For example, <em> foaf:age </em> can be used to link a person to his/her age</p>
-            <form onSubmit={this.searchVocabulary.bind(this)}>
+            <form onSubmit={this.searchVocabulary}>
               <TextField
                 name="Search vocabularies"
                 hintText="relation name"
-                onChange={this.onChange.bind(this)}
+                onChange={this.onChange}
               />
               <IconButton type="submit"><ActionSearch /></IconButton>
             </form>
@@ -460,7 +463,6 @@ class DataLinkView extends Component {
       </div>
     );
   }
-
 }
 function InfoBar(props) {
   const item = props.selected;
@@ -507,17 +509,17 @@ function InfoBar(props) {
           showExpandableButton
         />
         {
-            props.references.map(relation =>
-                (<CardText key={relation.subject} expandable>
-                  <Divider />
-                  <p>
-                    <b>Subject: </b>{relation.subject}<br />
-                    <b>Relation: </b>{relation.relation}<br />
-                    <b>Object: </b>{relation.object}<br />
-                  </p>
-                </CardText>),
-            )
-          }
+          props.references.map(relation =>
+            (<CardText key={relation.subject} expandable>
+              <Divider />
+              <p>
+                <b>Subject: </b>{relation.subject}<br />
+                <b>Relation: </b>{relation.relation}<br />
+                <b>Object: </b>{relation.object}<br />
+              </p>
+            </CardText>),
+          )
+        }
       </Card>
     );
   }
@@ -550,6 +552,21 @@ function InfoBar(props) {
     </Card>
   );
 }
+DataLinkView.propTypes = {
+  nodes: PropTypes.arrayOf.objectOf(PropTypes.string).isRequired,
+  links: PropTypes.arrayOf.objectOf(PropTypes.string).isRequired,
+  setNode: PropTypes.func.isRequired,
+  deleteEdge: PropTypes.func.isRequired,
+  nextPage: PropTypes.func.isRequired,
+  previousPage: PropTypes.func.isRequired,
+  pushEdge: PropTypes.func.isRequired,
+  getExampleData: PropTypes.func.isRequired,
+};
+InfoBar.propTypes = {
+  selected: PropTypes.objectOf(PropTypes.string).isRequired,
+  getData: PropTypes.func.isRequired,
+  references: PropTypes.arrayOf.objectOf(PropTypes.string).isRequired,
+};
 
 
 export default DataLinkView;
