@@ -363,7 +363,7 @@ class TripleVisualizer extends React.Component {
               style={{ maxHeight: '20vh' }}
             >
               {this.props.data.map(row => (
-                <TableRow>
+                <TableRow key={row[0].value + row[1].value + row[2].value}>
                   <TableRowColumn>{row[0].value}</TableRowColumn>
                   <TableRowColumn>{row[1].value}</TableRowColumn>
                   <TableRowColumn>{row[2].value}</TableRowColumn>

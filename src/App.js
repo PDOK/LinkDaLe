@@ -49,8 +49,8 @@ const States = {
 function NavigationBar(props) {
   return (
     <MaterialDrawer>
-      <Card>
-        <CardHeader style={{ textAlign: 'left' }} >
+      <Card style={{ paddingTop: '16px' }}>
+        <CardHeader style={{ textAlign: 'left', padding: '0px' }} >
             RDF-PAQT
           </CardHeader>
         <CardText>

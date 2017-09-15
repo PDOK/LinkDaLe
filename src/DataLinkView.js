@@ -438,7 +438,9 @@ class DataLinkView extends Component {
         >
 
           <div style={{ width: '100%' }}>
-            <p>Some text written by stan goes here</p>
+            <p>This dialog allows specifying relationships between data items that was linked.
+                In RDF this is called a predicate.</p>
+            <p>For example, <em> foaf:age </em> can be used to link a person to his/her age</p>
             <form onSubmit={this.searchVocabulary.bind(this)}>
               <TextField
                 name="Search vocabularies"
@@ -447,7 +449,9 @@ class DataLinkView extends Component {
               />
               <IconButton type="submit"><ActionSearch /></IconButton>
             </form>
-            <p>Some text written by stan goes here</p>
+            <p>Provide a relation name in the field above and pick a term from the suggestions</p>
+            <p> <em> Similar terms can be found in different vocabularies
+                therefore try to use as few vocabularies as possible</em></p>
             {this.renderDialogTableBody()}
           </div>
 
@@ -540,6 +544,7 @@ function InfoBar(props) {
           Click: Select node/edge<br />
           Click and hold on node: Drag the node<br />
           Shift+Click a node and drag: Create new Edge<br />
+          Click on an Edge and press Del: Delete the Edge<br />
         </CardText>
       </Card>
     </Card>

@@ -203,13 +203,21 @@ class DataClassifyView extends Component {
       case 0:
         return (
           <div>
-            <p>When the data is not a proper URI... Stans todo</p>
+            <p>In this dialog, you can specify a base URI for your data.
+              This base URI will be used to form URIs for data instances.</p>
+            <p>There are 2 possibilities:</p>
+            <ol type="1">
+              <li>If you know that a column contains only unique values then you can just
+                  submit a base URI. The values from the column will be added at the
+                end of the base URIs forming proper URIs for data instances.</li>
+              <li>If a column already conatains proper URIs then leave this field empty.</li>
+            </ol>
             <p>Column name: {item.columnName}</p>
             <p>Example value: {item.exampleValue}</p>
             <TextField
               name="Base-uri:"
               type="url"
-              hintText="Input the URL from which the data will start"
+              hintText="type a base URI here"
               onChange={(event, string) => this.onBaseUriChange(
                       this.state.dialog.id, string)}
             />
@@ -219,7 +227,10 @@ class DataClassifyView extends Component {
       case 1:
         return (
           <div>
-            <p>Some text written by stan goes here</p>
+            <p>This dialog allows specifying the class of things described by the data.
+            For example, if your data features people then you can use
+                <em> foaf:Person </em> </p>
+            <p>Examples are: person, company, animal etc.</p>
             <form onSubmit={this.searchVocabulary.bind(this)}>
               <TextField
                 name="Search vocabularies"
@@ -228,7 +239,9 @@ class DataClassifyView extends Component {
               />
               <IconButton type="submit"><ActionSearch /></IconButton>
             </form>
-            <p>Some text written by stan goes here</p>
+            <p>Provide a class name in the field above and pick a term from the suggestions</p>
+            <p> <em> Similar terms can be found in different vocabularies
+                therefore try to use as few vocabularies as possible</em></p>
             {this.renderDialogTableBody()}
 
           </div>
