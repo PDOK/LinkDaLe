@@ -22,7 +22,6 @@ class QueryWriter extends React.Component {
       query: 'SELECT ?s ?p ?o {?s ?p ?o}',
       data: [],
       graphContexts: [],
-      selectedGraph: {},
       headers: [],
       error: '',
       processing: false,
@@ -48,7 +47,9 @@ class QueryWriter extends React.Component {
   }
   onDataSourceChange = (event, index, value) => {
     this.setState({
-      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}` });
+      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`,
+      selectedGraph: value,
+    });
     this.cm.codeMirror.setValue(`SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`);
   };
 
@@ -102,9 +103,16 @@ class QueryWriter extends React.Component {
           floatingLabelText="Selected Database"
           value={this.state.selectedGraph}
           onChange={this.onDataSourceChange}
+          style={{ paddingLeft: '12px' }}
         >
           {this.state.graphContexts.map(
-            graph => <MenuItem key={graph.name} value={graph} primaryText={graph.name} />)}
+            graph =>
+              (<MenuItem
+                key={graph.name}
+                value={graph}
+                primaryText={graph.name}
+                label={graph.name}
+              />))}
         </SelectField>
         <Divider />
         <CodeMirror
