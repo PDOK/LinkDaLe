@@ -126,7 +126,7 @@ class DownloadView extends Component {
         const uri = `http://gerwinbosch.nl/rdf-paqt/data/${encodedGraphname}`;
         const dataQuery = `INSERT DATA { GRAPH <${uri}> {${graph}}}`;
         const contextQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/metadata> {
-            <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Datset> .
+            <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
             <${uri}> <http://purl.org/dc/terms/title> "${graphName}" .
             <${uri}> <http://purl.org/dc/terms/description> "${description}" .
             <${uri}> <http://purl.org/dc/terms/created> "${date}"^^<http://www.w3.org/2001/XMLSchema#date> .}}`;
