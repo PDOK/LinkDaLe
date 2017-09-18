@@ -14,7 +14,14 @@ import Snackbar from 'material-ui/Snackbar';
 import 'highlight.js/styles/default.css';
 import GraphContextForm from './GraphContextForm';
 
-class InfoBar extends Component {
+class DownloadView extends Component {
+  static encodeGraphName = (name) => {
+    if (name) {
+      const transformedName = name.replace(/ /g, '_');
+      return encodeURI(transformedName);
+    }
+    return '';
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -106,6 +113,7 @@ class InfoBar extends Component {
   };
   sendSparqlInput = (graphName, description, date) => {
     const serializer = new NTriplesSerializer();
+    const encodedGraphname = DownloadView.encodeGraphName(graphName);
     serializer.serialize(this.props.graph, () => {
     }).then((graph, err) => {
       if (err) {
@@ -115,7 +123,7 @@ class InfoBar extends Component {
           sparqlProcessing: true,
           dialog: { open: false },
         });
-        const uri = `http://gerwinbosch.nl/rdf-paqt/data/${graphName}`;
+        const uri = `http://gerwinbosch.nl/rdf-paqt/data/${encodedGraphname}`;
         const dataQuery = `INSERT DATA { GRAPH <${uri}> {${graph}}}`;
         const contextQuery = `INSERT DATA { GRAPH <http://gerwinbosch.nl/rdf-paqt/metadata> {
             <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Datset> .
@@ -280,14 +288,14 @@ class InfoBar extends Component {
   }
 }
 
-InfoBar.propTypes = {
+DownloadView.propTypes = {
   graph: PropTypes.objectOf(PropTypes.object),
   processing: PropTypes.bool.isRequired,
   executeQuery: PropTypes.func.isRequired,
   filename: PropTypes.string,
 };
-InfoBar.defaultProps = {
+DownloadView.defaultProps = {
   graph: undefined,
   filename: undefined,
 };
-export default InfoBar;
+export default DownloadView;
