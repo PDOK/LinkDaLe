@@ -49,10 +49,12 @@ const States = {
 function NavigationBar(props) {
   return (
     <MaterialDrawer>
-      <Card style={{ paddingTop: '16px' }}>
-        <CardHeader style={{ textAlign: 'left', padding: '0px' }} >
-            RDF-PAQT
-          </CardHeader>
+      <Card>
+        <CardHeader
+          title="LinkDaLe"
+          subtitle="Linked Data Learning environment"
+          textStyle={{paddingRight:'0px'}}
+        />
         <CardText>
           <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
         </CardText>
