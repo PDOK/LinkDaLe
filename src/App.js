@@ -54,10 +54,6 @@ function NavigationBar(props) {
           subtitle="Linked Data Learning environment"
           textStyle={{paddingRight:'0px'}}
         />
-      <Card style={{ paddingTop: '16px' }}>
-        <CardHeader style={{ textAlign: 'left', padding: '0px' }} >
-            RDF-PAQT
-        </CardHeader>
         <CardText>
           <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
         </CardText>
