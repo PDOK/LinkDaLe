@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind,react/jsx-filename-extension,react/forbid-prop-types */
 /**
  * Created by Gerwin Bosch on 3-7-2017.
  */
@@ -29,40 +28,40 @@ class DataClassifyView extends Component {
   constructor(props) {
     super(props);
     this.state = (
-    {
-      dialog: {
-        open: false,
-        id: 0,
-        searchText: '',
-        results: [],
-        stepIndex: 0,
-        vocabPickerIndex: 0,
-      },
-    }
+      {
+        dialog: {
+          open: false,
+          id: 0,
+          searchText: '',
+          results: [],
+          stepIndex: 0,
+          vocabPickerIndex: 0,
+        },
+      }
     );
   }
 
   /* Renders the source link */
 
-  onBaseUriChange(index, text) {
+  onBaseUriChange = (index, text) => {
     this.props.setBaseUri(index, text);
-  }
+  };
 
-  onVocabPicked(e, index) {
+  onVocabPicked = (_, index) => {
     const dialog = this.state.dialog;
     dialog.vocabPickerIndex = index;
     this.setState({
       dialog,
     });
-  }
+  };
 
-  onChange(object, string) {
+  onChange = (_, string) => {
     const dialog = this.state.dialog;
     dialog.searchText = string;
     this.setState({ dialog });
-  }
+  };
 
-  getAmountOfClasses() {
+  getAmountOfClasses = () => {
     const classes = this.props.data.slice();
     if (classes.length === 0) return 0;
     let counter = 0;
@@ -73,19 +72,19 @@ class DataClassifyView extends Component {
       }
     }
     return counter;
-  }
+  };
 
   // Opens the dialog and set the row number of the item that was picked
-  handleOpen(i) {
+  handleOpen = (i) => {
     const dialog = this.state.dialog;
     dialog.open = true;
     dialog.id = i;
     this.setState({
       dialog,
     });
-  }
+  };
 
-  handleClose() {
+  handleClose = () => {
     const dialog = this.state.dialog;
     dialog.open = false;
     dialog.id = -1;
@@ -95,39 +94,39 @@ class DataClassifyView extends Component {
     this.setState({
       dialog,
     });
-  }
+  };
 
-  handleNext() {
+  handleNext = () => {
     const dialog = this.state.dialog;
     dialog.stepIndex = 1;
     this.setState({
       dialog,
     });
-  }
+  };
 
-  searchVocabulary(e) {
+  searchVocabulary = (e) => {
     const query = this.state.dialog.searchText;
     const dialog = this.state.dialog;
     fetch(
-        `http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query}&type=class`)
-        .then(response => response.json())
-        .then((json) => {
-          dialog.results = json.results.map(
-              item => ({
-                uri: item.uri[0],
-                vocabPrefix: item['vocabulary.prefix'][0],
-                prefix: item.prefixedName[0],
-              }),
-          );
-          this.setState({ dialog });
-        })
-        .catch((ex) => {
-          console.log('parsing failed', ex);
-        });
+      `http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query}&type=class`)
+      .then(response => response.json())
+      .then((json) => {
+        dialog.results = json.results.map(
+          item => ({
+            uri: item.uri[0],
+            vocabPrefix: item['vocabulary.prefix'][0],
+            prefix: item.prefixedName[0],
+          }),
+        );
+        this.setState({ dialog });
+      })
+      .catch((ex) => {
+        console.error('parsing failed', ex);
+      });
     e.preventDefault();
-  }
+  };
 
-  handlePick() {
+  handlePick = () => {
     const dialog = this.state.dialog;
     const result = dialog.results[dialog.vocabPickerIndex];
     result.name = result.prefix.split(':')[1];
@@ -144,7 +143,7 @@ class DataClassifyView extends Component {
       },
     },
     );
-  }
+  };
 
   resetItem(index) {
     this.props.setClass(index, { name: 'Literal' });
@@ -164,27 +163,20 @@ class DataClassifyView extends Component {
   startClassification(index) {
     this.handleOpen(index);
   }
-  renderSourceLink(id) {
-    const object = this.props.data[id];
-    if (object.class.name !== 'Literal') {
-      return <a href={object.class.uri}>{object.class.name}</a>;
-    }
-    return <div />;
-  }
 
   renderDialogTableBody() {
     if (this.state.dialog.results.length) {
       const result = this.state.dialog.results.map((column, index) =>
-          (<MenuItem
-            key={column.prefix}
-            value={index}
-            label={column.prefix}
-            primaryText={column.prefix}
-          />));
+        (<MenuItem
+          key={column.prefix}
+          value={index}
+          label={column.prefix}
+          primaryText={column.prefix}
+        />));
       return (
         <DropDownMenu
           value={this.state.dialog.vocabPickerIndex}
-          onChange={this.onVocabPicked.bind(this)}
+          onChange={this.onVocabPicked}
           openImmediately
         >
           {result}
@@ -219,7 +211,7 @@ class DataClassifyView extends Component {
               type="url"
               hintText="type a base URI here"
               onChange={(event, string) => this.onBaseUriChange(
-                      this.state.dialog.id, string)}
+                this.state.dialog.id, string)}
             />
           </div>
 
@@ -229,13 +221,13 @@ class DataClassifyView extends Component {
           <div>
             <p>This dialog allows specifying the class of things described by the data.
             For example, if your data features people then you can use
-                <em> foaf:Person </em> </p>
+              <em> foaf:Person </em> </p>
             <p>Examples are: person, company, animal etc.</p>
-            <form onSubmit={this.searchVocabulary.bind(this)}>
+            <form onSubmit={this.searchVocabulary}>
               <TextField
                 name="Search vocabularies"
                 hintText="class name"
-                onChange={this.onChange.bind(this)}
+                onChange={this.onChange}
               />
               <IconButton type="submit"><ActionSearch /></IconButton>
             </form>
@@ -257,14 +249,14 @@ class DataClassifyView extends Component {
         label={(this.state.dialog.stepIndex === 0) ? 'Next' : 'Finish'}
         primary
         onClick={(this.state.dialog.stepIndex === 0) ?
-              this.handleNext.bind(this) : this.handlePick.bind(this)}
+          this.handleNext : this.handlePick}
         disabled={(this.state.dialog.stepIndex === 0) ?
-              false : this.state.dialog.results.length === 0}
+          false : this.state.dialog.results.length === 0}
       />,
       <FlatButton
         label="Cancel"
         primary={false}
-        onClick={this.handleClose.bind(this)}
+        onClick={this.handleClose}
       />,
     ];
     return (
@@ -301,39 +293,38 @@ class DataClassifyView extends Component {
             </TableHeader>
             <TableBody displayRowCheckbox={false}>
               {
-                  this.props.data.map((column, index) =>
-                      (<TableRow key={column.columnName}>
-                        <TableRowColumn>{column.columnName}</TableRowColumn>
-                        <TableRowColumn>{column.exampleValue}</TableRowColumn>
-                        <TableRowColumn>
-                          <CheckBox
-                            checked={column.uri}
-                            onCheck={() => this.startClassification(
-                                        index)}
-                            disabled={column.uri}
-                          />
-                        </TableRowColumn>
-                        <TableRowColumn>{column.class.name}</TableRowColumn>
-                        <TableRowColumn>{column.baseUri ?
-                            column.baseUri :
-                            ''}</TableRowColumn>
-                        <TableRowColumn>
-                          {
-                            column.uri ?
-                                (
-                                  <IconButton
-                                    onClick={() => this.resetItem(index)}
-                                  >
-                                    <ArrowBack />
-                                  </IconButton>
-                                ) :
-                                  <div />
-                          }
-                        </TableRowColumn>
+                this.props.data.map((column, index) =>
+                  (<TableRow key={column.columnName}>
+                    <TableRowColumn>{column.columnName}</TableRowColumn>
+                    <TableRowColumn>{column.exampleValue}</TableRowColumn>
+                    <TableRowColumn>
+                      <CheckBox
+                        checked={column.uri}
+                        onCheck={() => this.startClassification(
+                          index)}
+                        disabled={column.uri}
+                      />
+                    </TableRowColumn>
+                    <TableRowColumn>{column.class.name}</TableRowColumn>
+                    <TableRowColumn>{column.baseUri ?
+                      column.baseUri :
+                      ''}</TableRowColumn>
+                    <TableRowColumn>
+                      {
+                        column.uri ?
+                          (
+                            <IconButton
+                              onClick={() => this.resetItem(index)}
+                            >
+                              <ArrowBack />
+                            </IconButton>
+                          ) : <div />
+                      }
+                    </TableRowColumn>
 
-                      </TableRow>),
-                  )
-                }
+                  </TableRow>),
+                )
+              }
             </TableBody>
 
           </Table>
@@ -356,12 +347,11 @@ class DataClassifyView extends Component {
       </div>
     );
   }
-
 }
 
 DataClassifyView.propTypes = {
   setBaseUri: PropTypes.func.isRequired,
-  data: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
   setClass: PropTypes.func.isRequired,
   setUri: PropTypes.func.isRequired,
   nextPage: PropTypes.func.isRequired,

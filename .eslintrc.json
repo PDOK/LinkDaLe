@@ -3,24 +3,19 @@
 {
   "parser": "babel-eslint",
   "extends": "airbnb",
-  "react/jsx-filename-extension": ["off", { "extensions": [".js", ".jsx"] }],
-  "allowForLoopAfterthoughts": true,
-  "allow": ["warn", "error"],
   "globals": {
     "window": true,
-    "PropTypes":true,
-    "it":true,
-    "expect":true,
-    "fetch":true,
-    "FileReader":true,
-    "document":true,
+    "PropTypes": true,
+    "it": true,
+    "expect": true,
+    "fetch": true,
+    "FileReader": true,
+    "document": true,
     "jest": true,
     "describe": true
   },
-  "react/no-multi-comp": ["off", { "ignoreStateless":true }],
-  "react/jsx-no-bind": ["off", {
-    "allowBind": false
-  }],
-  "react/forbid-prop-types": "off"
-
+  "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "no-console": ["error", { "allow": ["info","warn", "error"] }]
+  }
 }

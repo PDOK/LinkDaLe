@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-filename-extension,no-return-assign */
 import React from 'react';
 import CodeMirror from 'react-codemirror';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -23,7 +22,6 @@ class QueryWriter extends React.Component {
       query: 'SELECT ?s ?p ?o {?s ?p ?o}',
       data: [],
       graphContexts: [],
-      selectedGraph: {},
       headers: [],
       error: '',
       processing: false,
@@ -42,14 +40,16 @@ class QueryWriter extends React.Component {
           });
         }
         const graphData = Object.keys(currentstore).map(
-            item => ({ name: currentstore[item]['http://purl.org/dc/terms/title'], uri: item }));
+          item => ({ name: currentstore[item]['http://purl.org/dc/terms/title'], uri: item }));
         this.setState({ graphContexts: graphData });
       }
     });
   }
   onDataSourceChange = (event, index, value) => {
     this.setState({
-      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}` });
+      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`,
+      selectedGraph: value,
+    });
     this.cm.codeMirror.setValue(`SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`);
   };
 
@@ -61,7 +61,7 @@ class QueryWriter extends React.Component {
     this.setState({ processing: true });
 
     this.props.executeQuery(
-        this.state.query, this.onQueryCallBack);
+      this.state.query, this.onQueryCallBack);
   };
 
   onQueryCallBack = (err, results) => {
@@ -103,12 +103,20 @@ class QueryWriter extends React.Component {
           floatingLabelText="Selected Database"
           value={this.state.selectedGraph}
           onChange={this.onDataSourceChange}
+          style={{ paddingLeft: '12px' }}
         >
           {this.state.graphContexts.map(
-              graph => <MenuItem key={graph.name} value={graph} primaryText={graph.name} />)}
+            graph =>
+              (<MenuItem
+                key={graph.name}
+                value={graph}
+                primaryText={graph.name}
+                label={graph.name}
+              />))}
         </SelectField>
         <Divider />
         <CodeMirror
+          // eslint-disable-next-line no-return-assign
           ref={el => this.cm = el}
           options={{
             mode: 'sparql',
