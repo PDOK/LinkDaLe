@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-filename-extension */
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
@@ -7,6 +6,12 @@ import PropTypes from 'prop-types';
 
 
 class GraphContextForm extends Component {
+  static encodeGraphName = (name) => {
+    if (name) {
+      const transformedName = name.replace(/ /g, '_');
+      return encodeURI(transformedName);
+    } return '';
+  };
   constructor() {
     super();
     const today = new Date();
@@ -18,9 +23,9 @@ class GraphContextForm extends Component {
   }
   onSubmit = () => {
     this.props.onSubmitForm(
-        this.state.fileName,
-        this.state.description,
-        this.state.date);
+      this.state.fileName,
+      this.state.description,
+      this.state.date);
   };
   handleChange = (event, value) => {
     const target = event.target;
@@ -33,7 +38,6 @@ class GraphContextForm extends Component {
         break;
       default:
         console.error('unknown change', target.name);
-
     }
   };
 
@@ -55,9 +59,10 @@ class GraphContextForm extends Component {
       <Dialog open={this.props.open} actions={actions}>
         <TextField
           name="filename"
-          value={`http://gerwinbosch.nl/rdf-paqt/${this.state.fileName}`}
+          value={`http://gerwinbosch.nl/rdf-paqt/data/${GraphContextForm.encodeGraphName(this.state.fileName)}`}
           floatingLabelText="URI of the dataset"
           disabled
+          fullWidth
         />
         <br />
         <TextField
@@ -65,15 +70,18 @@ class GraphContextForm extends Component {
           name="title"
           floatingLabelText="Title of the dataset"
           onChange={this.handleChange}
+          fullWidth
         />
         <br />
         <TextField
           name="description"
           type="text"
+          multiLine
           rows={2}
           rowsMax={8}
           floatingLabelText="A small description of the dataset"
           onChange={this.handleChange}
+          fullWidth
         />
         <br />
         <TextField
@@ -81,6 +89,7 @@ class GraphContextForm extends Component {
           name="date"
           floatingLabelText="Date of creation"
           value={this.state.date}
+          fullWidth
           disabled
         />
       </Dialog>

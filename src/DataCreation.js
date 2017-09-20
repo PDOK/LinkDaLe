@@ -53,11 +53,11 @@ class DataCreation extends Component {
   }
 
 
-    // columnName: column,
-    // exampleValue: temp[1][index],
-    // class: {name:'Literal'},
-    // uri: false,
-    // label: false
+  // columnName: column,
+  // exampleValue: temp[1][index],
+  // class: {name:'Literal'},
+  // uri: false,
+  // label: false
 
 
   getExampleData(column, page) {
@@ -172,7 +172,6 @@ class DataCreation extends Component {
         this.setState({
           currentPage: index,
         });
-
     }
   }
 
@@ -181,12 +180,12 @@ class DataCreation extends Component {
       currentPage: 4,
     });
     transformData(this.state.data, this.state.edges, this.state.nodes)
-    .then((result) => {
-      this.setState({
-        graph: result,
-        processing: false,
+      .then((result) => {
+        this.setState({
+          graph: result,
+          processing: false,
+        });
       });
-    });
   }
   finishFirstStep() {
     this.setState({
@@ -201,7 +200,7 @@ class DataCreation extends Component {
     this.setState({
       edges: links,
     },
-        );
+    );
   }
 
   deleteEdge(index) {
@@ -268,8 +267,6 @@ class DataCreation extends Component {
         </Tab>
       </Tabs>);
   }
-
-
 }
 DataCreation.propTypes = {
   executeQuery: PropTypes.func.isRequired,
