@@ -2,7 +2,7 @@
   "name": "LinkDaLe",
   "version": "0.1.0",
   "private": true,
-  "homepage": "linkdale.org",
+  "homepage": "http://linkdale.org",
   "dependencies": {
     "ajv": "^5.2.2",
     "babyparse": "^0.4.6",
