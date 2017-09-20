@@ -135,7 +135,7 @@ class DataBrowser extends Component {
               Object.keys(this.state.graphContexts).map((key, count) => {
                 const graph = this.state.graphContexts[key];
                 // Limited filtering
-                if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
+                if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Dataset') {
                   return (
                     <TableRow key={graph[dcTitle]} selected={count === this.state.currentSelected}>
                       <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
