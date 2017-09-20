@@ -112,17 +112,17 @@ class Tutorialised extends React.Component {
             />
             <FlatButton
               backgroundColor={green500}
-              label="Tutorial: My first Linked Data"
+              label="Tutorial: Create Linked Data"
               onClick={() => this.openRemoteMarkdown(1, 3)}
             />
             <FlatButton
               backgroundColor={green500}
-              label="Tutorial: Browse Linked Data"
+              label="Tutorial: Browse Data"
               onClick={() => this.openRemoteMarkdown(1, 4)}
             />
             <FlatButton
               backgroundColor={green500}
-              label="Tutorial: Query Linked Data"
+              label="Tutorial: Query Data"
               onClick={() => this.openRemoteMarkdown(1, 5)}
             />
             <FlatButton
