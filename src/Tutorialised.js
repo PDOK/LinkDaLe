@@ -59,11 +59,11 @@ class Tutorialised extends React.Component {
 
   openRemoteMarkdown(id, markdownId) {
     fetch(this.state.tutorials[id].markdownURIs[markdownId]).then(
-        result => result.text()).then(
-        body => this.setState({
-          markdownText: body,
-          dialogOpen: true,
-        }),
+      result => result.text()).then(
+      body => this.setState({
+        markdownText: body,
+        dialogOpen: true,
+      }),
     );
   }
   expandCollapseCard(id) {
@@ -96,7 +96,7 @@ class Tutorialised extends React.Component {
               can be linked and queried.
               With this tutorial you will learn the basics of the Linked Data
               technology and will generate your first Linked Data.
-            </CardText>
+          </CardText>
           <CardActions expandable>
             <FlatButton
               label="About the tool"
@@ -152,7 +152,7 @@ class Tutorialised extends React.Component {
               learn how to build and integrate systems between different parties in a supply chain.
               Linked Data is a technology that helps to simplify
               data management and exchange between parties.
-            </CardText>
+          </CardText>
           <CardActions expandable>
             <FlatButton
               label="About BPIL"
@@ -181,7 +181,6 @@ class Tutorialised extends React.Component {
       </div>
     );
   }
-
 }
 
 export default Tutorialised;

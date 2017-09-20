@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-filename-extension,react/jsx-no-bind */
 import React, { Component } from 'react';
 import { SparqlClient } from 'sparql-client-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -52,7 +51,7 @@ function NavigationBar(props) {
       <Card style={{ paddingTop: '16px' }}>
         <CardHeader style={{ textAlign: 'left', padding: '0px' }} >
             RDF-PAQT
-          </CardHeader>
+        </CardHeader>
         <CardText>
           <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
         </CardText>
@@ -173,7 +172,6 @@ class App extends Component {
         return <Tutorialised />;
       default:
         return <h1>Welcome</h1>;
-
     }
   };
 
@@ -190,8 +188,8 @@ class App extends Component {
               // iconClassNameRight="muidocs-icon-navigation-expand-more"
             />
             {
-                this.renderContent()
-              }
+              this.renderContent()
+            }
           </div>
         </div>
       </MuiThemeProvider>

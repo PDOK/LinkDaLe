@@ -1,7 +1,3 @@
-/* eslint-disable
-react/forbid-prop-types,
-react/jsx-filename-extension,
-react/require-default-props */
 /**
  * Created by Gerwin Bosch on 27-6-2017.
  */
@@ -46,28 +42,28 @@ function TableView(props) {
             {/* Create columns for every data */}
             {props.data[0].map(x => (
               <TableHeaderColumn key={x} style={{ width: '75px', maxWidth: '75px' }}>{x}</TableHeaderColumn>
-              ))}
+            ))}
           </TableRow>
 
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
           {/* Grab the rest of the data */}
           {props.data.slice(1, props.data.length).map((row, index) => (
-                // Split the data in rows and columns
+            // Split the data in rows and columns
             <TableRow key={props.data[index]} style={{}}>{
-                  row.map(x => (
-                    <TableRowColumn key={x} style={{ width: '75px', maxWidth: '75px' }}>{x}</TableRowColumn>
-                  ))}</TableRow>
-            ))}
+              row.map(x => (
+                <TableRowColumn key={x} style={{ width: '75px', maxWidth: '75px' }}>{x}</TableRowColumn>
+              ))}</TableRow>
+          ))}
         </TableBody>
       </Table>
     );
     //    Return empty div
   }
-  return (<p style = {{marginLeft: 'auto', marginRight: 'auto'}}>No Data Loaded</p>);
+  return (<p style={{ marginLeft: 'auto', marginRight: 'auto' }}>No Data Loaded</p>);
 }
 TableView.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
 };
 
 class ImportView extends Component {
@@ -92,7 +88,7 @@ class ImportView extends Component {
       this.props.setData([], '');
       return;
     }
-// eslint-disable-next-line no-useless-escape
+    // eslint-disable-next-line no-useless-escape
     if (event.target.files[0].name.split('\.').pop() !== 'csv') {
       this.setState({
         selectedFile: 'Wrong type of file selected',
@@ -100,12 +96,11 @@ class ImportView extends Component {
       this.props.setData([], '');
       return;
     }
-// eslint-disable-next-line no-useless-escape
+    // eslint-disable-next-line no-useless-escape
     const filename = event.target.files[0].name.split('\.')[0];
     reader.addEventListener('load', () => {
-      console.log(Baby.parse(reader.result).data);
       Baby.parse(reader.result);
-// eslint-disable-next-line no-useless-escape
+      // eslint-disable-next-line no-useless-escape
       this.props.setData(Baby.parse(reader.result).data, filename);
     });
     if (event.target.files) {
@@ -160,11 +155,15 @@ class ImportView extends Component {
   }
 }
 ImportView.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   setData: PropTypes.func.isRequired,
   pageFunction: PropTypes.func.isRequired,
 
 
+};
+
+ImportView.defaultProps = {
+  data: [],
 };
 
 export default ImportView;
