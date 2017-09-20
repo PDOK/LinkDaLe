@@ -10,6 +10,8 @@ import FlatButton from 'material-ui/FlatButton/';
 import AppBar from 'material-ui/AppBar/';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import SparqlJs from 'sparqljs';
+import Markdown from 'react-markdown';
+import Subheader from 'material-ui/Subheader';
 import {
   green400,
   green500,
@@ -43,6 +45,10 @@ const States = {
   DataBrowsing: 3,
   Querying: 4,
   Tutorialise: 5,
+  AboutTool: 6,
+  AboutLD: 7,
+  AboutLODC: 9,
+  AboutLOV: 10,
 };
 
 function NavigationBar(props) {
@@ -52,33 +58,58 @@ function NavigationBar(props) {
         <CardHeader
           title="LinkDaLe"
           subtitle="Linked Data Learning environment"
-          textStyle={{paddingRight:'0px'}}
+          textStyle={{ paddingRight: '0px' }}
         />
         <CardText>
           <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
         </CardText>
       </Card>
-      <FlatButton
-        label="Create Linked Data"
-        fullWidth
-        onClick={() => props.onClick(States.DataCreation)}
-      />
-      <FlatButton
-        label="Browse Data"
-        fullWidth
-        onClick={() => props.onClick(States.DataBrowsing)}
-      />
-      <FlatButton
-        label="Query Data"
-        fullWidth
-        onClick={() => props.onClick(States.Querying)}
-      />
-      <FlatButton
-        label="Tutorial"
-        fullWidth
-        onClick={() => props.onClick(States.Tutorialise)}
-      />
-      <Divider />
+      <div style={{ textAlign: 'left' }}>
+        <FlatButton
+          label="Create Linked Data"
+          fullWidth
+          onClick={() => props.onClick(States.DataCreation)}
+        />
+        <FlatButton
+          label="Browse Data"
+          fullWidth
+          onClick={() => props.onClick(States.DataBrowsing)}
+        />
+        <FlatButton
+          label="Query Data"
+          fullWidth
+          onClick={() => props.onClick(States.Querying)}
+        />
+        <FlatButton
+          label="Tutorial"
+          fullWidth
+          onClick={() => props.onClick(States.Tutorialise)}
+        />
+        <Divider />
+        <Subheader inset >About</Subheader>
+        <FlatButton
+          label="The tool"
+          fullWidth
+          onClick={() => props.onClick(States.AboutTool)}
+        />
+        <FlatButton
+          label="Linked Data"
+          fullWidth
+          onClick={() => props.onClick(States.AboutLD)}
+        />
+        <FlatButton
+          label="Linked Open Data Cloud"
+          fullWidth
+          onClick={() => props.onClick(States.AboutLODC)}
+        />
+        <FlatButton
+          label="Linked Open Vocabularies"
+          fullWidth
+          onClick={() => props.onClick(States.AboutLOV)}
+        />
+
+        <Divider />
+      </div>
       <div
         style={{
           position: 'absolute',
@@ -132,6 +163,7 @@ class App extends Component {
 
   handleClick = (i) => {
     let title;
+    let link = '';
     if (this.state === i) {
       return;
     }
@@ -149,16 +181,41 @@ class App extends Component {
         title = 'Query data';
         break;
       case (States.Tutorialise):
-        title = 'Learn about Linked Data';
+        title = 'Tutorials';
+        break;
+      case (States.AboutTool):
+        title = 'About the tool';
+        link = `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`;
+        break;
+      case (States.AboutLD):
+        title = 'About Linked Data';
+        link = `${process.env.PUBLIC_URL}/markdown/AboutLD.MD`;
+        break;
+      case (States.AboutLODC):
+        title = 'About Linked Open Data Cloud';
+        link = `${process.env.PUBLIC_URL}/markdown/AboutLOD.MD`;
+        break;
+      case (States.AboutLOV):
+        title = 'About Linked Open Vocabulary';
+        link = `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`;
         break;
       default:
         title = 'Welcome';
+    }
+    if (link) {
+      fetch(link).then(
+        result => result.text()).then(
+        body => this.setState({
+          markdownText: body,
+        }),
+      );
     }
     this.setState({
       state: i,
       title,
     });
   };
+
 
   renderContent = () => {
     switch (this.state.state) {
@@ -172,6 +229,20 @@ class App extends Component {
         />);
       case States.Tutorialise:
         return <Tutorialised />;
+      case States.AboutLOV:
+      case States.AboutLODC:
+      case States.AboutTool:
+      case States.AboutLD:
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <space style={{ flex: 1 }} />
+            <div style={{ textStyle: 'roboto, sans-serif', textAlign: 'left', flex: 3, width: '60%' }}>
+              <Markdown source={this.state.markdownText} />
+            </div>
+            <space style={{ flex: 1 }} />
+          </div>
+        );
       default:
         return <h1>Welcome</h1>;
     }
