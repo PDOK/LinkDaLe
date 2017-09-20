@@ -86,10 +86,9 @@ A Figure bellow presents an initial view of the **CLASSIFY** screen.
 It is a table with 6 columns. The first column lists all the columns of the source data which example values can be seen in the second column. 
 The third column asks if data presented in a column can be used for URIs. 
 
-<img src="/markdown/images/Classify1.png" height="300" title="Inititial view of the **CLISSIFY** screen"/>
+<img src="/markdown/images/Classify1.png" height="300" title="Inititial view of the **CLASSIFY** screen"/>
 
 #### Is it a URI?
-
 The first 2 rules of link data stay:
 
 * Use URIs as names for things
