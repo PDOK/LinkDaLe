@@ -14,7 +14,6 @@ import {
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import Markdown from 'react-markdown';
-import { green500 } from 'material-ui/styles/colors';
 import './Tutorialised.css';
 
 
@@ -30,9 +29,6 @@ class Tutorialised extends React.Component {
           expanded: false,
           markdownURIs:
           [
-            `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`,
-            `${process.env.PUBLIC_URL}/markdown/AboutLD.MD`,
-            `${process.env.PUBLIC_URL}/markdown/AboutLOD.MD`,
             `${process.env.PUBLIC_URL}/markdown/myFirstLD.MD`,
             `${process.env.PUBLIC_URL}/markdown/BrowseLD.MD`,
             `${process.env.PUBLIC_URL}/markdown/QueryLD.MD`,
@@ -99,36 +95,20 @@ class Tutorialised extends React.Component {
           </CardText>
           <CardActions expandable>
             <FlatButton
-              label="About the tool"
+              label="Tutorial: Create Linked Data"
               onClick={() => this.openRemoteMarkdown(1, 0)}
             />
             <FlatButton
-              label="About Linked Data"
+              label="Tutorial: Browse Data"
               onClick={() => this.openRemoteMarkdown(1, 1)}
             />
             <FlatButton
-              label="About Linked Open Data Cloud"
+              label="Tutorial: Query Data"
               onClick={() => this.openRemoteMarkdown(1, 2)}
             />
             <FlatButton
-              backgroundColor={green500}
-              label="Tutorial: Create Linked Data"
-              onClick={() => this.openRemoteMarkdown(1, 3)}
-            />
-            <FlatButton
-              backgroundColor={green500}
-              label="Tutorial: Browse Data"
-              onClick={() => this.openRemoteMarkdown(1, 4)}
-            />
-            <FlatButton
-              backgroundColor={green500}
-              label="Tutorial: Query Data"
-              onClick={() => this.openRemoteMarkdown(1, 5)}
-            />
-            <FlatButton
-              backgroundColor={green500}
               label="Tutorial: Enrich Linked Data"
-              onClick={() => this.openRemoteMarkdown(1, 6)}
+              onClick={() => this.openRemoteMarkdown(1, 3)}
             />
           </CardActions>
         </Card>
