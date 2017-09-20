@@ -176,9 +176,13 @@ class DataBrowser extends Component {
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose}
         />
-        <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open} />
+        <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open}>
+          <p>You are going to delete a dataset!</p>
+          <p><strong>There is no user access control!</strong> </p>
+          <p>Therefore you can accidentally delete SOMEBODY&#39;s else data.</p>
+          <p><strong>Be careful!</strong></p>
+        </Dialog>
       </div>
-
     );
   }
 }
