@@ -157,10 +157,13 @@ class DataClassifyView extends Component {
       result = dialog.results[dialog.vocabPickerIndex];
       result.name = result.prefix.split(':')[1];
     } else {
+      let name = this.props.data[this.state.dialog.vocabPickerIndex].columnName;
+      name = name.toLowerCase();
+      name = name.replace(/ /g, '_');
       result =
     {
       uri: this.state.dialog.vocabDownText,
-      name: this.props.data[this.state.dialog.vocabPickerIndex].columnName,
+      name,
     };
     }
     this.props.setClass(this.state.dialog.id, result);
