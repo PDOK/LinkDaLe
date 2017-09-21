@@ -6,12 +6,17 @@ import MaterialDrawer from 'material-ui/Drawer/Drawer';
 import Card from 'material-ui/Card/Card';
 import CardHeader from 'material-ui/Card/CardHeader';
 import CardText from 'material-ui/Card/CardText';
-import FlatButton from 'material-ui/FlatButton/';
 import AppBar from 'material-ui/AppBar/';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import SparqlJs from 'sparqljs';
 import Markdown from 'react-markdown';
-import Subheader from 'material-ui/Subheader';
+import Play from 'material-ui/svg-icons/av/play-arrow';
+import Create from 'material-ui/svg-icons/content/create';
+import Explore from 'material-ui/svg-icons/action/explore';
+import LightBulb from 'material-ui/svg-icons/action/lightbulb-outline';
+import Info from 'material-ui/svg-icons/action/info';
+import { List, ListItem } from 'material-ui/List';
+
 import {
   green400,
   green500,
@@ -57,7 +62,7 @@ function NavigationBar(props) {
       <Card>
         <CardHeader
           title="LinkDaLe"
-          subtitle="Linked Data Learning environment"
+          subtitle="Linked Data Learning Environment"
           textStyle={{ paddingRight: '0px' }}
         />
         <CardText>
@@ -65,49 +70,57 @@ function NavigationBar(props) {
         </CardText>
       </Card>
       <div style={{ textAlign: 'left' }}>
-        <FlatButton
-          label="Create Linked Data"
-          fullWidth
-          onClick={() => props.onClick(States.DataCreation)}
-        />
-        <FlatButton
-          label="Browse Data"
-          fullWidth
-          onClick={() => props.onClick(States.DataBrowsing)}
-        />
-        <FlatButton
-          label="Query Data"
-          fullWidth
-          onClick={() => props.onClick(States.Querying)}
-        />
-        <FlatButton
-          label="Tutorial"
-          fullWidth
-          onClick={() => props.onClick(States.Tutorialise)}
-        />
-        <Divider />
-        <Subheader inset >About</Subheader>
-        <FlatButton
-          label="The tool"
-          fullWidth
-          onClick={() => props.onClick(States.AboutTool)}
-        />
-        <FlatButton
-          label="Linked Data"
-          fullWidth
-          onClick={() => props.onClick(States.AboutLD)}
-        />
-        <FlatButton
-          label="Linked Open Data Cloud"
-          fullWidth
-          onClick={() => props.onClick(States.AboutLODC)}
-        />
-        <FlatButton
-          label="Linked Open Vocabularies"
-          fullWidth
-          onClick={() => props.onClick(States.AboutLOV)}
-        />
+        <List>
+          <ListItem
+            primaryText={'Create Linked Data'}
+            onClick={() => props.onClick(States.DataCreation)}
+            leftIcon={<Create />}
+          />
+          <ListItem
+            primaryText={'Browse Data'}
+            onClick={() => props.onClick(States.DataBrowsing)}
+            leftIcon={<Explore />}
+          />
+          <ListItem
+            primaryText={'Query Data'}
+            onClick={() => props.onClick(States.Querying)}
+            leftIcon={<Play />}
+          />
+          <ListItem
+            primaryText={'Tutorial'}
+            onClick={() => props.onClick(States.Tutorialise)}
+            leftIcon={<LightBulb />}
+          />
+          <Divider />
+          <ListItem
+            primaryTogglesNestedList
+            primaryText={'About'}
+            leftIcon={<Info />}
+            nestedItems={
+            [<ListItem
+              primaryText={'The tool'}
+              onClick={() => props.onClick(States.AboutTool)}
 
+            />,
+              <ListItem
+                primaryText={'Linked Data'}
+                onClick={() => props.onClick(States.AboutLD)}
+
+              />,
+              <ListItem
+                primaryText={'Linked Open Data Cloud'}
+                onClick={() => props.onClick(States.AboutLODC)}
+
+              />,
+              <ListItem
+                primaryText={'Linked Open Vocabularies'}
+                onClick={() => props.onClick(States.AboutLOV)}
+
+              />,
+            ]}
+
+          />
+        </List>
         <Divider />
       </div>
       <div
@@ -244,7 +257,25 @@ class App extends Component {
           </div>
         );
       default:
-        return <h1>Welcome</h1>;
+        return (
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <space style={{ flex: 1 }} />
+            <div style={{ textStyle: 'roboto, sans-serif', textAlign: 'left', flex: 3, width: '50%' }}>
+              <h1 style={{ textAlign: 'center' }}>LinkDaLe</h1>
+              <Markdown source={'is a learning environment where people can learn ' +
+             'basics of Linked Data and WEB of Data. It was created to help people with ' +
+              'limited IT skills to start thinking in graphs. \n\n' +
+              'If you have no idea what is Linked Data start with *About* pages.' +
+              'If you have some knowledge read  *Getting started* tutorials first to learn the interface.\n\n' +
+              'In any case you can start right now!' +
+              ''}
+              />
+              <img src={`${process.env.PUBLIC_URL}/images/tut1.png`} alt="LinkDaLe" style={{ width: '100%' }} />
+            </div>
+            <space style={{ flex: 1 }} />
+          </div>
+
+        );
     }
   };
 
