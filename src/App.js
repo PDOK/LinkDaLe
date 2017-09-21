@@ -244,7 +244,12 @@ class App extends Component {
           </div>
         );
       default:
-        return <h1>Welcome</h1>;
+        return (
+          <Markdown>
+            # Welcome
+          </Markdown>
+
+        );
     }
   };
 
