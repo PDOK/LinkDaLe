@@ -2,6 +2,7 @@
   text-align: center;
     width: 100vw;
     height: 100vh;
+    font-family: 'Roboto', Sans-Serif;
 }
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }

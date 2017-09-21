@@ -84,6 +84,7 @@ class DataLinkView extends Component {
         open: false,
         results: [],
         vocabPickerIndex: 0,
+        lovAvailable: true,
       },
     };
   }
@@ -213,6 +214,11 @@ class DataLinkView extends Component {
       dialog,
     });
   };
+  onUriChange = (_, string) => {
+    const dialog = this.state.dialog;
+    dialog.vocabDownText = string;
+    this.setState({ dialog });
+  };
 
 
   // Helper to find the index of a given node
@@ -260,34 +266,60 @@ class DataLinkView extends Component {
   searchVocabulary = (e) => {
     const query = this.state.dialog.searchText;
     const dialog = this.state.dialog;
-    fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
-    }&type=property`).then(response => response.json()).then((json) => {
-      dialog.results = json.results.map(
-        item => ({
-          uri: item.uri[0],
-          vocabPrefix: item['vocabulary.prefix'][0],
-          prefix: item.prefixedName[0],
-        }),
-      );
-      this.setState({ dialog });
-      this.forceUpdate();
-    }).catch((ex) => {
-      console.error('parsing failed', ex);
-    });
     e.preventDefault();
+    fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
+    }&type=property`)
+      .then((json) => {
+        dialog.results = json.results.map(
+          item => ({
+            uri: item.uri[0],
+            vocabPrefix: item['vocabulary.prefix'][0],
+            prefix: item.prefixedName[0],
+          }),
+        );
+        if (dialog.results.length === 0) {
+          dialog.error = 'No results found';
+        }
+        dialog.lovAvailable = true;
+        this.setState({ dialog });
+      })
+      .catch((ex) => {
+        if (ex.statusText) {
+          dialog.error = `Request failed due to ${ex}`;
+        } else {
+          dialog.error = 'LOV is currently not available';
+          dialog.lovAvailable = false;
+        }
+        console.error('parsing failed', ex);
+        this.setState(dialog);
+      });
   };
 
 
   handlePick = () => {
     const dialog = this.state.dialog;
-    const result = dialog.results[dialog.vocabPickerIndex];
+    let result;
+    let name;
+    if (this.state.dialog.lovAvailable) {
+      result = dialog.results[dialog.vocabPickerIndex];
+      name = result.prefix.split(':')[1];
+    } else {
+      name = this.state.dialog.vocabDownText;
+      name = name.toLowerCase();
+      name = name.replace(/ /g, '_');
+      result = {
+        uri: name,
+        name,
+        prefix: name,
+      };
+    }
     const newEdge = {
       source: this.state.dialog.source,
       target: this.state.dialog.target,
       relation: result.prefix,
       r: 30,
       type: 'emptyEdge',
-      title: result.prefix.split(':')[1],
+      title: name,
       link: result.uri,
 
     };
@@ -311,6 +343,13 @@ class DataLinkView extends Component {
     this.forceUpdate();
   };
   renderDialogTableBody() {
+    if (!this.state.dialog.lovAvailable) {
+      return (<TextField
+        name="Relation URI"
+        hintText="The relation of the URI"
+        onChange={this.onUriChange}
+      />);
+    }
     if (this.state.dialog.results.length) {
       const result = this.state.dialog.results.map((column, index) =>
         (<MenuItem
@@ -384,7 +423,7 @@ class DataLinkView extends Component {
         label={'Finish'}
         primary
         onClick={this.handlePick}
-        disabled={this.state.dialog.results.length === 0}
+        disabled={!(this.state.dialog.results.length !== 0 || this.state.dialog.vocabDownText)}
       />,
 
       <FlatButton
@@ -446,6 +485,7 @@ class DataLinkView extends Component {
                 name="Search vocabularies"
                 hintText="relation name"
                 onChange={this.onChange}
+                errorText={this.state.dialog.error}
               />
               <IconButton type="submit"><ActionSearch /></IconButton>
             </form>
