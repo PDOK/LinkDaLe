@@ -52,7 +52,7 @@ function NavigationBar(props) {
         <CardHeader
           title="LinkDaLe"
           subtitle="Linked Data Learning environment"
-          textStyle={{paddingRight:'0px'}}
+          textStyle={{ paddingRight: '0px' }}
         />
         <CardText>
           <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
@@ -187,6 +187,7 @@ class App extends Component {
           <div style={{ paddingLeft: 256 }}>
             <AppBar
               title={this.state.title}
+              showMenuIconButton={false}
               // iconClassNameRight="muidocs-icon-navigation-expand-more"
             />
             {
