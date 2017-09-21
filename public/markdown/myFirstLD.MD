@@ -75,7 +75,7 @@ Once the table is created it can be uploaded into the tool for transformation.
 This can be done on the first screen of the **"Create Link Data"** page. Just click **PICK A FILE** and submit a ***.CSV** file. The result will look like this:
  
 
-<img src="/markdown/images/STEP1.png" height="300" title="Result of the firts step - upload data "/>
+<img src="/images/STEP1.png" height="300" title="Result of the firts step - upload data "/>
 
 
 Click **Continue** to go to the next step.
