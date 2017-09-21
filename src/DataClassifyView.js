@@ -36,6 +36,9 @@ class DataClassifyView extends Component {
           results: [],
           stepIndex: 0,
           vocabPickerIndex: 0,
+          error: '',
+          lovAvailable: true,
+          vocabDownText: '',
         },
       }
     );
@@ -60,6 +63,12 @@ class DataClassifyView extends Component {
     dialog.searchText = string;
     this.setState({ dialog });
   };
+  onUriChange = (_, string) => {
+    const dialog = this.state.dialog;
+    dialog.vocabDownText = string;
+    this.setState({ dialog });
+  };
+
 
   getAmountOfClasses = () => {
     const classes = this.props.data.slice();
@@ -107,9 +116,15 @@ class DataClassifyView extends Component {
   searchVocabulary = (e) => {
     const query = this.state.dialog.searchText;
     const dialog = this.state.dialog;
+    e.preventDefault();
     fetch(
       `http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query}&type=class`)
-      .then(response => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response);
+        }
+        return response.json();
+      })
       .then((json) => {
         dialog.results = json.results.map(
           item => ({
@@ -118,18 +133,36 @@ class DataClassifyView extends Component {
             prefix: item.prefixedName[0],
           }),
         );
+        if (dialog.results.length === 0) {
+          dialog.error = 'No results found';
+        }
+        dialog.lovAvailable = true;
         this.setState({ dialog });
       })
       .catch((ex) => {
+        if (ex.statusText) {
+          dialog.error = `Request failed due to ${ex}`;
+        } else {
+          dialog.error = 'LOV is currently not available';
+          dialog.lovAvailable = false;
+        }
         console.error('parsing failed', ex);
+        this.setState(dialog);
       });
-    e.preventDefault();
   };
-
   handlePick = () => {
     const dialog = this.state.dialog;
-    const result = dialog.results[dialog.vocabPickerIndex];
-    result.name = result.prefix.split(':')[1];
+    let result;
+    if (this.state.dialog.lovAvailable) {
+      result = dialog.results[dialog.vocabPickerIndex];
+      result.name = result.prefix.split(':')[1];
+    } else {
+      result =
+    {
+      uri: this.state.dialog.vocabDownText,
+      name: this.props.data[this.state.dialog.vocabPickerIndex].columnName,
+    };
+    }
     this.props.setClass(this.state.dialog.id, result);
     this.props.setUri(this.state.dialog.id, true);
     this.setState({
@@ -140,9 +173,9 @@ class DataClassifyView extends Component {
         results: [],
         stepIndex: 0,
         vocabPickerIndex: 0,
+        vocabDownText: '',
       },
-    },
-    );
+    });
   };
 
   resetItem(index) {
@@ -165,6 +198,13 @@ class DataClassifyView extends Component {
   }
 
   renderDialogTableBody() {
+    if (!this.state.dialog.lovAvailable) {
+      return (<TextField
+        name="Relation URI"
+        hintText="The reslation of the URI"
+        onChange={this.onUriChange}
+      />);
+    }
     if (this.state.dialog.results.length) {
       const result = this.state.dialog.results.map((column, index) =>
         (<MenuItem
@@ -228,6 +268,7 @@ class DataClassifyView extends Component {
                 name="Search vocabularies"
                 hintText="class name"
                 onChange={this.onChange}
+                errorText={this.state.dialog.error}
               />
               <IconButton type="submit"><ActionSearch /></IconButton>
             </form>
@@ -250,8 +291,8 @@ class DataClassifyView extends Component {
         primary
         onClick={(this.state.dialog.stepIndex === 0) ?
           this.handleNext : this.handlePick}
-        disabled={(this.state.dialog.stepIndex === 0) ?
-          false : this.state.dialog.results.length === 0}
+        disabled={(this.state.dialog.stepIndex === 0 || this.state.dialog.vocabDownText) ?
+          false : this.state.dialog.results.length === 0 || this.state.dialog.vocabDownText}
       />,
       <FlatButton
         label="Cancel"
