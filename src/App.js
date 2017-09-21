@@ -244,10 +244,11 @@ class App extends Component {
           </div>
         );
       default:
+        const markdown = '# Hello';
         return (
-          <Markdown>
-            # Welcome
-          </Markdown>
+          <div>
+            <Markdown source={markdown} />
+          </div>
 
         );
     }
