@@ -27,7 +27,7 @@ defines the described resource, the predicate, in the middle, shows what kind of
 subject and object and object is another resource that has a relation with subject. There are several 
 serializations of RDF, but XML-based is the most common format. 
 
-<img src="/markdown/images/AboutLD1.png" height="150" title="Triple is a basic building block to structure data on the Semantic Web. 
+<img src="/markdown/images/about_ld_1.png" height="150" title="Triple is a basic building block to structure data on the Semantic Web. 
 It consists of a subject expressed as a URI, predicate (also URI) and an object 
 that can be either a liter or a URI. "/>
 
@@ -57,7 +57,7 @@ into smaller bits of information, which are written in a formal structure. The c
 similar information. For example, it is assumed that the column with the name Registration ID hold only records with such ID, 
 the opposite would be considered an error. 
 
-<img src="/markdown/images/AboutLD2.png" height="550" title="Data transformation from unstructured free text into structured table and to linked RDF."/>
+<img src="/images/about_ld_2.png" height="550" title="Data transformation from unstructured free text into structured table and to linked RDF."/>
 
 However, even though the computers can read the tables, it is not possible for them to reason upon such structures. 
 To enable reasoning, a formal representation of the concepts and relations used in the data should be decoupled from 

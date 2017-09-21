@@ -96,29 +96,21 @@ function NavigationBar(props) {
             primaryTogglesNestedList
             primaryText={'About'}
             leftIcon={<Info />}
-            nestedItems={
-            [<ListItem
-              primaryText={'The tool'}
-              onClick={() => props.onClick(States.AboutTool)}
+            nestedItems={[
+              <ListItem
+                primaryText={'The tool'}
+                onClick={() => props.onClick(States.AboutTool)}
 
-            />,
+              />,
               <ListItem
                 primaryText={'Linked Data'}
                 onClick={() => props.onClick(States.AboutLD)}
-
               />,
               <ListItem
                 primaryText={'Linked Open Data Cloud'}
                 onClick={() => props.onClick(States.AboutLODC)}
-
-              />,
-              <ListItem
-                primaryText={'Linked Open Vocabularies'}
-                onClick={() => props.onClick(States.AboutLOV)}
-
               />,
             ]}
-
           />
         </List>
         <Divider />
@@ -209,8 +201,8 @@ class App extends Component {
         link = `${process.env.PUBLIC_URL}/markdown/AboutLOD.MD`;
         break;
       case (States.AboutLOV):
-        title = 'About Linked Open Vocabulary';
-        link = `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`;
+        // title = 'About Linked Open Vocabulary';
+        // link = `${process.env.PUBLIC_URL}/markdown/AboutTool.MD`;
         break;
       default:
         title = 'Welcome';
@@ -245,7 +237,7 @@ class App extends Component {
       case States.AboutLOV:
       case States.AboutLODC:
       case States.AboutTool:
-      case States.AboutLD:
+      // case States.AboutLD:
 
         return (
           <div style={{ display: 'flex', flexDirection: 'row' }}>

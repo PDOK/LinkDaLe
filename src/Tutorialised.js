@@ -102,14 +102,14 @@ class Tutorialised extends React.Component {
               label="Tutorial: Browse Data"
               onClick={() => this.openRemoteMarkdown(1, 1)}
             />
-            <FlatButton
-              label="Tutorial: Query Data"
-              onClick={() => this.openRemoteMarkdown(1, 2)}
-            />
-            <FlatButton
-              label="Tutorial: Enrich Linked Data"
-              onClick={() => this.openRemoteMarkdown(1, 3)}
-            />
+            {/* <FlatButton */}
+            {/* label="Tutorial: Query Data" */}
+            {/* onClick={() => this.openRemoteMarkdown(1, 2)} */}
+            {/* /> */}
+            {/* <FlatButton */}
+            {/* label="Tutorial: Enrich Linked Data" */}
+            {/* onClick={() => this.openRemoteMarkdown(1, 3)} */}
+            {/* /> */}
           </CardActions>
         </Card>
         <Card
@@ -142,8 +142,13 @@ class Tutorialised extends React.Component {
               label="Assignment 1: Explain Yourself"
               onClick={() => this.openRemoteMarkdown(2, 1)}
             />
-            <FlatButton label="Assignment 2: Enrich It" onClick={() => this.openRemoteMarkdown(2, 2)} />
-            <FlatButton label="Assignment 3: Use it" onClick={() => this.openRemoteMarkdown(2, 3)} />
+            <FlatButton
+              label="Assignment 2: Enrich It"
+              onClick={() => this.openRemoteMarkdown(2, 2)}
+            />
+            {/* <FlatButton */}
+            {/* label="Assignment 3: Use it" onClick={() => this.openRemoteMarkdown(2, 3)} */}
+            {/* /> */}
 
           </CardActions>
         </Card>

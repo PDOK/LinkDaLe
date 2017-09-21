@@ -44,19 +44,19 @@ Table view shows the data organised into 3 columns: Subject, Predicate and Objec
 Those columns represent three parts of a triple. Each raw can be read as a triple. 
 A figure below shows an example of a Table view on the data created in the previous exercise.  
 
-<img src="/markdown/images/browseTable.png" height="500" title="Table view on data"/> 
+<img src="/images/browse_table.png" height="500" title="Table view on data"/> 
   
  #### Graph View
 
 The Graph view visualises the data using a network visualisation. 
 The URIs are shown as circles and literal values are represented as rectangles. 
 
-<img src="/markdown/images/graphView.png" height="300" title="Graph view on data"/> 
+<img src="/images/graph_view.png" height="300" title="Graph view on data"/> 
 
 
  #### Class Graph view
  
  Class Graph view shows a so called *data shape*, a structure of the classes, relation between them and their attributes. 
  
- <img src="/markdown/images/classView.png" height="300" title="Class Graph view on data"/> 
+ <img src="/images/class_view.png" height="300" title="Class Graph view on data"/> 
  
