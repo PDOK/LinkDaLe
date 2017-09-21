@@ -15,6 +15,9 @@
     margin: 10px 10px 10px 10px;
     height: fit-content;
 }
+.TutorialCard:hover {
+    cursor : pointer;
+}
 .TutorialCardText {
     text-align: justify;
 }
