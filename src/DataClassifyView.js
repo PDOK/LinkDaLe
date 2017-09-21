@@ -160,11 +160,13 @@ class DataClassifyView extends Component {
       let name = this.props.data[this.state.dialog.vocabPickerIndex].columnName;
       name = name.toLowerCase();
       name = name.replace(/ /g, '_');
-      result =
-    {
-      uri: this.state.dialog.vocabDownText,
-      name,
-    };
+      let uri = this.state.dialog.vocabDownText;
+      uri = uri.toLowerCase();
+      uri = uri.replace(/ /g, '_');
+      result = {
+        uri,
+        name,
+      };
     }
     this.props.setClass(this.state.dialog.id, result);
     this.props.setUri(this.state.dialog.id, true);
@@ -203,8 +205,8 @@ class DataClassifyView extends Component {
   renderDialogTableBody() {
     if (!this.state.dialog.lovAvailable) {
       return (<TextField
-        name="Relation URI"
-        hintText="The reslation of the URI"
+        name="Class URI"
+        hintText="The class of the URI"
         onChange={this.onUriChange}
       />);
     }
