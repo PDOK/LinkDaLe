@@ -62,7 +62,7 @@ function NavigationBar(props) {
       <Card>
         <CardHeader
           title="LinkDaLe"
-          subtitle="Linked Data Learning environment"
+          subtitle="Linked Data Learning Environment"
           textStyle={{ paddingRight: '0px' }}
         />
         <CardText>
@@ -258,12 +258,21 @@ class App extends Component {
         );
       default:
         return (
-          <div>
-            <Markdown source={'# Hello' +
-            'bj xmcnxcnbx  cvnbcvb' +
-            'z,vsdkbvsdkjbsdb  ' +
-            ''}
-            />
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <space style={{ flex: 1 }} />
+            <div style={{ textStyle: 'roboto, sans-serif', textAlign: 'left', flex: 3, width: '50%' }}>
+              <h1 style={{ textAlign: 'center' }}>LinkDaLe</h1>
+              <Markdown source={'is a learning environment where people can learn ' +
+             'basics of Linked Data and WEB of Data. It was created to help people with ' +
+              'limited IT skills to start thinking in graphs. \n\n' +
+              'If you have no idea what is Linked Data start with *About* pages.' +
+              'If you have some knowledge read  *Getting started* tutorials first to learn the interface.\n\n' +
+              'In any case you can start right now!' +
+              ''}
+              />
+              <img src={`${process.env.PUBLIC_URL}/images/tut1.png`} alt="LinkDaLe" style={{ width: '100%' }} />
+            </div>
+            <space style={{ flex: 1 }} />
           </div>
 
         );
