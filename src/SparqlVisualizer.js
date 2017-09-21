@@ -41,6 +41,7 @@ class SparqlVisualizer extends React.Component {
             <TableBody
               displayRowCheckbox={false}
               style={{ maxHeight: '20vh' }}
+              preScanRows={false}
             >
               {this.props.data.map(row => (
                 <TableRow key={row.map(data => data.value)}>
