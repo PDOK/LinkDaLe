@@ -75,7 +75,7 @@ Once the table is created it can be uploaded into the tool for transformation.
 This can be done on the first screen of the **"Create Link Data"** page. Just click **PICK A FILE** and submit a ***.CSV** file. The result will look like this:
  
 
-<img src="/markdown/images/STEP1.png" height="300" title="Result of the firts step - upload data "/>
+<img src="/images/step1.png" height="300" title="Result of the firts step - upload data "/>
 
 
 Click **Continue** to go to the next step.
@@ -86,10 +86,9 @@ A Figure bellow presents an initial view of the **CLASSIFY** screen.
 It is a table with 6 columns. The first column lists all the columns of the source data which example values can be seen in the second column. 
 The third column asks if data presented in a column can be used for URIs. 
 
-<img src="/markdown/images/Classify1.png" height="300" title="Inititial view of the **CLISSIFY** screen"/>
+<img src="/images/classify1.png" height="300" title="Inititial view of the **CLASSIFY** screen"/>
 
 #### Is it a URI?
-
 The first 2 rules of link data stay:
 
 * Use URIs as names for things
@@ -143,17 +142,17 @@ Therefore, in order to indicate that column **Name** is used to make URIs, check
 
 You will be prompt to fill a form to specify a base URI (http://rdf,paqt/). See figure bellow. 
 
-<img src="/markdown/images/pickURI.png" height="300" title="Pick a URI dialog"/>
+<img src="/images/pick_uri.png" height="300" title="Pick a URI dialog"/>
 
 
 After you click **Next** you will see another dialog that asks to provide a class. Type a name of a class (e.g person) into the search bar and click search. Select one term from the list of suggestions (e.g. foaf:Person). See the figure below.  
 
-<img src="/markdown/images/selectClass.png" height="300" title="Select a class name"/>
+<img src="/images/select_class.png" height="300" title="Select a class name"/>
 
 
 When you click **Finish** you will see an updated Classify screen with all the information you provided,  
 
-<img src="/markdown/images/Classify2.png" height="300" title="Result classify screen"/>
+<img src="/images/classify2.png" height="300" title="Result classify screen"/>
 
 The **Reset** button will wipe out information you have provided for a column.
   
@@ -162,7 +161,7 @@ The **Reset** button will wipe out information you have provided for a column.
 When you click **Continue** you will be redirected to the screen where you can provide 
 relations between data items you have identified in the previous steps. 
  
- <img src="/markdown/images/linkData.png" height="500" title="Initial Link Data screen"/>
+ <img src="/images/link_data.png" height="500" title="Initial Link Data screen"/>
  
 The figure above shows an initial state of the **Link Data** screen. What you see is a graphical visualisation 
 of the data items identified in the previous steps. **Circles** represent classes, **rectangles** - literal values. You can read about each of the objects from the right side bar.
@@ -184,7 +183,7 @@ Therefore, change the relation by deleting an existing one (select a relation an
  
 If you have done everything right you will see a similar picture as below.
 
- <img src="/markdown/images/linkData2.png" height="500" title="Final Link Data screen"/>
+ <img src="/images/link_data2.png" height="500" title="Final Link Data screen"/>
  
 Click **Continue** to get to the next step.
 
@@ -197,7 +196,7 @@ button.
 as it shown below.
 
 
-<img src="/markdown/images/publish.png" height="500" title="Metadata dialog"/> 
+<img src="/images/publish.png" height="500" title="Metadata dialog"/> 
 
 
 CLick **Publish** and you are done!

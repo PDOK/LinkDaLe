@@ -258,6 +258,7 @@ class App extends Component {
           <div style={{ paddingLeft: 256 }}>
             <AppBar
               title={this.state.title}
+              showMenuIconButton={false}
               // iconClassNameRight="muidocs-icon-navigation-expand-more"
             />
             {
