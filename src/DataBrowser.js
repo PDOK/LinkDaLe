@@ -135,7 +135,7 @@ class DataBrowser extends Component {
               Object.keys(this.state.graphContexts).map((key, count) => {
                 const graph = this.state.graphContexts[key];
                 // Limited filtering
-                if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Datset') {
+                if (graph[rdfsType] && graph[rdfsType] === 'http://rdfs.org/ns/void#Dataset') {
                   return (
                     <TableRow key={graph[dcTitle]} selected={count === this.state.currentSelected}>
                       <TableRowColumn>{graph[dcTitle]}</TableRowColumn>
@@ -176,9 +176,13 @@ class DataBrowser extends Component {
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose}
         />
-        <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open} />
+        <Dialog title="Are you sure?" actions={dialogActions} open={this.state.dialog.open}>
+          <p>You are going to delete a dataset!</p>
+          <p><strong>There is no user access control!</strong> </p>
+          <p>Therefore you can accidentally delete SOMEBODY&#39;s else data.</p>
+          <p><strong>Be careful!</strong></p>
+        </Dialog>
       </div>
-
     );
   }
 }
