@@ -9,6 +9,7 @@ original data with information from LOD.
 ### Required knowledge:
 1.	The student knows the Linked Data principles and basic concepts such as triples and ontologies.
 2.	The student knows how to analyse and model data. 
+3.  The student has done first two Getting Started tutorials (Create Linked Data, Browse data).
 
 ### Goals:
 1.	To learn how to model and analyse Linked Data structures using ontologies.
