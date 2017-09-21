@@ -205,8 +205,8 @@ class DataClassifyView extends Component {
   renderDialogTableBody() {
     if (!this.state.dialog.lovAvailable) {
       return (<TextField
-        name="Relation URI"
-        hintText="The reslation of the URI"
+        name="Class URI"
+        hintText="The class of the URI"
         onChange={this.onUriChange}
       />);
     }
