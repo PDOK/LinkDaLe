@@ -234,10 +234,10 @@ class App extends Component {
         />);
       case States.Tutorialise:
         return <Tutorialised />;
-      case States.AboutLOV:
+      // case States.AboutLOV:
       case States.AboutLODC:
       case States.AboutTool:
-      // case States.AboutLD:
+      case States.AboutLD:
 
         return (
           <div style={{ display: 'flex', flexDirection: 'row' }}>
