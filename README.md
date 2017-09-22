@@ -3,7 +3,7 @@
 
 RDF-PAQT is a tool/service where users are able to learn and to work with Linked Data. 
 
-[Click here](http://Gerwinbosch.nl/RDF-PAQT) for a live version hosted with gh-pages.
+[Click here](http://linkdale.org) for a live version hosted with gh-pages.
 
 ## About
 
