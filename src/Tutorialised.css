@@ -15,7 +15,7 @@
     margin: 10px 10px 10px 10px;
     height: fit-content;
 }
-.TutorialCard:hover {
+.clickable_surface:hover {
     cursor : pointer;
 }
 .TutorialCardText {

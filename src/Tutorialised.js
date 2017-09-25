@@ -81,13 +81,21 @@ class Tutorialised extends React.Component {
         <Card
           className="TutorialCard"
           expanded={this.state.tutorials[1].expanded}
-          onClick={() => this.expandCollapseCard(1)}
         >
-          <CardMedia>
+          <CardMedia className="clickable_surface" onClick={() => this.expandCollapseCard(1)}>
             <img src={`${process.env.PUBLIC_URL}/images/tut1.png`} alt="Getting Started" />
           </CardMedia>
-          <CardTitle title="Getting Started" subtitle="Learn Linked Data" />
-          <CardText className="TutorialCardText" expandable>
+          <CardTitle
+            className="clickable_surface"
+            title="Getting Started"
+            subtitle="Learn Linked Data"
+            onClick={() => this.expandCollapseCard(1)}
+          />
+          <CardText
+            className="TutorialCardText clickable_surface"
+            onClick={() => this.expandCollapseCard(1)}
+            expandable
+          >
             <strong>Linked Data</strong> is a method of publishing structured data so that it
               can be linked and queried.
               With this tutorial you will learn the basics of the Linked Data
@@ -115,19 +123,26 @@ class Tutorialised extends React.Component {
         <Card
           className="TutorialCard"
           expanded={this.state.tutorials[2].expanded}
-          onClick={() => this.expandCollapseCard(2)}
         >
           <CardMedia
+            className="clickable_surface"
+            onClick={() => this.expandCollapseCard(2)}
             style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}
           >
-            <img src={`${process.env.PUBLIC_URL}/images/bpil.png`} alt="Business Process Integration Lab" />
+            <img className="clickable_surface" src={`${process.env.PUBLIC_URL}/images/bpil.png`} alt="Business Process Integration Lab" />
           </CardMedia>
           <CardTitle
+            className="clickable_surface"
+            onClick={() => this.expandCollapseCard(2)}
             title="Business Process Integration Lab"
             subtitle="Linked Data for Supply-chain integration"
             actAsExpander
           />
-          <CardText className="TutorialCardText" expandable>
+          <CardText
+            className="TutorialCardText clickable_surface"
+            onClick={() => this.expandCollapseCard(2)}
+            expandable
+          >
             <strong> BPIL </strong> is a course at University of Twente where students
               learn how to build and integrate systems between different parties in a supply chain.
               Linked Data is a technology that helps to simplify
