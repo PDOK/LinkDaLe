@@ -253,7 +253,7 @@ class App extends Component {
               <Markdown source={'is a learning environment where people can learn ' +
              'basics of Linked Data and WEB of Data. It was created to help people with ' +
               'limited IT skills to start thinking in graphs. \n\n' +
-              'If you have no idea what is Linked Data start with *About* pages.' +
+              'If you have no idea what Linked Data is, start with *About* pages.' +
               'If you have some knowledge read  *Getting started* tutorials first to learn the interface.\n\n' +
               'In any case you can start right now!' +
               ''}
