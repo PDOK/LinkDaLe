@@ -4,7 +4,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MaterialDrawer from 'material-ui/Drawer/Drawer';
 import Card from 'material-ui/Card/Card';
-import CardHeader from 'material-ui/Card/CardHeader';
+// import CardHeader from 'material-ui/Card/CardHeader';
 import CardText from 'material-ui/Card/CardText';
 import AppBar from 'material-ui/AppBar/';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -60,13 +60,9 @@ function NavigationBar(props) {
   return (
     <MaterialDrawer>
       <Card className="home_card" onClick={() => props.onClick(States.Welcome)}>
-        <CardHeader
-          title="LinkDaLe"
-          subtitle="Linked Data Learning Environment"
-          textStyle={{ paddingRight: '0px' }}
-        />
         <CardText>
-          <img src={`${process.env.PUBLIC_URL}/images/rdf.png`} height={80} alt="logo" />
+          <img src={`${process.env.PUBLIC_URL}/images/linkdale_logo.png`} height={80} alt="logo" />
+          <p>Linked Data Learning Environment </p>
         </CardText>
       </Card>
       <div style={{ textAlign: 'left' }}>
