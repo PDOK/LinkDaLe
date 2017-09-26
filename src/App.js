@@ -59,7 +59,7 @@ const States = {
 function NavigationBar(props) {
   return (
     <MaterialDrawer>
-      <Card>
+      <Card className="home_card" onClick={() => props.onClick(States.Welcome)}>
         <CardHeader
           title="LinkDaLe"
           subtitle="Linked Data Learning Environment"
