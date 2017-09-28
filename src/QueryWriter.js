@@ -19,7 +19,7 @@ class QueryWriter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: 'SELECT ?s ?p ?o {?s ?p ?o}',
+      query: 'SELECT ?s ?p ?o {?s ?p ?o} LIMIT 100',
       data: [],
       graphContexts: [],
       headers: [],
@@ -47,10 +47,10 @@ class QueryWriter extends React.Component {
   }
   onDataSourceChange = (event, index, value) => {
     this.setState({
-      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`,
+      query: `SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}} LIMIT 100`,
       selectedGraph: value,
     });
-    this.cm.codeMirror.setValue(`SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}}`);
+    this.cm.codeMirror.setValue(`SELECT ?subject ?predicate ?object WHERE { GRAPH <${value.uri}> {?subject ?predicate ?object}} LIMIT 100`);
   };
 
   onQueryChange = (query) => {
