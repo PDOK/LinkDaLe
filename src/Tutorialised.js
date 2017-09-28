@@ -110,10 +110,10 @@ class Tutorialised extends React.Component {
               label="Tutorial: Browse Data"
               onClick={() => this.openRemoteMarkdown(1, 1)}
             />
-            {/* <FlatButton */}
-            {/* label="Tutorial: Query Data" */}
-            {/* onClick={() => this.openRemoteMarkdown(1, 2)} */}
-            {/* /> */}
+            <FlatButton
+              label="Tutorial: Query Data"
+              onClick={() => this.openRemoteMarkdown(1, 2)}
+            />
             {/* <FlatButton */}
             {/* label="Tutorial: Enrich Linked Data" */}
             {/* onClick={() => this.openRemoteMarkdown(1, 3)} */}
