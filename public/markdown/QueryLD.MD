@@ -126,3 +126,31 @@ Limit 10
 ```
 In the query, we specified a class of a variable (`?s a foaf:Person`) and we added additional triple pattern 
 that asks for objects (`?name`) that are connected to ?s using foaf:name predicate (`?s foaf:name ?name`).
+
+
+
+#### Federation
+
+The [SPARQL specification](https://www.w3.org/TR/2013/REC-sparql11-federated-query-20130321/) states:
+
+>RDF is a directed, labeled graph data format for representing information in the Web. 
+>SPARQL can be used to express queries across diverse data sources, whether the data is stored 
+natively as RDF or viewed as RDF via middleware. 
+SPARQL allows executing queries distributed over different SPARQL endpoints. 
+The SERVICE keyword is used to support queries that merge data distributed across the Web.
+
+To put it short, federation makes it possible to query more than one endpoint at a time.
+Example below retrieves first 10 triples from DBpedia:
+
+```
+SELECT ?s ?p ?o 
+{Service <http://dbpedia.org/sparql>
+{?s ?p ?o}
+}
+Limit 10
+```
+
+As it was stated above LinkDaLe works with the endpoint <http://almere.pilod.nl:8890/sparql>
+Therefore, all the queries is executed by that endpoint. The query above was sent
+ to <http://almere.pilod.nl:8890/sparql> . The endpoint precessed the query (found ***SERVICE*** keyword) and 
+ sent another query to DBpedia endpoint specified after the ***SERVICE*** keyword. The DBpedia endpoint processed the request returned it to <http://almere.pilod.nl:8890/sparql> and then, it was back in the browser.  
