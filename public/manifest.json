@@ -1,9 +1,9 @@
 {
   "short_name": "LinkDaLe",
-  "name": "Linked Data Learning eviroment",
+  "name": "Linked Data Learning environment",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "favicon-link.png",
       "sizes": "192x192",
       "type": "image/png"
     }

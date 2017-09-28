@@ -269,6 +269,12 @@ class DataLinkView extends Component {
     e.preventDefault();
     fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
     }&type=property`)
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response);
+        }
+        return response.json();
+      })
       .then((json) => {
         dialog.results = json.results.map(
           item => ({

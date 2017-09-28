@@ -354,7 +354,7 @@ class TripleVisualizer extends React.Component {
               <TableRow>
                 <TableHeaderColumn>Subject</TableHeaderColumn>
                 <TableHeaderColumn>Predicate</TableHeaderColumn>
-                <TableHeaderColumn>Predicate</TableHeaderColumn>
+                <TableHeaderColumn>Object</TableHeaderColumn>
               </TableRow>
             </TableHeader>
             <TableBody
