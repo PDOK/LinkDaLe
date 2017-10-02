@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/GerwinBosch/LinkDaLe.svg?branch=master)](https://travis-ci.org/GerwinBosch/LinkDaLe)
-# LinkDalE
+# LinkDaLe
 
 LinkDaLe is a tool/service where users are able to learn and to work with Linked Data. 
 
