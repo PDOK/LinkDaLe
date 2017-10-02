@@ -1,19 +1,19 @@
 [![Build Status](https://travis-ci.org/GerwinBosch/LinkDaLe.svg?branch=master)](https://travis-ci.org/GerwinBosch/LinkDaLe)
-# RDF-PAQT
+# LinkDaLe
 
-RDF-PAQT is a tool/service where users are able to learn and to work with Linked Data. 
+LinkDaLe is a tool/service where users are able to learn and to work with Linked Data. 
 
 [Click here](http://linkdale.org) for a live version hosted with gh-pages.
 
 ## About
 
-RDF-PAQT is the product created as part of the Bachelor thesis of [Gerwin Bosch](https://github.com/GerwinBosch) in order of [The Kadaster](https://www.kadaster.com/)
+LinkDaLe is the product created as part of the Bachelor thesis of [Gerwin Bosch](https://github.com/GerwinBosch) in order of [The Kadaster](https://www.kadaster.com/)
  
-For more information and documentation see [the wiki](https://github.com/GerwinBosch/rdf-paqt/wiki)
+For more information and documentation see [the wiki](https://github.com/GerwinBosch/LinkDaLe/wiki)
 
 ## Goal
 
-With RDF-PAQT the Kadaster hopes to make Linked Data a more approachable technology by supplying people who are intersted in Linked Data with an online enviroment where they are able to create and query Linked Data while following tutorials. 
+With LinkDaLe the Kadaster hopes to make Linked Data a more approachable technology by supplying people who are intersted in Linked Data with an online enviroment where they are able to create and query Linked Data while following tutorials. 
 
 
 ## Special thanks
