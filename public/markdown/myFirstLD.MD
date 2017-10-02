@@ -109,7 +109,7 @@ Age and place of birth can be seen as 2 attributes of a person therefor they can
 
 URI strategy refers to the way how URIs are formed. In general, a URI consists of a *base* - a part of URI that don't change and an addition that represents a unique data instance. 
 In the example of Berlin `http://dbpedia.org/resource/` is the *base* of URI that defines a namespace. When `Berlin` is a one data instance of that namespace. 
-For this assignment we will use `http://rdf.paqt/` a base for URIs
+For this assignment we will use `http://linkdale.org/data/` a base for URIs
 
 #### What is a class? 
 
@@ -140,7 +140,7 @@ Most useful information is about the type of a thing and its label*
 In our example, it is known that the values in the column **Name** are unique therefore it is possible to form URIs using those values as additions.
 Therefore, in order to indicate that column **Name** is used to make URIs, check a tick box "Is it a URI?" 
 
-You will be prompt to fill a form to specify a base URI (http://rdf,paqt/). See figure bellow. 
+You will be prompt to fill a form to specify a base URI (http://linkdale.org/data/). See figure bellow. 
 
 <img src="/images/pick_uri.png" height="300" title="Pick a URI dialog"/>
 
