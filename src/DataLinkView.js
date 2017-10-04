@@ -16,6 +16,8 @@ import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import Info from 'material-ui/svg-icons/action/info-outline';
 
 function doNothing() {
 
@@ -86,6 +88,7 @@ class DataLinkView extends Component {
         vocabPickerIndex: 0,
         lovAvailable: true,
       },
+      infoDialog: { open: false },
     };
   }
 
@@ -473,6 +476,14 @@ class DataLinkView extends Component {
             references={this.state.relations}
             getData={this.props.getExampleData}
           />
+          <FloatingActionButton
+            style={{
+              position: 'absolute',
+              right: '256px',
+              bottom: '8px',
+            }}
+            onClick={() => this.setState({ infoDialog: { open: true } })}
+          ><Info /></FloatingActionButton>
 
 
         </div>
@@ -500,6 +511,17 @@ class DataLinkView extends Component {
                 therefore try to use as few vocabularies as possible</em></p>
             {this.renderDialogTableBody()}
           </div>
+
+        </Dialog>
+        <Dialog
+          open={this.state.infoDialog.open}
+          onRequestClose={() => this.setState({ infoDialog: { open: false } })}
+          title="controls"
+        >
+              Click: Select node/edge<br />
+              Click, hold and drag a node: Drag the node<br />
+              Shift+Click a node and drag: Create new Edge<br />
+              Click on an Edge and press Del: Delete the Edge<br />
 
         </Dialog>
 
@@ -579,20 +601,6 @@ function InfoBar(props) {
         </CardText>
       </Card>
       {middleCard}
-      <Card>
-        <CardHeader
-          title="Controls"
-          subtitle="Click to expand"
-          actAsExpander
-          showExpandableButton
-        />
-        <CardText expandable>
-          Click: Select node/edge<br />
-          Click and hold on node: Drag the node<br />
-          Shift+Click a node and drag: Create new Edge<br />
-          Click on an Edge and press Del: Delete the Edge<br />
-        </CardText>
-      </Card>
     </Card>
   );
 }
