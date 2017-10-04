@@ -123,7 +123,7 @@ class DownloadView extends Component {
           sparqlProcessing: true,
           dialog: { open: false },
         });
-        const uri = `http://linkdale.org/data/${graphName}`;
+        const uri = `http://linkdale.org/data/${encodedGraphname}`;
         const dataQuery = `INSERT DATA { GRAPH <${uri}> {${graph}}}`;
         const contextQuery = `INSERT DATA { GRAPH <http://linkdale.org/metadata> {
             <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
