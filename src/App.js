@@ -139,7 +139,7 @@ class App extends Component {
     this.state = {
       state: States.Welcome,
       title: 'Welcome',
-      client: new SparqlClient('http://almere.pilod.nl:8890/sparql'),
+      client: new SparqlClient('http://almere.pilod.nl/sparql'),
       parser: new SparqlJs.Parser(),
     };
   }
