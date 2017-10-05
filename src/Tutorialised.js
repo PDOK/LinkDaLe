@@ -161,9 +161,10 @@ class Tutorialised extends React.Component {
               label="Assignment 2: Enrich It"
               onClick={() => this.openRemoteMarkdown(2, 2)}
             />
-            {/* <FlatButton */}
-            {/* label="Assignment 3: Use it" onClick={() => this.openRemoteMarkdown(2, 3)} */}
-            {/* /> */}
+            <FlatButton
+              label="Assignment 3: Call mister Postman"
+              onClick={() => this.openRemoteMarkdown(2, 3)}
+            />
 
           </CardActions>
         </Card>
