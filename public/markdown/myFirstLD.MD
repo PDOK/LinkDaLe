@@ -192,7 +192,7 @@ Click **Continue** to get to the next step.
 Congratulations! You can see and read your newly created data from this screen. You can change serialisation (Turtle, JSON-LD, N-Triples) and download the data by clicking **Download**
 button. 
  
-**Publish** button will insert your data into a remote [triplestore](http://almere.pilod.nl:8890/sparql). This will make your data published on the Web Of Data! Just provide useful metadata by filling a form 
+**Publish** button will insert your data into a remote [triplestore](http://almere.pilod.nl/sparql). This will make your data published on the Web Of Data! Just provide useful metadata by filling a form 
 as it shown below.
 
 
