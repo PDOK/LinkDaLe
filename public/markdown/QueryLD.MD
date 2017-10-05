@@ -150,7 +150,7 @@ SELECT ?s ?p ?o
 Limit 10
 ```
 
-As it was stated above LinkDaLe works with the endpoint <http://almere.pilod.nl:8890/sparql>
+As it was stated above LinkDaLe works with the endpoint <http://almere.pilod.nl/sparql>
 Therefore, all the queries is executed by that endpoint. The query above was sent
- to <http://almere.pilod.nl:8890/sparql> . The endpoint precessed the query (found ***SERVICE*** keyword) and 
+ to <http://almere.pilod.nl/sparql> . The endpoint precessed the query (found ***SERVICE*** keyword) and 
  sent another query to DBpedia endpoint specified after the ***SERVICE*** keyword. The DBpedia endpoint processed the request returned it to <http://almere.pilod.nl:8890/sparql> and then, it was back in the browser.  
