@@ -8,4 +8,4 @@
 # TODO
 
 - [ ] Travis build succeeds
-- [ ] Assigned reviewer (preffered reviewer [GerwinBosch](https://github.com/GerwinBosch))
+- [ ] Assigned reviewer
