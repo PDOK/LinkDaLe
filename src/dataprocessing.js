@@ -101,99 +101,88 @@ function distribute(data) {
     return dataCopy;
   });
 }
+function createLiteralNode(id, title, columnNr) {
+  return {
+    id,
+    label: title,
+    type: 'literal',
+    r: 30,
+    title,
+    column: columnNr,
+  };
+}
+function createURINode(id, title, columnNr, uri) {
+  return {
+    id,
+    label: title,
+    uri,
+    type: 'uri',
+    r: 30,
+    title,
+    column: columnNr,
+  };
+}
+function createLabelEdge(source, target) {
+  return {
+    source,
+    target,
+    relation: 'rdfs:label',
+    r: 30,
+    type: 'emptyEdge',
+    title: 'label',
+    link: 'https://www.w3.org/2000/01/rdf-schema#label',
+  };
+}
+function createUriRow(data, classification, index) {
+  // Create base-uri
+  let baseUri = classification.baseUri;
+  // If the person has added www but no http:
+  if (baseUri.startsWith('www')) {
+    baseUri = `http://${baseUri}`;
+  } else if (!baseUri.startsWith('http') || (!baseUri.startsWith())) {
+    baseUri = `http://www.${baseUri}`;
+  }
+  if (classification.baseUri[classification.baseUri.length - 1] !== '/') {
+    baseUri += '/';
+  }
+  // Create a new column with the URI's
+  return data.map((dataRow, rowIndex) => {
+    // Column header
+    if (rowIndex === 0) {
+      return `${classification.class.name}_uri`;
+    }
+    // Data is empty
+    if (!dataRow[index]) {
+      return '';
+    }
+    // Find the same
+    const like = data.filter(rowData => rowData[index] === dataRow[index]);
+    if (like.length > 0) {
+      return baseUri + encodeURI(like[0][index].replace(/ /g, '_'));
+    }
+    return '';
+  });
+}
 
 function nodeCreation(data, classifications) {
   let nodes = [];
   const edges = [];
   classifications.forEach((classification, index) => {
     if (classification.baseUri) {
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: classification.class.name,
-          type: 'literal',
-          r: 30,
-          title: classification.class.name,
-          column: index,
-        });
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: `${classification.class.name}_uri`,
-          type: 'uri',
-          r: 30,
-          title: `${classification.class.name}_uri`,
-          uri: classification.class.uri,
-          column: data[0].length,
-        });
-      edges.push(
-        {
-          source: nodes.length - 1,
-          target: nodes.length - 2,
-          relation: 'rdfs:label',
-          r: 30,
-          type: 'emptyEdge',
-          title: 'label',
-          link: 'https://www.w3.org/2000/01/rdf-schema#label',
-
-
-        },
-      );
-      let newRow = data.map((dataRow, rowIndex) => {
-        // Column header
-        if (rowIndex === 0) {
-          return `${classification.class.name}_uri`;
-        }
-        // Data is empty
-        if (!dataRow[index]) {
-          return '';
-        }
-        // Find the same
-        const like = data.filter(rowData => rowData[index] === dataRow[index]);
-        if (like.length > 0) {
-          return like[0][index];
-        }
-        return '';
-      });
-      if (classification.baseUri) {
-        newRow = newRow.map((item, idx) => {
-          let baseUri = classification.baseUri;
-          if (idx === 0) {
-            return item;
-          }
-          if (baseUri.startsWith('www')) {
-            baseUri = `http://${baseUri}`;
-          } else if (!baseUri.startsWith('http')) {
-            baseUri = `http://www.${baseUri}`;
-          }
-          if (classification.baseUri[classification.baseUri.length - 1] !== '/') {
-            baseUri += '/';
-          }
-          return baseUri + encodeURI(item.replace(/ /g, '_'));
-        });
-      }
-      data.forEach((dataRow, idx) => dataRow.push(newRow[idx]));
+      // Push the new nodes
+      nodes.push(createLiteralNode(nodes.length, classification.class.name, index));
+      nodes.push(createURINode(nodes.length, `${classification.class.name}_uri`, data[0].length, classification.class.uri));
+      edges.push(createLabelEdge(nodes.length - 1, nodes.length - 2));
+      // Create a new row of data containing the URI's of the data
+      const uriRow = createUriRow(data, classification, index);
+      // Add the uri row to the data
+      data.forEach((dataRow, idx) => dataRow.push(uriRow[idx]));
     } else if (classification.class.uri) {
       nodes.push(
-        {
-          id: (nodes.length),
-          label: classification.class.name,
-          type: 'uri',
-          r: 30,
-          title: classification.class.name,
-          uri: classification.class.uri,
-          column: index,
-        });
+        createURINode(nodes.length, classification.class.name, index, classification.class.uri),
+      );
     } else {
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: classification.columnName,
-          type: 'literal',
-          r: 30,
-          title: classification.columnName,
-          column: index,
-        });
+      nodes.push(createLiteralNode(nodes.length, classification.columnName, index));
     }
   });
 
