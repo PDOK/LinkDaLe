@@ -63,9 +63,9 @@ function convertDataToTriples(data, links, nodes) {
             if (!Number(targetValue)) { // String literal
               targetValue = rdf.createLiteral(targetValue, 'en', 'http://www.w3.org/2001/XMLSchema#string');
             } else if (targetValue % 1 === 0) { // Integer Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#integer');
+              targetValue = rdf.createLiteral(targetValue, null, 'http://www.w3.org/2001/XMLSchema#integer');
             } else { // Float Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#float');
+              targetValue = rdf.createLiteral(targetValue, null, 'http://www.w3.org/2001/XMLSchema#float');
             }
           } else {
             targetValue = rdf.createNamedNode(targetValue);
