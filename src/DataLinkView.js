@@ -35,7 +35,7 @@ const GraphConfig = {
       ),
     },
     uri: {
-      typeText: 'URI',
+      typeText: 'class',
       shapeId: '#uri',
       shape: (
         <symbol viewBox="0 0 100 100" id="uri" key="1">
@@ -45,7 +45,7 @@ const GraphConfig = {
       ),
     },
     literal: {
-      typeText: 'Literal',
+      typeText: 'raw value',
       shapeId: '#literal',
       shape: (<symbol viewBox="0 0 50 50" id="literal" key="2">
         <rect width="45" height="45" />
@@ -330,7 +330,8 @@ class DataLinkView extends Component {
       type: 'emptyEdge',
       title: name,
       link: result.uri,
-
+      vocabPrefix: result.vocabPrefix,
+      prefix: result.prefix,
     };
     this.props.pushEdge(newEdge);
     dialog.open = false;
@@ -467,11 +468,6 @@ class DataLinkView extends Component {
         <div style={{ display: 'flex' }}>
           {this.renderGraph()}
           <InfoBar
-            style={
-              {
-                flex: 0,
-              }
-            }
             selected={selected}
             references={this.state.relations}
             getData={this.props.getExampleData}
@@ -531,36 +527,31 @@ class DataLinkView extends Component {
 }
 function InfoBar(props) {
   const item = props.selected;
-  let title = 'No item selected';
-  let subTitle = 'click on an item to select it';
-  if (item.type === 'literal' || item.type === 'uri') {
-    title = item.label;
-    subTitle = 'node';
-  } else if (item.type === 'emptyEdge') {
-    title = item.title;
-    subTitle = 'relation';
-  }
   let text;
   if (item.type === 'literal') {
-    text = <p>Raw Value</p>;
+    text = (<CardText><p>ColumnName: {item.title}</p></CardText>);
   } else if (item.type === 'uri') {
-    text = (<a
-      href={item.uri}
-      target="_blank"
-      rel="noopener noreferrer"
-    >{item.title}</a>);
+    text = (
+      <CardText style={{ textOverflow: 'ellipsis' }}>
+        <p>
+          Class: <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.label}</a><br />
+          Ontology: {item.title}<br />
+          Prefix: {item.prefixedName}
+        </p>
+      </CardText>);
   } else if (item.type === 'emptyEdge') {
-    text = (<a
-      href={item.link}
-      target="_blank"
-      rel="noopener noreferrer"
-    >{item.relation}</a>);
+    text = (
+      <p>
+        Property: <a href={item.link} target="_blank" rel="noopener noreferrer">{item.relation}</a><br />
+        Ontology: {item.prefix}<br />
+        Prefix: {item.vocabPrefix}<br />
+      </p>);
   }
   let middleCard = <div />;
   if (item.type !== 'emptyEdge') {
     middleCard = props.getData(item.column, 0).results.map((x, idx) => (
       // eslint-disable-next-line react/no-array-index-key
-      <CardText key={idx}>
+      <CardText key={idx} style={{ textOverflow: 'ellipsis' }}>
         {x}
         <Divider />
       </CardText>
@@ -576,7 +567,7 @@ function InfoBar(props) {
         />
         {
           props.references.map(relation =>
-            (<CardText key={relation.subject} expandable>
+            (<CardText key={relation.subject} style={{ textOverflow: 'ellipsis' }} expandable>
               <Divider />
               <p>
                 <b>Subject: </b>{relation.subject}<br />
@@ -590,12 +581,8 @@ function InfoBar(props) {
     );
   }
   return (
-    <Card>
+    <Card style={{ width: '256px', maxWidth: '256px' }}>
       <Card>
-        <CardHeader
-          title={title}
-          subtitle={subTitle}
-        />
         <CardText>
           {text}
         </CardText>

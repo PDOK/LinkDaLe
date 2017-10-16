@@ -110,20 +110,21 @@ function nodeCreation(data, classifications) {
       nodes.push(
         {
           id: (nodes.length),
-          label: classification.class.name,
+          label: data[0][index],
           type: 'literal',
           r: 30,
-          title: classification.class.name,
+          title: data[0][index],
           column: index,
         });
       nodes.push(
         {
           id: (nodes.length),
-          label: `${classification.class.name}_uri`,
+          label: `${classification.class.name}`,
           type: 'uri',
           r: 30,
-          title: `${classification.class.name}_uri`,
+          title: `${classification.class.prefix}`,
           uri: classification.class.uri,
+          prefixedName: classification.class.vocabPrefix,
           column: data[0].length,
         });
       edges.push(
@@ -135,14 +136,14 @@ function nodeCreation(data, classifications) {
           type: 'emptyEdge',
           title: 'label',
           link: 'https://www.w3.org/2000/01/rdf-schema#label',
-
-
+          vocabPrefix: 'rdfs',
+          prefix: 'rdfs:label',
         },
       );
       let newRow = data.map((dataRow, rowIndex) => {
         // Column header
         if (rowIndex === 0) {
-          return `${classification.class.name}_uri`;
+          return `${classification.class.name}`;
         }
         // Data is empty
         if (!dataRow[index]) {
@@ -157,6 +158,9 @@ function nodeCreation(data, classifications) {
       });
       if (classification.baseUri) {
         newRow = newRow.map((item, idx) => {
+          if (!item) {
+            return '';
+          }
           let baseUri = classification.baseUri;
           if (idx === 0) {
             return item;
