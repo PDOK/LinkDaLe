@@ -28,6 +28,14 @@ function createClassDefinitions(nodes, links) {
   });
   return classDefinitions;
 }
+function classifyLiteral(literal) {
+  if (Number(literal)) {
+    if (literal % 1 === 0) return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#integer');
+    return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#float');
+  }
+  if (Date.parse(literal)) rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#date');
+  return rdf.createLiteral(literal, 'en', 'http://www.w3.org/2001/XMLSchema#string');
+}
 
 
 function convertDataToTriples(data, links, nodes) {
@@ -60,13 +68,7 @@ function convertDataToTriples(data, links, nodes) {
           let targetValue = dataRow[relation.target.column];
           // If the relation is not mentioned yet
           if (relation.target.type === 'literal') {
-            if (!Number(targetValue)) { // String literal
-              targetValue = rdf.createLiteral(targetValue, 'en', 'http://www.w3.org/2001/XMLSchema#string');
-            } else if (targetValue % 1 === 0) { // Integer Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'http://www.w3.org/2001/XMLSchema#integer');
-            } else { // Float Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'http://www.w3.org/2001/XMLSchema#float');
-            }
+            targetValue = classifyLiteral(targetValue);
           } else {
             targetValue = rdf.createNamedNode(targetValue);
           }
