@@ -237,9 +237,9 @@ class App extends Component {
       case States.AboutLD:
 
         return (
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', padding: '20px' }}>
             <space style={{ flex: 1 }} />
-            <div style={{ textStyle: 'roboto, sans-serif', textAlign: 'left', flex: 3, width: '60%' }}>
+            <div style={{ textStyle: 'roboto, sans-serif', textAlign: 'left', flex: 3, maxHeight: '98vh', overflowX: 'none' }}>
               <Markdown source={this.state.markdownText} />
             </div>
             <space style={{ flex: 1 }} />

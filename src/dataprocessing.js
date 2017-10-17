@@ -28,6 +28,14 @@ function createClassDefinitions(nodes, links) {
   });
   return classDefinitions;
 }
+function classifyLiteral(literal) {
+  if (Number(literal)) {
+    if (literal % 1 === 0) return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#integer');
+    return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#float');
+  }
+  if (Date.parse(literal)) rdf.createLiteral(Date.parse(literal).toISOString(), null, 'http://www.w3.org/2001/XMLSchema#date');
+  return rdf.createLiteral(literal, 'en', 'http://www.w3.org/2001/XMLSchema#string');
+}
 
 
 function convertDataToTriples(data, links, nodes) {
@@ -60,13 +68,7 @@ function convertDataToTriples(data, links, nodes) {
           let targetValue = dataRow[relation.target.column];
           // If the relation is not mentioned yet
           if (relation.target.type === 'literal') {
-            if (!Number(targetValue)) { // String literal
-              targetValue = rdf.createLiteral(targetValue, 'en', 'http://www.w3.org/2001/XMLSchema#string');
-            } else if (targetValue % 1 === 0) { // Integer Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#integer');
-            } else { // Float Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#float');
-            }
+            targetValue = classifyLiteral(targetValue);
           } else {
             targetValue = rdf.createNamedNode(targetValue);
           }
@@ -177,6 +179,43 @@ function nodeCreation(data, classifications) {
       const uriRow = createUriRow(data, classification, index);
       // Add the uri row to the data
       data.forEach((dataRow, idx) => dataRow.push(uriRow[idx]));
+      let newRow = data.map((dataRow, rowIndex) => {
+        // Column header
+        if (rowIndex === 0) {
+          return `${classification.class.name}`;
+        }
+        // Data is empty
+        if (!dataRow[index]) {
+          return '';
+        }
+        // Find the same
+        const like = data.filter(rowData => rowData[index] === dataRow[index]);
+        if (like.length > 0) {
+          return like[0][index];
+        }
+        return '';
+      });
+      if (classification.baseUri) {
+        newRow = newRow.map((item, idx) => {
+          if (!item) {
+            return '';
+          }
+          let baseUri = classification.baseUri;
+          if (idx === 0) {
+            return item;
+          }
+          if (baseUri.startsWith('www')) {
+            baseUri = `http://${baseUri}`;
+          } else if (!baseUri.startsWith('http')) {
+            baseUri = `http://www.${baseUri}`;
+          }
+          if (classification.baseUri[classification.baseUri.length - 1] !== '/') {
+            baseUri += '/';
+          }
+          return baseUri + encodeURI(item.replace(/ /g, '_'));
+        });
+      }
+      data.forEach((dataRow, idx) => dataRow.push(newRow[idx]));
     } else if (classification.class.uri) {
       nodes.push(
         createURINode(nodes.length, classification.class.name, index, classification.class.uri),

@@ -30,7 +30,7 @@
     "react-highlight": "^0.10.0",
     "react-icons": "^2.2.5",
     "react-markdown": "^2.5.0",
-    "react-tap-event-plugin": "^3.0.2",
+    "react-tap-event-plugin": "2.0.1",
     "request": "^2.81.0",
     "sparql-client-2": "^0.6.2",
     "sparqljs": "^1.5.1",

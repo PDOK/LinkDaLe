@@ -70,8 +70,12 @@ class QueryWriter extends React.Component {
     } else if (results.length === 0) {
       this.setState({ error: '', data: [], headers: [], processing: false });
     } else {
-      const data = results.map(result => Object.keys(result).map(value => result[value]));
+      let data = results.map(result => Object.keys(result).map(value => result[value]));
       const headers = Object.keys(results[0]);
+      data = data.sort(
+        (a, b) =>
+          a[0].value.localeCompare(b[0].value),
+      );
       this.setState({ data, headers, error: '', processing: false });
     }
   };
