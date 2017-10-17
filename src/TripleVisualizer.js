@@ -349,7 +349,7 @@ class TripleVisualizer extends React.Component {
       <Tabs>
         {renderErrorBox}
         <Tab label="Table" disabled={!!this.props.error}>
-          <Table selectable={false} wrapperStyle={{ maxHeight: '50vh' }}>
+          <Table selectable={false} wrapperStyle={{ maxHeight: '48vh' }}>
             <TableHeader displaySelectAll={false}>
               <TableRow>
                 <TableHeaderColumn>Subject</TableHeaderColumn>
@@ -406,7 +406,7 @@ class TripleVisualizer extends React.Component {
           <GraphView
             style={
               {
-                height: '50vh',
+                height: '48vh',
               }
             }
             primary={green500}

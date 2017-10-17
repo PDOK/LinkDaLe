@@ -53,7 +53,7 @@ class SparqlVisualizer extends React.Component {
         <Tabs>
           {renderErrorBox}
           <Tab label="Table">
-            <Table selectable={false} wrapperStyle={{ maxHeight: '50vh' }}>
+            <Table selectable={false} wrapperStyle={{ maxHeight: '48vh' }}>
               <TableHeader displaySelectAll={false}>
                 <TableRow>
                   {this.props.headers.map(header =>
