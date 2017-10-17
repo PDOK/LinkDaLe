@@ -23,6 +23,8 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import PropTypes from 'prop-types';
+import { SelectField } from 'material-ui';
+import literalMap from './literalMapping';
 
 class DataClassifyView extends Component {
   constructor(props) {
@@ -39,6 +41,16 @@ class DataClassifyView extends Component {
           error: '',
           lovAvailable: true,
           vocabDownText: '',
+        },
+        uriDialog: {
+          open: false,
+          error: '',
+          text: '',
+        },
+        tagDialog: {
+          open: false,
+          error: '',
+          text: '',
         },
       }
     );
@@ -68,7 +80,16 @@ class DataClassifyView extends Component {
     dialog.vocabDownText = string;
     this.setState({ dialog });
   };
-
+  onTagChange = (_, string) => {
+    const tagDialog = this.state.tagDialog;
+    tagDialog.text = string;
+    this.setState({ tagDialog });
+  };
+  onDialogUriChange = (_, string) => {
+    const uriDialog = this.state.uriDialog;
+    uriDialog.text = string;
+    this.setState({ uriDialog });
+  };
 
   getAmountOfClasses = () => {
     const classes = this.props.data.slice();
@@ -189,6 +210,19 @@ class DataClassifyView extends Component {
     this.props.setBaseUri(index, null);
   }
 
+  handleColumnChange = (index, value) => {
+    switch (value) {
+      case 'Language tagged String':
+        this.setState({ tagDialog: { open: true, column: index } });
+        break;
+      case 'Other':
+        this.setState({ uriDialog: { open: true, column: index } });
+        break;
+      default:
+        this.props.setLiteralType(index, value);
+    }
+  };
+
 
   toNextPage() {
     this.props.nextPage(this.state.data);
@@ -305,6 +339,45 @@ class DataClassifyView extends Component {
         onClick={this.handleClose}
       />,
     ];
+    const tagActions = [
+      <FlatButton
+        label="Finish"
+        primary
+        onClick={() => {
+          const tagDialog = this.state.tagDialog;
+          if (!tagDialog.text) {
+            tagDialog.error = 'empty';
+            this.setState({ tagDialog });
+          } else {
+            this.props.setLiteralType(this.state.tagDialog.column, { label: 'Language tagged String', value: this.state.tagDialog.text });
+          }
+          tagDialog.open = false;
+          tagDialog.text = '';
+          tagDialog.column = -1;
+          this.setState(tagDialog);
+        }}
+
+      />,
+    ];
+    const uriActions = [
+      <FlatButton
+        label="Finish"
+        primary
+        onClick={() => {
+          const uriDialog = this.state.uriDialog;
+          if (!uriDialog.text) {
+            uriDialog.error = 'empty';
+            this.setState({ uriDialog });
+          } else {
+            this.props.setLiteralType(this.state.uriDialog.column, { label: 'Other', value: this.state.uriDialog.text });
+          }
+          uriDialog.open = false;
+          uriDialog.text = '';
+          uriDialog.column = -1;
+          this.setState(uriDialog);
+        }}
+      />,
+    ];
     return (
       <div>
         <Paper zDepth={2}>
@@ -351,10 +424,28 @@ class DataClassifyView extends Component {
                         disabled={column.uri}
                       />
                     </TableRowColumn>
-                    <TableRowColumn>{column.class.name}</TableRowColumn>
-                    <TableRowColumn>{column.baseUri ?
-                      column.baseUri :
-                      ''}</TableRowColumn>
+                    <TableRowColumn>
+                      {column.uri ? `URI : ${column.class.name}` :
+                        (<SelectField
+                          floatingLabelText="select types"
+                          value={column.valueType}
+                          onChange={(event, idx, value) => this.handleColumnChange(index, value)}
+                        >
+                          {literalMap.map(litDescr =>
+                            (<MenuItem
+                              label={litDescr.variableToAdd.length > 0 ? `${litDescr.variableToAdd[0]}:${column[litDescr.variableToAdd[0]]}` : litDescr.label}
+                              value={litDescr.label}
+                            >
+                              {litDescr.label}
+                            </MenuItem>),
+                          )}
+                        </SelectField>)
+
+                      }
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {column.baseUri ? column.baseUri : ''}
+                    </TableRowColumn>
                     <TableRowColumn>
                       {
                         column.uri ?
@@ -390,6 +481,31 @@ class DataClassifyView extends Component {
           </Stepper>
           {this.renderDialogBody()}
         </Dialog>
+        <Dialog
+          actions={tagActions}
+          open={this.state.tagDialog.open}
+          modal
+        >
+          Please enter a language tag according to the ISO 639 Standard ex. (en or nl)
+          <TextField
+            errorText={this.state.tagDialog.error}
+            onChange={this.onTagChange}
+          />
+
+        </Dialog>
+        <Dialog
+          actions={uriActions}
+          open={this.state.uriDialog.open}
+          modal
+        >
+          Please enter a URI
+          <TextField
+            errorText={this.state.uriDialog.error}
+            onChange={this.onDialogUriChange}
+          />
+
+        </Dialog>
+
       </div>
     );
   }
@@ -401,6 +517,7 @@ DataClassifyView.propTypes = {
   setClass: PropTypes.func.isRequired,
   setUri: PropTypes.func.isRequired,
   nextPage: PropTypes.func.isRequired,
+  setLiteralType: PropTypes.func.isRequired,
 
 
 };
