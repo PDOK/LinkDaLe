@@ -1,4 +1,5 @@
 import * as rdf from 'rdf-ext';
+import literalMap from './literalMapping';
 
 function createClassDefinitions(nodes, links) {
   const classDefinitions = [];
@@ -28,13 +29,27 @@ function createClassDefinitions(nodes, links) {
   });
   return classDefinitions;
 }
-function classifyLiteral(literal) {
-  if (Number(literal)) {
-    if (literal % 1 === 0) return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#integer');
-    return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#float');
+// function classifyLiteral(literal) { //OLD GUESSING APPROACH
+//   if (Number(literal)) {
+//     if (literal % 1 === 0) return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#integer');
+//     return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#float');
+//   }
+//   if (Date.parse(literal)) return rdf.createLiteral(Date.parse(literal).toISOString(), null, 'http://www.w3.org/2001/XMLSchema#date');
+//   return rdf.createLiteral(literal, 'en', 'http://www.w3.org/2001/XMLSchema#string');
+// }
+function classifyLiteral(literal, target) {
+  const literalDescription =
+      literalMap.find(description => (description.label === target.valueType));
+  if (literalDescription.variableToAdd.length > 0) {
+    const extraVariable = literalDescription.variableToAdd[0];
+    if (literalDescription.label === 'Language tagged String') {
+      const value = target[extraVariable];
+      return rdf.createLiteral(literal, value, literalDescription.uri);
+    } else if (literalDescription.label === 'Other') {
+      return rdf.createLiteral(literal, null, target[extraVariable]);
+    }
   }
-  if (Date.parse(literal)) return rdf.createLiteral(Date.parse(literal).toISOString(), null, 'http://www.w3.org/2001/XMLSchema#date');
-  return rdf.createLiteral(literal, 'en', 'http://www.w3.org/2001/XMLSchema#string');
+  return rdf.createLiteral(literal, null, literalDescription.uri);
 }
 
 
@@ -68,7 +83,7 @@ function convertDataToTriples(data, links, nodes) {
           let targetValue = dataRow[relation.target.column];
           // If the relation is not mentioned yet
           if (relation.target.type === 'literal') {
-            targetValue = classifyLiteral(targetValue);
+            targetValue = classifyLiteral(targetValue, relation.target);
           } else {
             targetValue = rdf.createNamedNode(targetValue);
           }
@@ -117,6 +132,7 @@ function nodeCreation(data, classifications) {
           r: 30,
           title: data[0][index],
           column: index,
+          valueType: 'String',
         });
       nodes.push(
         {
@@ -191,15 +207,20 @@ function nodeCreation(data, classifications) {
           column: index,
         });
     } else {
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: classification.columnName,
-          type: 'literal',
-          r: 30,
-          title: classification.columnName,
-          column: index,
-        });
+      const definition = literalMap.find(def => def.label === classification.valueType);
+      const node = {
+        id: (nodes.length),
+        label: classification.columnName,
+        type: 'literal',
+        r: 30,
+        title: classification.columnName,
+        column: index,
+        valueType: classification.valueType,
+      };
+      if (definition.variableToAdd.length > 0) {
+        node[definition.variableToAdd[0]] = classification[definition.variableToAdd[0]];
+      }
+      nodes.push(node);
     }
   });
 
