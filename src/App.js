@@ -94,15 +94,18 @@ function NavigationBar(props) {
             leftIcon={<Info />}
             nestedItems={[
               <ListItem
+                key="Tool"
                 primaryText={'The tool'}
                 onClick={() => props.onClick(States.AboutTool)}
 
               />,
               <ListItem
+                key="Linked"
                 primaryText={'Linked Data'}
                 onClick={() => props.onClick(States.AboutLD)}
               />,
               <ListItem
+                key={'LODCloud'}
                 primaryText={'Linked Open Data Cloud'}
                 onClick={() => props.onClick(States.AboutLODC)}
               />,

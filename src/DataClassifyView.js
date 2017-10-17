@@ -191,17 +191,13 @@ class DataClassifyView extends Component {
     }
     this.props.setClass(this.state.dialog.id, result);
     this.props.setUri(this.state.dialog.id, true);
-    this.setState({
-      dialog: {
-        open: false,
-        id: 0,
-        searchText: '',
-        results: [],
-        stepIndex: 0,
-        vocabPickerIndex: 0,
-        vocabDownText: '',
-      },
-    });
+    dialog.open = false;
+    dialog.id = 0;
+    dialog.searchText = '';
+    dialog.stepIndex = 0;
+    dialog.vocabPickerIndex = 0;
+    dialog.results = [];
+    this.setState({ dialog });
   };
 
   resetItem(index) {
@@ -239,6 +235,7 @@ class DataClassifyView extends Component {
   renderDialogTableBody() {
     if (!this.state.dialog.lovAvailable) {
       return (<TextField
+        id="emergencyTextField"
         name="Class URI"
         hintText="The class of the URI"
         onChange={this.onUriChange}
@@ -331,7 +328,7 @@ class DataClassifyView extends Component {
         onClick={(this.state.dialog.stepIndex === 0) ?
           this.handleNext : this.handlePick}
         disabled={(this.state.dialog.stepIndex === 0 || this.state.dialog.vocabDownText) ?
-          false : this.state.dialog.results.length === 0 || this.state.dialog.vocabDownText}
+          false : !!(this.state.dialog.results.length === 0 || this.state.dialog.vocabDownText)}
       />,
       <FlatButton
         label="Cancel"
@@ -433,6 +430,7 @@ class DataClassifyView extends Component {
                         >
                           {literalMap.map(litDescr =>
                             (<MenuItem
+                              key={litDescr.label}
                               label={litDescr.variableToAdd.length > 0 ? `${litDescr.variableToAdd[0]}:${column[litDescr.variableToAdd[0]]}` : litDescr.label}
                               value={litDescr.label}
                             >
@@ -488,6 +486,7 @@ class DataClassifyView extends Component {
         >
           Please enter a language tag according to the ISO 639 Standard ex. (en or nl)
           <TextField
+            id="tagText"
             errorText={this.state.tagDialog.error}
             onChange={this.onTagChange}
           />
@@ -500,6 +499,7 @@ class DataClassifyView extends Component {
         >
           Please enter a URI
           <TextField
+            id="uriText"
             errorText={this.state.uriDialog.error}
             onChange={this.onDialogUriChange}
           />
