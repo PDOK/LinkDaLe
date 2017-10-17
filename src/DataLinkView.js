@@ -551,7 +551,7 @@ function InfoBar(props) {
   if (item.type !== 'emptyEdge') {
     middleCard = props.getData(item.column, 0).results.map((x, idx) => (
       // eslint-disable-next-line react/no-array-index-key
-      <CardText key={idx} style={{ textOverflow: 'ellipsis' }}>
+      <CardText key={idx} style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
         {x}
         <Divider />
       </CardText>
