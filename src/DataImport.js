@@ -155,7 +155,7 @@ class ImportView extends Component {
   }
 }
 ImportView.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.any)),
   setData: PropTypes.func.isRequired,
   pageFunction: PropTypes.func.isRequired,
 

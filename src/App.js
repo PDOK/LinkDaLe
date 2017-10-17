@@ -122,7 +122,8 @@ function NavigationBar(props) {
         <Divider />
         <IconButton
           iconClassName="muidocs-icon-custom-github"
-          href="https://github.com/GerwinBosch/rdf-paqt"
+          href="https://github.com/PDOK/LinkDaLe"
+          rel="noopener noreferrer"
         />
       </div>
     </MaterialDrawer>
