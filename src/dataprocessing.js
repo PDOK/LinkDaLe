@@ -28,6 +28,14 @@ function createClassDefinitions(nodes, links) {
   });
   return classDefinitions;
 }
+function classifyLiteral(literal) {
+  if (Number(literal)) {
+    if (literal % 1 === 0) return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#integer');
+    return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#float');
+  }
+  if (Date.parse(literal)) rdf.createLiteral(Date.parse(literal).toISOString(), null, 'http://www.w3.org/2001/XMLSchema#date');
+  return rdf.createLiteral(literal, 'en', 'http://www.w3.org/2001/XMLSchema#string');
+}
 
 
 function convertDataToTriples(data, links, nodes) {
@@ -60,13 +68,7 @@ function convertDataToTriples(data, links, nodes) {
           let targetValue = dataRow[relation.target.column];
           // If the relation is not mentioned yet
           if (relation.target.type === 'literal') {
-            if (!Number(targetValue)) { // String literal
-              targetValue = rdf.createLiteral(targetValue, 'en', 'http://www.w3.org/2001/XMLSchema#string');
-            } else if (targetValue % 1 === 0) { // Integer Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#integer');
-            } else { // Float Literal
-              targetValue = rdf.createLiteral(targetValue, null, 'https://www.w3.org/2001/XMLSchema#float');
-            }
+            targetValue = classifyLiteral(targetValue);
           } else {
             targetValue = rdf.createNamedNode(targetValue);
           }
@@ -110,20 +112,21 @@ function nodeCreation(data, classifications) {
       nodes.push(
         {
           id: (nodes.length),
-          label: classification.class.name,
+          label: data[0][index],
           type: 'literal',
           r: 30,
-          title: classification.class.name,
+          title: data[0][index],
           column: index,
         });
       nodes.push(
         {
           id: (nodes.length),
-          label: `${classification.class.name}_uri`,
+          label: `${classification.class.name}`,
           type: 'uri',
           r: 30,
-          title: `${classification.class.name}_uri`,
+          title: `${classification.class.prefix}`,
           uri: classification.class.uri,
+          prefixedName: classification.class.vocabPrefix,
           column: data[0].length,
         });
       edges.push(
@@ -135,14 +138,14 @@ function nodeCreation(data, classifications) {
           type: 'emptyEdge',
           title: 'label',
           link: 'https://www.w3.org/2000/01/rdf-schema#label',
-
-
+          vocabPrefix: 'rdfs',
+          prefix: 'rdfs:label',
         },
       );
       let newRow = data.map((dataRow, rowIndex) => {
         // Column header
         if (rowIndex === 0) {
-          return `${classification.class.name}_uri`;
+          return `${classification.class.name}`;
         }
         // Data is empty
         if (!dataRow[index]) {
@@ -157,6 +160,9 @@ function nodeCreation(data, classifications) {
       });
       if (classification.baseUri) {
         newRow = newRow.map((item, idx) => {
+          if (!item) {
+            return '';
+          }
           let baseUri = classification.baseUri;
           if (idx === 0) {
             return item;
