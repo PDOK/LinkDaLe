@@ -33,7 +33,7 @@ function classifyLiteral(literal) {
     if (literal % 1 === 0) return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#integer');
     return rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#float');
   }
-  if (Date.parse(literal)) rdf.createLiteral(literal, null, 'http://www.w3.org/2001/XMLSchema#date');
+  if (Date.parse(literal)) rdf.createLiteral(Date.parse(literal).toISOString(), null, 'http://www.w3.org/2001/XMLSchema#date');
   return rdf.createLiteral(literal, 'en', 'http://www.w3.org/2001/XMLSchema#string');
 }
 
