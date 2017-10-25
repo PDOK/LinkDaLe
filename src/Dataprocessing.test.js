@@ -144,8 +144,10 @@ it('Nodes length', () => {
     columnName: 'Column3',
     class: {
       name: 'Literal',
+      type: 'String',
     },
     baseUri: '',
+    valueType: 'String',
   },
   {
     columnName: 'Column4',
@@ -153,6 +155,7 @@ it('Nodes length', () => {
       name: 'Literal',
     },
     baseUri: '',
+    valueType: 'String',
   },
   ];
   const result = nodeCreation(data, classifications);
@@ -190,6 +193,7 @@ it('Uri node generation', () => {
       name: 'Literal',
     },
     baseUri: '',
+    valueType: 'String',
   },
   {
     columnName: 'Column4',
@@ -197,6 +201,7 @@ it('Uri node generation', () => {
       name: 'Literal',
     },
     baseUri: '',
+    valueType: 'String',
   },
   ];
   const result = nodeCreation(data, classifications);
