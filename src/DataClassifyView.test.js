@@ -8,6 +8,7 @@ describe('<DataCreation/>', () => {
   const baseSetClass = jest.fn();
   const baseSetBaseUri = jest.fn();
   const baseNextPage = jest.fn();
+  const setLiteralType = jest.fn();
   const baseData =
     [{ columnName: 't0', exampleValue: 'b0', class: { name: 'Literal' }, uri: false },
       { columnName: 't1', exampleValue: 'b1', class: { name: 'Literal' }, uri: false },
@@ -22,6 +23,7 @@ describe('<DataCreation/>', () => {
       nextPage={baseNextPage}
       setClass={baseSetClass}
       setUri={baseSetURI}
+      setLiteralType={setLiteralType}
     />);
   });
 
@@ -32,6 +34,7 @@ describe('<DataCreation/>', () => {
       nextPage={baseNextPage}
       setClass={baseSetClass}
       setUri={baseSetURI}
+      setLiteralType={setLiteralType}
     />);
     const instance = wrapper.instance();
     expect(instance.getAmountOfClasses()).toBe(0);
@@ -50,6 +53,7 @@ describe('<DataCreation/>', () => {
       nextPage={baseNextPage}
       setClass={baseSetClass}
       setUri={baseSetURI}
+      setLiteralType={setLiteralType}
     />);
     const instance = wrapper.instance();
     expect(instance.getAmountOfClasses()).toBe(2);
