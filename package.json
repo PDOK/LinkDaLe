@@ -25,7 +25,7 @@
     "rdfstore": "^0.9.17",
     "react": "^15.6.1",
     "react-codemirror": "^1.0.0",
-    "react-digraph": "^1.0.13",
+    "react-digraph": "^2.0.0",
     "react-dom": "^15.6.1",
     "react-highlight": "^0.10.0",
     "react-icons": "^2.2.5",

@@ -276,25 +276,33 @@ class DataCreation extends Component {
     return (
       <Tabs value={this.state.currentPage}>
         <Tab label="Step 1: Upload data" value={1} disabled>
-          <DataImport
-            data={this.state.data}
-            pageFunction={this.finishFirstStep.bind(this)}
-            setData={this.setData.bind(this)}
-          />
+          {(this.state.currentPage === 1) ?
+            <DataImport
+              data={this.state.data}
+              pageFunction={this.finishFirstStep.bind(this)}
+              setData={this.setData.bind(this)}
+            />
+            : null}
         </Tab>
         <Tab label="Step 2: Classify data" value={2} disabled>
-          {this.renderDataClassifyView()}
+          {(this.state.currentPage === 2) ?
+            this.renderDataClassifyView()
+            : null}
         </Tab>
         <Tab label="Step 3: Link data" value={3} disabled>
-          {this.renderDataLink()}
+          {(this.state.currentPage === 3) ?
+            this.renderDataLink()
+            : null}
         </Tab>
         <Tab label="Step 4: Download / Publish" value={4} disabled>
-          <DownloadView
-            processing={this.state.processing}
-            graph={this.state.graph}
-            executeQuery={this.props.executeQuery}
-            filename={this.state.filename}
-          />
+          {(this.state.currentPage === 4) ?
+            <DownloadView
+              processing={this.state.processing}
+              graph={this.state.graph}
+              executeQuery={this.props.executeQuery}
+              filename={this.state.filename}
+            />
+            : null}
         </Tab>
       </Tabs>);
   }
