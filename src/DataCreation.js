@@ -10,6 +10,7 @@ import DataClassifyView from './DataClassifyView';
 import DataLinkView from './DataLinkView';
 import DownloadView from './DownloadView';
 import { convertDataToTriples, nodeCreation } from './dataprocessing';
+import literalMap from './literalMapping';
 
 async function transformData(data, links, nodes) {
   return convertDataToTriples(data, links, nodes);
@@ -36,6 +37,14 @@ class DataCreation extends Component {
       return firstValues;
     }
     return [];
+  };
+  static identifyLiteral=(literal) => {
+    if (Number(literal)) {
+      if (literal % 1 === 0) return 'Integer';
+      return 'float';
+    }
+    if (Date.parse(literal)) return 'Date-time';
+    return 'String';
   };
 
   constructor() {
@@ -85,12 +94,15 @@ class DataCreation extends Component {
     let exampleValues;
     if (data.length > 1) {
       const firstValues = this.constructor.getFirstValues(data);
-      exampleValues = data[0].map((column, index) => ({
-        columnName: column,
-        exampleValue: firstValues[index],
-        class: { name: 'Literal' },
-        uri: false,
-      }));
+      exampleValues = data[0].map((column, index) =>
+        ({
+          columnName: column,
+          exampleValue: firstValues[index],
+          valueType: this.constructor.identifyLiteral(firstValues[index]),
+          class: { name: 'Literal' },
+          uri: false,
+        }),
+      );
     } else {
       exampleValues = [];
     }
@@ -138,6 +150,24 @@ class DataCreation extends Component {
       nodes,
     });
   }
+  setLiteralType = (index, value) => {
+    const classes = this.state.dataClassifications.slice();
+    const item = classes[index];
+    if (value.label) {
+      const definition = literalMap.find(def => def.label === value.label);
+      definition.variableToAdd.forEach(
+        (variableLabel) => { item[variableLabel] = value.value; },
+      );
+      item.valueType = value.label;
+    } else {
+      item.valueType = value;
+    }
+    classes[index] = item;
+    this.setState({
+      dataClassifications: classes,
+    });
+  };
+
 
   toThirdStep() {
     // Convert data to nodes and edges
@@ -235,6 +265,7 @@ class DataCreation extends Component {
           setClass={this.setClass.bind(this)}
           setUri={this.setUri.bind(this)}
           setBaseUri={this.setBaseUri.bind(this)}
+          setLiteralType={this.setLiteralType}
         />
       );
     }

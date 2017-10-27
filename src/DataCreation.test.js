@@ -19,7 +19,7 @@ describe('<DataCreation/>', () => {
     instance.setData(defaultExampleData);
     expect(instance.state.data).toBe(defaultExampleData);
     expect(instance.state.dataClassifications[0]).toEqual(
-      { columnName: 't0', exampleValue: 'b0', class: { name: 'Literal' }, uri: false });
+      { columnName: 't0', exampleValue: 'b0', class: { name: 'Literal' }, uri: false, valueType: 'String' });
   });
 
   it('getExampleData', () => {
