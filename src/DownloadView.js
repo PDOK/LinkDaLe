@@ -129,7 +129,7 @@ class DownloadView extends Component {
             <${uri}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
             <${uri}> <http://purl.org/dc/terms/title> "${graphName}" .
             <${uri}> <http://purl.org/dc/terms/description> "${description}" .
-            <${uri}> <http://purl.org/dc/terms/created> "${date.toISOString().substring(0, 10)}"^^<http://www.w3.org/2001/XMLSchema#date> .}}`;
+            <${uri}> <http://purl.org/dc/terms/created> "${new Date().toISOString().substring(0, 10)}"^^<http://www.w3.org/2001/XMLSchema#date> .}}`;
         this.props.executeQuery(contextQuery, () => {
           this.props.executeQuery(dataQuery, this.sparqlCallback);
         });
