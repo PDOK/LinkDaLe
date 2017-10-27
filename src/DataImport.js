@@ -48,7 +48,9 @@ function TableView(props) {
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
           {/* Grab the rest of the data */}
-          {props.data.slice(1, props.data.length).map((row, index) => (
+          {props.data.slice(
+            1, props.data.length < 100 ? props.data.length : 100,
+          ).map((row, index) => (
             // Split the data in rows and columns
             <TableRow key={props.data[index]} style={{}}>{
               row.map(x => (
