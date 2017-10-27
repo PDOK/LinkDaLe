@@ -236,7 +236,7 @@ class DataCreation extends Component {
   deleteEdge(index) {
     const edges = this.state.edges;
     edges.splice(index, 1);
-    this.setState({ links: edges });
+    this.setState({ edges });
   }
 
   renderDataLink() {
