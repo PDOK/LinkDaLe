@@ -135,6 +135,7 @@ class DataClassifyView extends Component {
       this.props.setBaseUri(this.state.dialog.id, baseUri);
     }
     this.props.setClass(this.state.dialog.id, classification);
+    this.props.setUri(this.state.dialog.id, true);
     this.setState({ dialog: { open: false, id: 0 } });
   };
 
