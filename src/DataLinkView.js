@@ -7,17 +7,13 @@ import FlatButton from 'material-ui/FlatButton';
 import GraphView from 'react-digraph';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { green500 } from 'material-ui/styles/colors';
-import ActionSearch from 'material-ui/svg-icons/action/search';
-import MenuItem from 'material-ui/MenuItem';
-import DropDownMenu from 'material-ui/DropDownMenu';
 import Dialog from 'material-ui/Dialog';
 import 'whatwg-fetch';
-import IconButton from 'material-ui/IconButton';
-import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import Info from 'material-ui/svg-icons/action/info-outline';
+import DataLinkDialog from './DataLinkDialog';
 
 function doNothing() {
 
@@ -111,13 +107,6 @@ class DataLinkView extends Component {
     }
     return true;
   }
-
-  onChange = (object, string) => {
-    const dialog = this.state.dialog;
-    dialog.searchText = string;
-    this.setState({ dialog });
-  };
-
   // Called by 'drag' handler, etc..
   // to sync updates from D3 with the graph
   onUpdateNode = (viewNode) => {
@@ -217,11 +206,6 @@ class DataLinkView extends Component {
       dialog,
     });
   };
-  onUriChange = (_, string) => {
-    const dialog = this.state.dialog;
-    dialog.vocabDownText = string;
-    this.setState({ dialog });
-  };
 
 
   // Helper to find the index of a given node
@@ -260,87 +244,9 @@ class DataLinkView extends Component {
     this.props.nextPage();
   }
 
-
   toPreviousPage() {
     this.props.previousPage(2);
   }
-
-
-  searchVocabulary = (e) => {
-    const query = this.state.dialog.searchText;
-    const dialog = this.state.dialog;
-    e.preventDefault();
-    fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
-    }&type=property`)
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response);
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dialog.results = json.results.map(
-          item => ({
-            uri: item.uri[0],
-            vocabPrefix: item['vocabulary.prefix'][0],
-            prefix: item.prefixedName[0],
-          }),
-        );
-        if (dialog.results.length === 0) {
-          dialog.error = 'No results found';
-        }
-        dialog.lovAvailable = true;
-        this.setState({ dialog });
-      })
-      .catch((ex) => {
-        if (ex.statusText) {
-          dialog.error = `Request failed due to ${ex}`;
-        } else {
-          dialog.error = 'LOV is currently not available';
-          dialog.lovAvailable = false;
-        }
-        console.error('parsing failed', ex);
-        this.setState(dialog);
-      });
-  };
-
-
-  handlePick = () => {
-    const dialog = this.state.dialog;
-    let result;
-    let name;
-    if (this.state.dialog.lovAvailable) {
-      result = dialog.results[dialog.vocabPickerIndex];
-      name = result.prefix.split(':')[1];
-    } else {
-      name = this.state.dialog.vocabDownText;
-      name = name.toLowerCase();
-      name = name.replace(/ /g, '_');
-      result = {
-        uri: name,
-        name,
-        prefix: name,
-      };
-    }
-    const newEdge = {
-      source: this.state.dialog.source,
-      target: this.state.dialog.target,
-      relation: result.prefix,
-      r: 30,
-      type: 'emptyEdge',
-      title: name,
-      link: result.uri,
-      vocabPrefix: result.vocabPrefix,
-      prefix: result.prefix,
-    };
-    this.props.pushEdge(newEdge);
-    dialog.open = false;
-    dialog.results = [];
-    this.setState({
-      dialog,
-    });
-    this.forceUpdate();
-  };
 
   handleClose = () => {
     const dialog = this.state.dialog;
@@ -352,35 +258,6 @@ class DataLinkView extends Component {
     });
     this.forceUpdate();
   };
-  renderDialogTableBody() {
-    if (!this.state.dialog.lovAvailable) {
-      return (<TextField
-        name="Relation URI"
-        hintText="The relation of the URI"
-        onChange={this.onUriChange}
-      />);
-    }
-    if (this.state.dialog.results.length) {
-      const result = this.state.dialog.results.map((column, index) =>
-        (<MenuItem
-          key={column.prefix}
-          value={index}
-          label={column.prefix}
-          primaryText={column.prefix}
-        />));
-      return (
-        <DropDownMenu
-          value={this.state.dialog.vocabPickerIndex}
-          onChange={this.onVocabPicked}
-          openImmediately
-        >
-          {result}
-        </DropDownMenu>
-      );
-    }
-    return <div />;
-  }
-
 
   renderGraph() {
     const nodes = this.props.nodes;
@@ -428,19 +305,6 @@ class DataLinkView extends Component {
   render() {
     const selected = this.state.selected;
 
-    const actions = [
-      <FlatButton
-        label={'Finish'}
-        primary
-        onClick={this.handlePick}
-        disabled={!(this.state.dialog.results.length !== 0 || this.state.dialog.vocabDownText)}
-      />,
-
-      <FlatButton
-        label="Cancel"
-        onClick={this.handleClose}
-      />,
-    ];
 
     return (
 
@@ -483,32 +347,26 @@ class DataLinkView extends Component {
 
 
         </div>
-        <Dialog
-          actions={actions}
-          modal
+        <DataLinkDialog
           open={this.state.dialog.open}
-        >
-
-          <div style={{ width: '100%' }}>
-            <p>This dialog allows specifying relationships between data items that was linked.
-                In RDF this is called a predicate.</p>
-            <p>For example, <em> foaf:age </em> can be used to link a person to his/her age</p>
-            <form onSubmit={this.searchVocabulary}>
-              <TextField
-                name="Search vocabularies"
-                hintText="relation name"
-                onChange={this.onChange}
-                errorText={this.state.dialog.error}
-              />
-              <IconButton type="submit"><ActionSearch /></IconButton>
-            </form>
-            <p>Provide a relation name in the field above and pick a term from the suggestions</p>
-            <p> <em> Similar terms can be found in different vocabularies
-                therefore try to use as few vocabularies as possible</em></p>
-            {this.renderDialogTableBody()}
-          </div>
-
-        </Dialog>
+          source={this.state.dialog.source}
+          target={this.state.dialog.target}
+          finishDialog={(edge) => {
+            this.props.pushEdge(edge);
+            const dialog = this.state.dialog;
+            dialog.open = false;
+            dialog.source = -1;
+            dialog.target = -1;
+            this.setState({ dialog });
+          }}
+          closeDialog={() => {
+            const dialog = this.state.dialog;
+            dialog.open = false;
+            dialog.source = -1;
+            dialog.target = -1;
+            this.setState({ dialog });
+          }}
+        />
         <Dialog
           open={this.state.infoDialog.open}
           onRequestClose={() => this.setState({ infoDialog: { open: false } })}

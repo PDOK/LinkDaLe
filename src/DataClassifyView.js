@@ -17,14 +17,12 @@ import CheckBox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
 import 'whatwg-fetch';
 import IconButton from 'material-ui/IconButton';
-import ActionSearch from 'material-ui/svg-icons/action/search';
-import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
-import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import PropTypes from 'prop-types';
 import { SelectField } from 'material-ui';
 import literalMap from './literalMapping';
+import DataClassifyDialog from './DataClassifyDialog';
 
 class DataClassifyView extends Component {
   constructor(props) {
@@ -114,92 +112,6 @@ class DataClassifyView extends Component {
     });
   };
 
-  handleClose = () => {
-    const dialog = this.state.dialog;
-    dialog.open = false;
-    dialog.id = -1;
-    dialog.stepIndex = 0;
-    dialog.results = [];
-    dialog.vocabPickerIndex = 0;
-    this.setState({
-      dialog,
-    });
-  };
-
-  handleNext = () => {
-    const dialog = this.state.dialog;
-    dialog.stepIndex = 1;
-    this.setState({
-      dialog,
-    });
-  };
-
-  searchVocabulary = (e) => {
-    const query = this.state.dialog.searchText;
-    const dialog = this.state.dialog;
-    e.preventDefault();
-    fetch(
-      `http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query}&type=class`)
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response);
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dialog.results = json.results.map(
-          item => ({
-            uri: item.uri[0],
-            vocabPrefix: item['vocabulary.prefix'][0],
-            prefix: item.prefixedName[0],
-          }),
-        );
-        if (dialog.results.length === 0) {
-          dialog.error = 'No results found';
-        }
-        dialog.lovAvailable = true;
-        this.setState({ dialog });
-      })
-      .catch((ex) => {
-        if (ex.statusText) {
-          dialog.error = `Request failed due to ${ex}`;
-        } else {
-          dialog.error = 'LOV is currently not available';
-          dialog.lovAvailable = false;
-        }
-        console.error('parsing failed', ex);
-        this.setState(dialog);
-      });
-  };
-  handlePick = () => {
-    const dialog = this.state.dialog;
-    let result;
-    if (this.state.dialog.lovAvailable) {
-      result = dialog.results[dialog.vocabPickerIndex];
-      result.name = result.prefix.split(':')[1];
-    } else {
-      let name = this.props.data[this.state.dialog.id].columnName;
-      name = name.toLowerCase();
-      name = name.replace(/ /g, '_');
-      let uri = this.state.dialog.vocabDownText;
-      uri = uri.toLowerCase();
-      uri = uri.replace(/ /g, '_');
-      result = {
-        uri,
-        name,
-      };
-    }
-    this.props.setClass(this.state.dialog.id, result);
-    this.props.setUri(this.state.dialog.id, true);
-    dialog.open = false;
-    dialog.id = 0;
-    dialog.searchText = '';
-    dialog.stepIndex = 0;
-    dialog.vocabPickerIndex = 0;
-    dialog.results = [];
-    this.setState({ dialog });
-  };
-
   resetItem(index) {
     this.props.setClass(index, { name: 'Literal' });
     this.props.setUri(index, false);
@@ -218,6 +130,14 @@ class DataClassifyView extends Component {
         this.props.setLiteralType(index, value);
     }
   };
+  finishCallBack = (classification, baseUri) => {
+    if (baseUri) {
+      this.props.setBaseUri(this.state.dialog.id, baseUri);
+    }
+    this.props.setClass(this.state.dialog.id, classification);
+    this.props.setUri(this.state.dialog.id, true);
+    this.setState({ dialog: { open: false, id: 0 } });
+  };
 
 
   toNextPage() {
@@ -232,110 +152,7 @@ class DataClassifyView extends Component {
     this.handleOpen(index);
   }
 
-  renderDialogTableBody() {
-    if (!this.state.dialog.lovAvailable) {
-      return (<TextField
-        id="emergencyTextField"
-        name="Class URI"
-        hintText="The class of the URI"
-        onChange={this.onUriChange}
-      />);
-    }
-    if (this.state.dialog.results.length) {
-      const result = this.state.dialog.results.map((column, index) =>
-        (<MenuItem
-          key={column.prefix}
-          value={index}
-          label={column.prefix}
-          primaryText={column.prefix}
-        />));
-      return (
-        <DropDownMenu
-          value={this.state.dialog.vocabPickerIndex}
-          onChange={this.onVocabPicked}
-          openImmediately
-        >
-          {result}
-        </DropDownMenu>
-      );
-    }
-    return <div />;
-  }
-
-  renderDialogBody() {
-    const item = this.props.data[this.state.dialog.id];
-    if (!item) {
-      return <div />;
-    }
-    switch (this.state.dialog.stepIndex) {
-      case 0:
-        return (
-          <div>
-            <p>In this dialog, you can specify a base URI for your data.
-              This base URI will be used to form URIs for data instances.</p>
-            <p>There are 2 possibilities:</p>
-            <ol type="1">
-              <li>If you know that a column contains only unique values then you can just
-                  submit a base URI. The values from the column will be added at the
-                end of the base URIs forming proper URIs for data instances.</li>
-              <li>If a column already conatains proper URIs then leave this field empty.</li>
-            </ol>
-            <p>Column name: {item.columnName}</p>
-            <p>Example value: {item.exampleValue}</p>
-            <TextField
-              name="Base-uri:"
-              type="url"
-              hintText="type a base URI here"
-              onChange={(event, string) => this.onBaseUriChange(
-                this.state.dialog.id, string)}
-            />
-          </div>
-
-        );
-      case 1:
-        return (
-          <div>
-            <p>This dialog allows specifying the class of things described by the data.
-            For example, if your data features people then you can use
-              <em> foaf:Person </em> </p>
-            <p>Examples are: person, company, animal etc.</p>
-            <form onSubmit={this.searchVocabulary}>
-              <TextField
-                name="Search vocabularies"
-                hintText="class name"
-                onChange={this.onChange}
-                errorText={this.state.dialog.error}
-              />
-              <IconButton type="submit"><ActionSearch /></IconButton>
-            </form>
-            <p>Provide a class name in the field above and pick a term from the suggestions</p>
-            <p> <em> Similar terms can be found in different vocabularies
-                therefore try to use as few vocabularies as possible</em></p>
-            {this.renderDialogTableBody()}
-
-          </div>
-        );
-      default:
-        return <div />;
-    }
-  }
-
   render() {
-    const actions = [
-      <FlatButton
-        label={(this.state.dialog.stepIndex === 0) ? 'Next' : 'Finish'}
-        primary
-        onClick={(this.state.dialog.stepIndex === 0) ?
-          this.handleNext : this.handlePick}
-        disabled={(this.state.dialog.stepIndex === 0 || this.state.dialog.vocabDownText) ?
-          false : !!(this.state.dialog.results.length === 0 || this.state.dialog.vocabDownText)}
-      />,
-      <FlatButton
-        label="Cancel"
-        primary={false}
-        onClick={this.handleClose}
-      />,
-    ];
     const tagActions = [
       <FlatButton
         label="Finish"
@@ -464,21 +281,12 @@ class DataClassifyView extends Component {
 
           </Table>
         </Paper>
-        <Dialog
-          actions={actions}
-          modal
+        <DataClassifyDialog
           open={this.state.dialog.open}
-        >
-          <Stepper activeStep={this.state.dialog.stepIndex}>
-            <Step>
-              <StepLabel>Pick URI</StepLabel>
-            </Step>
-            <Step>
-              <StepLabel>Select class</StepLabel>
-            </Step>
-          </Stepper>
-          {this.renderDialogBody()}
-        </Dialog>
+          data={this.props.data[this.state.dialog.id]}
+          closeCallBack={() => this.setState({ dialog: { open: false, id: 0 } })}
+          finishCallBack={this.finishCallBack}
+        />
         <Dialog
           actions={tagActions}
           open={this.state.tagDialog.open}
