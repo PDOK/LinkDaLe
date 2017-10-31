@@ -6,6 +6,7 @@ import GraphView from 'react-digraph';
 import { green500 } from 'material-ui/styles/colors';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
+import * as d3 from 'd3';
 import { distribute } from './dataprocessing';
 
 const GraphConfig = {
@@ -77,7 +78,6 @@ class TripleVisualizer extends React.Component {
 
     };
   }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps !== this.props) {
       this.dataToNodes(nextProps.data);
@@ -213,10 +213,13 @@ class TripleVisualizer extends React.Component {
             nodes.push(endNode);
           }
         }
+        const delimiter = relation.classification.indexOf('#') !== -1 ? '#' : '/';
         edges.push({
           source: startNode.id,
           target: endNode.id,
           label: relation.classification,
+          title: relation.classification.substring(
+            relation.classification.lastIndexOf(delimiter) + 1, relation.classification.length),
           type: 'emptyEdge',
         });
       });
@@ -261,9 +264,12 @@ class TripleVisualizer extends React.Component {
           };
           nodes.push(object);
         }
+        const delimiter = ontology[1].value.indexOf('#') !== -1 ? '#' : '/';
         edges.push({
           source: subject.id,
           target: object.id,
+          title: ontology[1].value.substring(
+            ontology[1].value.lastIndexOf(delimiter) + 1, ontology[1].value.length),
           label: ontology[1].value,
           type: 'emptyEdge',
         });
@@ -273,6 +279,34 @@ class TripleVisualizer extends React.Component {
     this.setState({ nodes, edges });
   };
   doNothing = () => {};
+  // {source: 0, target: 1, label: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", type: "emptyEdge"}
+  // eslint-disable-next-line class-methods-use-this
+  renderEdge(graphView, domNode, datum) {
+    // For new edges, add necessary child domNodes
+    if (!domNode.hasChildNodes()) {
+      d3.select(domNode).append('path');
+      d3.select(domNode).append('use');
+      d3.select(domNode).append('text');
+    }
+
+    const style = graphView.getEdgeStyle(datum, graphView.props.selected);
+    const trans = graphView.getEdgeHandleTransformation(datum);
+    d3.select(domNode).attr('style', style).select('use').attr('xlink:href', d => graphView.props.edgeTypes[d.type].shapeId)
+      .attr('width', graphView.props.edgeHandleSize)
+      .attr('height', graphView.props.edgeHandleSize)
+      .attr('transform', trans);
+
+    d3.select(domNode).select('path').attr('d', graphView.getPathDescription);
+    if (datum.label) {
+      d3.select(domNode).select('text').attr('class', 'barsEndlineText')
+        .attr('text-anchor', 'middle')
+        .attr('transform', trans)
+        .attr('font-size', '12px')
+        .text(datum.title);
+    }
+  }
+
+
   renderCard = () => {
     let cardText = '';
     let title = '';
@@ -397,6 +431,7 @@ class TripleVisualizer extends React.Component {
             onDeleteEdge={this.doNothing}
             onDeleteNode={this.doNothing}
             onCreateNode={this.doNothing}
+            renderEdge={this.renderEdge}
           />
           {this.renderCard()}
 
@@ -429,6 +464,7 @@ class TripleVisualizer extends React.Component {
             onDeleteEdge={this.doNothing}
             onDeleteNode={this.doNothing}
             onCreateNode={this.doNothing}
+            renderEdge={this.renderEdge}
           />
           {this.renderClassCard()}
 
