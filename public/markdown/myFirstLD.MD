@@ -24,6 +24,7 @@ Neil,33,Enschede
 Leelah,15,Utrecht
 ```
 
+You can copy the example from above and paste it in a text file. Or just [download it](https://1drv.ms/u/s!Ah2_2X7uyAX5iNhG5jxgU27tPh19Bw)
 
 And this is a rendered version:
 
@@ -65,6 +66,7 @@ th {
     <td>Utrecht</td>
   </tr>
 </table>
+
 
 This data will be converted into Linked Data following the logic of the 4 design principles. 
 
