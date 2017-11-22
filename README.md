@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/PDOK/LinkDaLe.svg?branch=master)](https://travis-ci.org/GerwinBosch/LinkDaLe)
+[![Build Status](https://travis-ci.org/PDOK/LinkDaLe.svg?branch=master)](https://travis-ci.org/PDOK/LinkDaLe)
 # LinkDaLe
 
 LinkDaLe is a tool/service where users are able to learn and to work with Linked Data. 
