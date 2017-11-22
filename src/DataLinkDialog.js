@@ -25,6 +25,13 @@ class DataLinkDialog extends Component {
   onChange = (object, string) => {
     this.setState({ searchText: string });
   };
+
+  onVocabPicked = (_, index) => {
+    this.setState({
+      vocabPickerIndex: index,
+    });
+  };
+
   handlePick = () => {
     let result;
     let name;
