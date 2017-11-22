@@ -90,7 +90,7 @@ class DataClassifyDialog extends Component {
       results: [],
       lovAvailable: true,
     });
-  }
+  };
 
 
   renderDialogTableBody() {
