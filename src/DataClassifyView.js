@@ -60,14 +60,6 @@ class DataClassifyView extends Component {
     this.props.setBaseUri(index, text);
   };
 
-  onVocabPicked = (_, index) => {
-    const dialog = this.state.dialog;
-    dialog.vocabPickerIndex = index;
-    this.setState({
-      dialog,
-    });
-  };
-
   onChange = (_, string) => {
     const dialog = this.state.dialog;
     dialog.searchText = string;

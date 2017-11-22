@@ -19,6 +19,12 @@ class DataClassifyDialog extends Component {
       lovAvailable: true,
     };
   }
+  onVocabPicked = (_, index) => {
+    this.setState({
+      vocabPickerIndex: index,
+    });
+  };
+
   searchVocabulary = (e) => {
     const query = this.state.searchText;
     const tempState = this.state;
@@ -74,6 +80,9 @@ class DataClassifyDialog extends Component {
       };
     }
     this.props.finishCallBack(result, this.state.baseUri);
+    this.resetDialog();
+  };
+  resetDialog = () => {
     this.setState({
       searchText: '',
       stepIndex: 0,
@@ -81,7 +90,7 @@ class DataClassifyDialog extends Component {
       results: [],
       lovAvailable: true,
     });
-  };
+  }
 
 
   renderDialogTableBody() {
@@ -138,7 +147,7 @@ class DataClassifyDialog extends Component {
               name="Base-uri:"
               type="url"
               hintText="type a base URI here"
-              onChange={(_, string) => this.setState({ baseURI: string })}
+              onChange={(_, string) => this.setState({ baseUri: string })}
             />
           </div>
 
@@ -176,15 +185,18 @@ class DataClassifyDialog extends Component {
       <FlatButton
         label={(this.state.stepIndex === 0) ? 'Next' : 'Finish'}
         primary
-        onClick={(this.state.stepIndex === 0) ?
-          this.setState({ stepIndex: 1 }) : this.handlePick}
+        onClick={() => ((this.state.stepIndex === 0) ?
+          this.setState({ stepIndex: 1 }) : this.handlePick())}
         disabled={(this.state.stepIndex === 0 || this.state.vocabDownText) ?
           false : !!(this.state.results.length === 0 || this.state.vocabDownText)}
       />,
       <FlatButton
         label="Cancel"
         primary={false}
-        onClick={this.props.closeCallBack}
+        onClick={() => {
+          this.resetDialog();
+          this.props.closeCallBack();
+        }}
       />,
     ];
     return (
