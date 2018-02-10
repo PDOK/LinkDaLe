@@ -290,7 +290,18 @@ class TripleVisualizer extends React.Component {
     }
 
     const style = graphView.getEdgeStyle(datum, graphView.props.selected);
-    const trans = graphView.getEdgeHandleTransformation(datum);
+    let trans = graphView.getEdgeHandleTransformation(datum);
+    trans = trans.replace(/rotate\((.*?)\)/g, (value) => {
+      let degrees = Number(value.substring(7, value.length - 1));
+      if ((degrees > 90 && degrees < 270) || degrees < -90) {
+        degrees += 180;
+        if (degrees > 359) {
+          degrees -= 360;
+        }
+      }
+      return `rotate(${degrees})`;
+    });
+
     d3.select(domNode).attr('style', style).select('use').attr('xlink:href', d => graphView.props.edgeTypes[d.type].shapeId)
       .attr('width', graphView.props.edgeHandleSize)
       .attr('height', graphView.props.edgeHandleSize)
@@ -301,7 +312,8 @@ class TripleVisualizer extends React.Component {
       d3.select(domNode).select('text').attr('class', 'barsEndlineText')
         .attr('text-anchor', 'middle')
         .attr('transform', trans)
-        .attr('font-size', '12px')
+        .attr('font-size', '15px')
+        .attr('stroke-width', '1px')
         .text(datum.title);
     }
   }
