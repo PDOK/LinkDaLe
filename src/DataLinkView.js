@@ -200,14 +200,6 @@ class DataLinkView extends Component {
       selected: {},
     });
   };
-  onVocabPicked = (_, index) => {
-    const dialog = this.state.dialog;
-    dialog.vocabPickerIndex = index;
-    this.setState({
-      dialog,
-    });
-  };
-
 
   // Helper to find the index of a given node
   getNodeIndex(searchNode) {
