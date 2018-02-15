@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
 import {
   Dialog, DropDownMenu, FlatButton, IconButton, MenuItem, Step,
@@ -221,7 +222,7 @@ class DataClassifyDialog extends Component {
 }
 DataClassifyDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.object.isRequired,
   closeCallBack: PropTypes.func.isRequired,
   finishCallBack: PropTypes.func.isRequired,
 };

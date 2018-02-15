@@ -55,6 +55,7 @@ class DataLinkDialog extends Component {
       r: 30,
       type: 'emptyEdge',
       title: name,
+      label: name,
       link: result.uri,
       vocabPrefix: result.vocabPrefix,
       prefix: result.prefix,
@@ -111,6 +112,7 @@ class DataLinkDialog extends Component {
         this.setState(error, lovAvailable);
       });
   };
+
 
   renderDialogTableBody() {
     if (!this.state.lovAvailable) {

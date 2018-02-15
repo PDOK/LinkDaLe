@@ -13,6 +13,7 @@ import Divider from 'material-ui/Divider';
 import PropTypes from 'prop-types';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import Info from 'material-ui/svg-icons/action/info-outline';
+import * as d3 from 'd3';
 import DataLinkDialog from './DataLinkDialog';
 
 function doNothing() {
@@ -250,6 +251,31 @@ class DataLinkView extends Component {
     });
     this.forceUpdate();
   };
+  // eslint-disable-next-line class-methods-use-this
+  renderEdge(graphView, domNode, datum) {
+    // For new edges, add necessary child domNodes
+    if (!domNode.hasChildNodes()) {
+      d3.select(domNode).append('path');
+      d3.select(domNode).append('use');
+      d3.select(domNode).append('text');
+    }
+
+    const style = graphView.getEdgeStyle(datum, graphView.props.selected);
+    const trans = graphView.getEdgeHandleTransformation(datum);
+    d3.select(domNode).attr('style', style).select('use').attr('xlink:href', d => graphView.props.edgeTypes[d.type].shapeId)
+      .attr('width', graphView.props.edgeHandleSize)
+      .attr('height', graphView.props.edgeHandleSize)
+      .attr('transform', trans);
+
+    d3.select(domNode).select('path').attr('d', graphView.getPathDescription);
+    if (datum.label) {
+      d3.select(domNode).select('text').attr('class', 'barsEndlineText')
+        .attr('text-anchor', 'middle')
+        .attr('transform', trans)
+        .text(datum.label);
+    }
+  }
+
 
   renderGraph() {
     const nodes = this.props.nodes;
@@ -288,6 +314,7 @@ class DataLinkView extends Component {
           onDeleteEdge={this.onDeleteEdge}
           onDeleteNode={doNothing}
           onCreateNode={doNothing}
+          renderEdge={this.renderEdge}
         />
       );
     }
