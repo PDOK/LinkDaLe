@@ -75,7 +75,7 @@ class DataLinkDialog extends Component {
     const query = this.state.searchText;
     let results = [];
     e.preventDefault();
-    fetch(`http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query
+    fetch(`https://lov.linkeddata.es/dataset/lov/api/v2/term/search?q=${query
     }&type=property`)
       .then((response) => {
         if (!response.ok) {

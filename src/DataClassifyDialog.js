@@ -31,7 +31,7 @@ class DataClassifyDialog extends Component {
     const tempState = this.state;
     e.preventDefault();
     fetch(
-      `http://lov.okfn.org/dataset/lov/api/v2/term/search?q=${query}&type=class`)
+      `https://lov.linkeddata.es/dataset/lov/api/v2/term/search?q=${query}&type=class`)
       .then((response) => {
         if (!response.ok) {
           throw Error(response);
@@ -158,7 +158,7 @@ class DataClassifyDialog extends Component {
           <div>
             <p>This dialog allows specifying the class of things described by the data.
                 For example, if your data features people then you can use
-              <em> foaf:Person </em> </p>
+            <em> foaf:Person </em> </p>
             <p>Examples are: person, company, animal etc.</p>
             <form onSubmit={this.searchVocabulary}>
               <TextField
