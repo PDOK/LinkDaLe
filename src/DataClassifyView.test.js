@@ -1,7 +1,10 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react';
-import { shallow } from 'enzyme';
+
 import DataClassifyView from './DataClassifyView';
+import * as enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+enzyme.configure({ adapter: new Adapter() });
 
 describe('<DataCreation/>', () => {
   const baseSetURI = jest.fn();
@@ -17,7 +20,7 @@ describe('<DataCreation/>', () => {
       { columnName: 't4', exampleValue: 'b4', class: { name: 'Literal' }, uri: false }];
 
   it('renders without crashes', () => {
-    shallow(<DataClassifyView
+    enzyme.shallow(<DataClassifyView
       setBaseUri={baseSetBaseUri}
       data={baseData}
       nextPage={baseNextPage}
@@ -28,7 +31,7 @@ describe('<DataCreation/>', () => {
   });
 
   it('getAmountOfClasses none', () => {
-    const wrapper = shallow(<DataClassifyView
+    const wrapper = enzyme.shallow(<DataClassifyView
       setBaseUri={baseSetBaseUri}
       data={baseData}
       nextPage={baseNextPage}
@@ -47,7 +50,7 @@ describe('<DataCreation/>', () => {
         { columnName: 't2', exampleValue: 'b2', class: { name: 'Literal' }, uri: false },
         { columnName: 't3', exampleValue: 'b3', class: { name: 'Literal' }, uri: true },
         { columnName: 't4', exampleValue: 'b4', class: { name: 'Literal' }, uri: false }];
-    const wrapper = shallow(<DataClassifyView
+    const wrapper = enzyme.shallow(<DataClassifyView
       setBaseUri={baseSetBaseUri}
       data={data}
       nextPage={baseNextPage}
