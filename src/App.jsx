@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { SparqlClient } from 'sparql-client-2';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import MaterialDrawer from 'material-ui/Drawer/Drawer';
 import Card from 'material-ui/Card/Card';
 // import CardHeader from 'material-ui/Card/CardHeader';
@@ -35,7 +34,6 @@ import QueryWriter from './QueryWriter';
 // import {MdCode,MdSearch,MdCreate,MdBook} from 'react-icons/md';
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
-injectTapEventPlugin();
 const muiTheme = getMuiTheme({
   palette: {
     primary1Color: green500,
@@ -62,7 +60,7 @@ function NavigationBar(props) {
       <Card className="home_card" onClick={() => props.onClick(States.Welcome)}>
         <CardText>
           <img src={`${process.env.PUBLIC_URL}/images/linkdale_logo.png`} height={80} alt="logo" />
-          <p>Linked Data Learning Environment </p>
+          <p>Linked Data Learning Environment</p>
         </CardText>
       </Card>
       <div style={{ textAlign: 'left' }}>
