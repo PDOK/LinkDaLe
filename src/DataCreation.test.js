@@ -1,6 +1,8 @@
 import React from 'react';
-import { shallow } from 'enzyme';
 import DataCreation from './DataCreation';
+import * as enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+enzyme.configure({ adapter: new Adapter() });
 
 describe('<DataCreation/>', () => {
   const defaultExampleData =
@@ -10,11 +12,11 @@ describe('<DataCreation/>', () => {
       ['d0', '', 'd2', '', 'd4'],
       ['e0', '', 'e2', 'e3', 'e4']];
   it('renders without crashing', () => {
-    shallow(<DataCreation executeQuery={jest.fn()} />);
+    enzyme.shallow(<DataCreation executeQuery={jest.fn()} />);
   });
 
   it('setData', () => {
-    const wrapper = shallow(<DataCreation executeQuery={jest.fn()} />);
+    const wrapper = enzyme.shallow(<DataCreation executeQuery={jest.fn()} />);
     const instance = wrapper.instance();
     instance.setData(defaultExampleData);
     expect(instance.state.data).toBe(defaultExampleData);
@@ -23,7 +25,7 @@ describe('<DataCreation/>', () => {
   });
 
   it('getExampleData', () => {
-    const wrapper = shallow(<DataCreation executeQuery={jest.fn()} />);
+    const wrapper = enzyme.shallow(<DataCreation executeQuery={jest.fn()} />);
     const instance = wrapper.instance();
     instance.setData(defaultExampleData);
     const result = instance.getExampleData(0, 0);
@@ -32,7 +34,7 @@ describe('<DataCreation/>', () => {
 
   it('getMaxTenData', () => {
     const data = [['title'], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]];
-    const wrapper = shallow(<DataCreation executeQuery={jest.fn()} />);
+    const wrapper = enzyme.shallow(<DataCreation executeQuery={jest.fn()} />);
     const instance = wrapper.instance();
     instance.setData(data);
     let result = instance.getExampleData(0, 0);

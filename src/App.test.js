@@ -1,15 +1,19 @@
-/* eslint-disable react/jsx-filename-extension */
 // import 'jsdom-global/register'; // Uncomment when testing locally
 import React from 'react';
-import { mount } from 'enzyme';
+import * as enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import App from './App';
-
-it('renders without crashing', () => {
-  mount(<App />);
-});
+// tslint:disable-next-line:no-any
+enzyme.configure({ adapter: new Adapter() });
+describe('render', () => {
+  it('renders without crashing', () => {
+    enzyme.mount( < App/> );
+  });
+})
 
 
 // it('datastore did mount', () => {
+
 //   const wrapper = mount(<App />);
 //   expect(wrapper.state().store).toBeDefined();
 // });
@@ -158,4 +162,3 @@ it('renders without crashing', () => {
 //     });
 //   });
 // });
-//

@@ -12,8 +12,7 @@ function createClassDefinitions(nodes, links) {
         // Push relation and class
         return ({
           link,
-          target:
-              nodes.filter(nodeF => nodeF.id === link.target)[0],
+          target: nodes.filter(nodeF => nodeF.id === link.target)[0],
         });
       }
       return undefined;
@@ -39,7 +38,7 @@ function createClassDefinitions(nodes, links) {
 // }
 function classifyLiteral(literal, target) {
   const literalDescription =
-      literalMap.find(description => (description.label === target.valueType));
+    literalMap.find(description => (description.label === target.valueType));
   if (literalDescription.variableToAdd.length > 0) {
     const extraVariable = literalDescription.variableToAdd[0];
     if (literalDescription.label === 'Language tagged String') {
@@ -68,8 +67,8 @@ function convertDataToTriples(data, links, nodes) {
       // If there is no item create a new one
       const dataSubject = rdf.createNamedNode(dataRow[classDefinition.subject.column]);
       const typeOf = rdf.createNamedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-      if (graph.filter(relation => relation.object === dataSubject
-              && relation.predicate === typeOf).length === 0) {
+      if (graph.filter(relation => relation.object === dataSubject &&
+          relation.predicate === typeOf).length === 0) {
         graph.add(rdf.createTriple(
           dataSubject,
           typeOf,
@@ -88,9 +87,9 @@ function convertDataToTriples(data, links, nodes) {
             targetValue = rdf.createNamedNode(targetValue);
           }
           // eslint-disable-next-line no-underscore-dangle
-          if (graph._graph.filter(node => (node.object === dataSubject
-                  && node.predicate === relationNode
-                  && node.subject === targetValue)).length === 0) {
+          if (graph._graph.filter(node => (node.object === dataSubject &&
+              node.predicate === relationNode &&
+              node.subject === targetValue)).length === 0) {
             graph.add(rdf.createTriple(dataSubject, relationNode, targetValue));
           }
         }
@@ -124,40 +123,36 @@ function nodeCreation(data, classifications) {
   const edges = [];
   classifications.forEach((classification, index) => {
     if (classification.baseUri) {
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: data[0][index],
-          type: 'literal',
-          r: 30,
-          title: data[0][index],
-          column: index,
-          valueType: 'String',
-        });
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: `${classification.class.name}`,
-          type: 'uri',
-          r: 30,
-          title: `${classification.class.prefix}`,
-          uri: classification.class.uri,
-          prefixedName: classification.class.vocabPrefix,
-          column: data[0].length,
-        });
-      edges.push(
-        {
-          source: nodes.length - 1,
-          target: nodes.length - 2,
-          relation: 'rdfs:label',
-          r: 30,
-          type: 'emptyEdge',
-          title: 'label',
-          link: 'https://www.w3.org/2000/01/rdf-schema#label',
-          vocabPrefix: 'rdfs',
-          prefix: 'rdfs:label',
-        },
-      );
+      nodes.push({
+        id: (nodes.length),
+        label: data[0][index],
+        type: 'literal',
+        r: 30,
+        title: data[0][index],
+        column: index,
+        valueType: 'String',
+      });
+      nodes.push({
+        id: (nodes.length),
+        label: `${classification.class.name}`,
+        type: 'uri',
+        r: 30,
+        title: `${classification.class.prefix}`,
+        uri: classification.class.uri,
+        prefixedName: classification.class.vocabPrefix,
+        column: data[0].length,
+      });
+      edges.push({
+        source: nodes.length - 1,
+        target: nodes.length - 2,
+        relation: 'rdfs:label',
+        r: 30,
+        type: 'emptyEdge',
+        title: 'label',
+        link: 'https://www.w3.org/2000/01/rdf-schema#label',
+        vocabPrefix: 'rdfs',
+        prefix: 'rdfs:label',
+      });
       let newRow = data.map((dataRow, rowIndex) => {
         // Column header
         if (rowIndex === 0) {
@@ -196,16 +191,15 @@ function nodeCreation(data, classifications) {
       }
       data.forEach((dataRow, idx) => dataRow.push(newRow[idx]));
     } else if (classification.class.uri) {
-      nodes.push(
-        {
-          id: (nodes.length),
-          label: classification.class.name,
-          type: 'uri',
-          r: 30,
-          title: classification.class.name,
-          uri: classification.class.uri,
-          column: index,
-        });
+      nodes.push({
+        id: (nodes.length),
+        label: classification.class.name,
+        type: 'uri',
+        r: 30,
+        title: classification.class.name,
+        uri: classification.class.uri,
+        column: index,
+      });
     } else {
       const definition = literalMap.find(def => def.label === classification.valueType);
       const node = {
@@ -232,4 +226,9 @@ function nodeCreation(data, classifications) {
     nodes,
   });
 }
-export { convertDataToTriples, createClassDefinitions, nodeCreation, distribute };
+export {
+  convertDataToTriples,
+  createClassDefinitions,
+  nodeCreation,
+  distribute
+};

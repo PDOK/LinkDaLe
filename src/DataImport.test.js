@@ -3,8 +3,10 @@
  * Created by Gerwin Bosch on 3-7-2017.
  */
 import React from 'react';
-import { shallow } from 'enzyme';
 import DataImport from './DataImport';
+import * as enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+enzyme.configure({ adapter: new Adapter() });
 
 describe('<DataImport/>', () => {
   let dataStore = [];
@@ -20,14 +22,14 @@ describe('<DataImport/>', () => {
     const setMyData = function (data) {
       dataStore = data;
     };
-    shallow(
+    enzyme.shallow(
       <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />);
   });
 
   it('set Data', () => {
     dataStore = [];
     const setMyData = jest.fn();
-    const wrapper = shallow(
+    const wrapper = enzyme.shallow(
       <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
     const tf = wrapper.find('input');
@@ -44,7 +46,7 @@ describe('<DataImport/>', () => {
   it('Invalid filetype', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
     const setMyData = jest.fn();
-    const wrapper = shallow(
+    const wrapper = enzyme.shallow(
       <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
     const tf = wrapper.find('input');
@@ -59,7 +61,7 @@ describe('<DataImport/>', () => {
   it('No File selected', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
     const setMyData = jest.fn();
-    const wrapper = shallow(
+    const wrapper = enzyme.shallow(
       <DataImport data={dataStore} setData={setMyData.bind(this)} pageFunction={pageFunction} />,
     );
     const tf = wrapper.find('input');
@@ -74,7 +76,7 @@ describe('<DataImport/>', () => {
   it('ContinueClick', () => {
     dataStore = [['gerwinbosch', 'x', 'y'], ['kaas', 'c', 'u'], []];
     const tempPageFunction = jest.fn();
-    const wrapper = shallow(
+    const wrapper = enzyme.shallow(
       <DataImport data={dataStore} setData={setData} pageFunction={tempPageFunction.bind(this)} />,
     );
     const tf = wrapper.find('#continue_button');
@@ -87,7 +89,7 @@ describe('<DataImport/>', () => {
     // Expect tempPagefunction not te be called
     dataStore = [];
     const tempPageFunction = jest.fn();
-    const wrapper = shallow(
+    const wrapper = enzyme.shallow(
       <DataImport data={dataStore} setData={setData} pageFunction={tempPageFunction.bind(this)} />,
     );
     const tf = wrapper.find('#continue_button');
