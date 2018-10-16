@@ -149,7 +149,7 @@ function nodeCreation(data, classifications) {
         r: 30,
         type: 'emptyEdge',
         title: 'label',
-        link: 'https://www.w3.org/2000/01/rdf-schema#label',
+        link: 'http://www.w3.org/2000/01/rdf-schema#label',
         vocabPrefix: 'rdfs',
         prefix: 'rdfs:label',
       });

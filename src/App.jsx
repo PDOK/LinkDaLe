@@ -140,7 +140,7 @@ class App extends Component {
     this.state = {
       state: States.Welcome,
       title: 'Welcome',
-      client: new SparqlClient('http://almere.pilod.nl/sparql'),
+      client: new SparqlClient('https://virtuoso.almere.pilod.nl/sparql'),
       parser: new SparqlJs.Parser(),
     };
   }
@@ -151,6 +151,7 @@ class App extends Component {
       this.state.client.query(call).execute((err, results) => {
         if (err) {
           if (callBack) {
+            console.error(err)
             callBack(err, []);
           }
         } else if (callBack) {
@@ -159,6 +160,7 @@ class App extends Component {
         }
       });
     } catch (error) {
+      console.error(error) 
       callBack(error, null);
     }
   };
