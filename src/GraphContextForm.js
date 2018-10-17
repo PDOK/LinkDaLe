@@ -59,7 +59,7 @@ class GraphContextForm extends Component {
       <Dialog open={this.props.open} actions={actions}>
         <TextField
           name="filename"
-          value={`http://gerwinbosch.nl/rdf-paqt/data/${GraphContextForm.encodeGraphName(this.state.fileName)}`}
+          value={`http://linkdale.org/data/${GraphContextForm.encodeGraphName(this.state.fileName)}`}
           floatingLabelText="URI of the dataset"
           disabled
           fullWidth
