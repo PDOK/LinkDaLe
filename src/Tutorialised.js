@@ -16,6 +16,10 @@ import Dialog from 'material-ui/Dialog';
 import Markdown from 'react-markdown';
 import './Tutorialised.css';
 
+function ImageRenderer(props) {
+  // eslint-disable-next-line alt prop provided by React Markdown renderer
+  return <img {...props} style={{maxWidth:'100%'}}/>
+}
 
 class Tutorialised extends React.Component {
   constructor() {
@@ -174,8 +178,11 @@ class Tutorialised extends React.Component {
           onRequestClose={this.handleClose.bind(this)}
           modal={false}
           actions={cardActions}
+          contentStyle={{width:"80%", maxWidth:"none"}}
         >
-          <Markdown source={this.state.markdownText} />
+          <Markdown source={this.state.markdownText}
+          renderers={{image:ImageRenderer}}
+           />
         </Dialog>
 
 
