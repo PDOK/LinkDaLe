@@ -54,6 +54,11 @@ const States = {
   AboutLOV: 10,
 };
 
+function ImageRenderer(props) {
+    // eslint-disable-next-line alt prop provided by React Markdown renderer
+  return <img {...props} style={{maxWidth:'100%'}}/>
+}
+
 function NavigationBar(props) {
   return (
     <MaterialDrawer>
@@ -242,7 +247,9 @@ class App extends Component {
           <div style={{ display: 'flex', flexDirection: 'row', padding: '20px' }}>
             <space style={{ flex: 1 }} />
             <div style={{ textStyle: 'roboto, sans-serif', textAlign: 'left', flex: 3, maxHeight: '98vh', overflowX: 'none' }}>
-              <Markdown source={this.state.markdownText} />
+              <Markdown source={this.state.markdownText}
+               renderers = {{image:ImageRenderer}}
+              />
             </div>
             <space style={{ flex: 1 }} />
           </div>
