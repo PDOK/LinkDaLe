@@ -18,14 +18,14 @@ Leelah,15,Utrecht
 The resulting Linked Data representation of the same data is as follows:
 
 ``` xml
-<http://rdf.paqt/Neil> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-<http://rdf.paqt/Neil> <http://xmlns.com/foaf/0.1/name> "Neil"@en .
-<http://rdf.paqt/Neil> <http://xmlns.com/foaf/0.1/age> "33"^^<https://www.w3.org/2001/XMLSchema#integer> .
-<http://rdf.paqt/Neil> <http://www.w3.org/ns/person#placeOfBirth> "Enschede"@en .
-<http://rdf.paqt/Leelah> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-<http://rdf.paqt/Leelah> <http://xmlns.com/foaf/0.1/name> "Leelah"@en .
-<http://rdf.paqt/Leelah> <http://xmlns.com/foaf/0.1/age> "15"^^<https://www.w3.org/2001/XMLSchema#integer> .
-<http://rdf.paqt/Leelah> <http://www.w3.org/ns/person#placeOfBirth> "Utrecht"@en .
+<http://linkdale.org/data/Neil> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://linkdale.org/data/Neil> <http://xmlns.com/foaf/0.1/name> "Neil"@en .
+<http://linkdale.org/data/Neil> <http://xmlns.com/foaf/0.1/age> "33"^^<https://www.w3.org/2001/XMLSchema#integer> .
+<http://linkdale.org/data/Neil> <http://www.w3.org/ns/person#placeOfBirth> "Enschede"@en .
+<http://linkdale.org/data/Leelah> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://linkdale.org/data/Leelah> <http://xmlns.com/foaf/0.1/name> "Leelah"@en .
+<http://linkdale.org/data/Leelah> <http://xmlns.com/foaf/0.1/age> "15"^^<https://www.w3.org/2001/XMLSchema#integer> .
+<http://linkdale.org/data/Leelah> <http://www.w3.org/ns/person#placeOfBirth> "Utrecht"@en .
 ```
 
 With the **Browse data** screen you can browse the data in a human-readable way using **Table** representation
@@ -56,4 +56,4 @@ The URIs are shown as circles and literal values are represented as rectangles.
 
 Class Graph view shows a so called *data shape*, a structure of the classes, relation between them and their attributes.
 
-![Class Graph view on data](/images/class_view.png)F
+![Class Graph view on data](/images/class_view.png)
