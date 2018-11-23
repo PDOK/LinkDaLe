@@ -108,7 +108,7 @@ Therefore, in order to indicate that column **Name** is used to make URIs, check
 
 You will be prompt to fill a form to specify a base URI (<http://linkdale.org/data/>). See figure bellow.
 
-![Pick a URI dialog](/images/pick_uri.png)
+![Pick a URI dialog](/images/pick_uri_new.png)
 
 After you click **Next** you will see another dialog that asks to provide a class. Type a name of a class (e.g person) into the search bar and click search. Select one term from the list of suggestions (e.g. foaf:Person). See the figure below.
 
@@ -116,7 +116,7 @@ After you click **Next** you will see another dialog that asks to provide a clas
 
 When you click **Finish** you will see an updated Classify screen with all the information you provided,
 
-![Result classify screen](/images/classify2.png)
+![Result classify screen](/images/classify2_new.png)
 
 The **Reset** button will wipe out information you have provided for a column.
 
@@ -159,7 +159,7 @@ button.
 **Publish** button will insert your data into a remote [triplestore](http://virtuoso.almere.pilod.nl/sparql). This will make your data published on the Web Of Data! Just provide useful metadata by filling a form
 as it shown below.
 
-![Metadata dialog](/images/publish.png)
+![Metadata dialog](/images/publish_new.png)
 
 CLick **Publish** and you are done!
 
