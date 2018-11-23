@@ -56,4 +56,4 @@ The URIs are shown as circles and literal values are represented as rectangles.
 
 Class Graph view shows a so called *data shape*, a structure of the classes, relation between them and their attributes.
 
-![Class Graph view on data](/images/class_view.png)F
+![Class Graph view on data](/images/class_view.png)
