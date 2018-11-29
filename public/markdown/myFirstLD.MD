@@ -162,6 +162,6 @@ as it shown below.
 
 ![Metadata dialog](/images/publish.png)
 
-Cдick **Publish** and you are done!
+Click **Publish** and you are done!
 
 You can browse your data from **Browse data** screen or query it from **Query data** screen.)
