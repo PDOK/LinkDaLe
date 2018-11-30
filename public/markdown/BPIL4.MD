@@ -9,7 +9,7 @@ The latter allows managing data in a remote triple store. You can use both GET a
 Triple stores are able to response in mny formats and serialisations (e.g Turtle, RDF/XML, JSON and JSON-LD)
 
 In this assignment you are asked to perform an HTTP request with a SPARQL query using an HTTP client.
-You will use the last query (about product information) of the second assignment.
+You will use the last query (find a match) of the third assignment.
 After you succeed in an HTTP client, you will send the same request from your Mendix application.
 
 ### Required knowledge
@@ -26,7 +26,7 @@ After you succeed in an HTTP client, you will send the same request from your Me
 ### Assignment steps
 
 * **Install [Postman](https://www.getpostman.com/apps)** for your platform. Postman is a user friendly HTTP client that is handy when it comes to development of HTTP requests.
-* **Encode a query into a URL** using the URL-encoding [service](https://meyerweb.com/eric/tools/dencoder/). Use the last query from the previous assignment (about products).
+* **Encode a query into a URL** using the URL-encoding [service](https://meyerweb.com/eric/tools/dencoder/). Use the last query from the previous assignment (find a match).
 * **Construct an HTTP request** by adding your encoded query to the base `http://virtuoso.almere.pilod.nl/sparql?query=`
 * **Send the request** from Postman
 * **Change query parameters** to have response in a desired format by changing the accept header e.g (to `accept:json` for JSON encoding)
