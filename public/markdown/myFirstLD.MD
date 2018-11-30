@@ -42,7 +42,8 @@ This data will be converted into Linked Data following the logic of the 4 design
 Once the table is created it can be uploaded into the tool for transformation.
 This can be done on the first screen of the **"Create Link Data"** page. Just click **PICK A FILE** and submit a ***.CSV** file. The result will look like this:
 
-![Result of the firts step - upload data](/images/step1.png)
+![Result of the first step - upload data](/images/step1.png)
+
 
 Click **Continue** to go to the next step.
 
@@ -52,7 +53,7 @@ A Figure bellow presents an initial view of the **CLASSIFY** screen.
 It is a table with 6 columns. The first column lists all the columns of the source data which example values can be seen in the second column.
 The third column asks if data presented in a column can be used for URIs.
 
-![Inititial view of the **CLASSIFY** screen](/images/classify1.png)
+![Initial view of the **CLASSIFY** screen](/images/classify1.png)
 
 #### Is it a URI
 
@@ -161,6 +162,6 @@ as it shown below.
 
 ![Metadata dialog](/images/publish.png)
 
-CLick **Publish** and you are done!
+Click **Publish** and you are done!
 
 You can browse your data from **Browse data** screen or query it from **Query data** screen.)
