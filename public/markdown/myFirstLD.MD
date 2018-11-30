@@ -42,7 +42,8 @@ This data will be converted into Linked Data following the logic of the 4 design
 Once the table is created it can be uploaded into the tool for transformation.
 This can be done on the first screen of the **"Create Link Data"** page. Just click **PICK A FILE** and submit a ***.CSV** file. The result will look like this:
 
-![Result of the firts step - upload data](/images/step1.png)
+![Result of the first step - upload data](/images/step1.png)
+
 
 Click **Continue** to go to the next step.
 
@@ -52,7 +53,7 @@ A Figure bellow presents an initial view of the **CLASSIFY** screen.
 It is a table with 6 columns. The first column lists all the columns of the source data which example values can be seen in the second column.
 The third column asks if data presented in a column can be used for URIs.
 
-![Inititial view of the **CLASSIFY** screen](/images/classify1.png)
+![Initial view of the **CLASSIFY** screen](/images/classify1.png)
 
 #### Is it a URI
 
@@ -108,7 +109,7 @@ Therefore, in order to indicate that column **Name** is used to make URIs, check
 
 You will be prompt to fill a form to specify a base URI (<http://linkdale.org/data/>). See figure bellow.
 
-![Pick a URI dialog](/images/pick_uri_new.png)
+![Pick a URI dialog](/images/pick_uri.png)
 
 After you click **Next** you will see another dialog that asks to provide a class. Type a name of a class (e.g person) into the search bar and click search. Select one term from the list of suggestions (e.g. foaf:Person). See the figure below.
 
@@ -116,7 +117,7 @@ After you click **Next** you will see another dialog that asks to provide a clas
 
 When you click **Finish** you will see an updated Classify screen with all the information you provided,
 
-![Result classify screen](/images/classify2_new.png)
+![Result classify screen](/images/classify2.png)
 
 The **Reset** button will wipe out information you have provided for a column.
 
@@ -159,8 +160,8 @@ button.
 **Publish** button will insert your data into a remote [triplestore](http://virtuoso.almere.pilod.nl/sparql). This will make your data published on the Web Of Data! Just provide useful metadata by filling a form
 as it shown below.
 
-![Metadata dialog](/images/publish_new.png)
+![Metadata dialog](/images/publish.png)
 
-CLick **Publish** and you are done!
+Click **Publish** and you are done!
 
 You can browse your data from **Browse data** screen or query it from **Query data** screen.)
