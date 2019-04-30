@@ -34,7 +34,7 @@ LinkDaLe provides a SPARQL query interface. It has quite typical appearance for 
 Other prominent examples are [YasGUI](http://yasgui.org/) and [isparql](https://www.openlinksw.com/isparql/)
 From the figure below you can see that the interface consists of 3 main fields and the run button.
 
-![Query interface of LinkDaLe](/images/query_interface)
+![Query interface of LinkDaLe](/images/query_interface.png)
 
 By default the query interface is aimed at the SPARQL endpoint of <http://virtuoso.almere.pilod.nl:8890/sparql> .
 The initial query in the Query form retrieves everything from that endpoint.
